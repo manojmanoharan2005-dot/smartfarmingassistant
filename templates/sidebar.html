@@ -1,0 +1,21 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h3>🌾 Smart Farm</h3>
+    </div>
+    <nav class="sidebar-nav">
+        <ul>
+            <li><a href="{{ url_for('dashboard.dashboard') }}" class="sidebar-link">
+                📊 Dashboard
+            </a></li>
+            <li><a href="{{ url_for('crop.crop_suggestion') }}" class="sidebar-link">
+                🌱 Crop Suggestion
+            </a></li>
+            <li><a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="sidebar-link">
+                🧪 Fertilizer Recommendation
+            </a></li>
+            <li><a href="{{ url_for('disease.disease_detection') }}" class="sidebar-link">
+                🦠 Disease Detection
+            </a></li>
+        </ul>
+    </nav>
+</aside>

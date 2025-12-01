@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Disease Detection Result - Smart Farming Assistant{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/disease.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="disease-result">
+        <h2>🦠 Disease Detection Result</h2>
+        
+        <div class="result-container">
+            <div class="image-section">
+                <img src="{{ url_for('static', filename=disease.image_path.split('static/')[-1]) }}" 
+                     alt="Uploaded plant image" class="result-image">
+            </div>
+            
+            <div class="detection-info">
+                <div class="disease-header">
+                    <h3>{{ disease.disease_name }}</h3>
+                    <div class="confidence-badge">
+                        Confidence: {{ "%.1f"|format(disease.confidence * 100) }}%
+                    </div>
+                </div>
+                
+                <div class="disease-details">
+                    <p><strong>Plant Type:</strong> {{ disease.plant_type }}</p>
+                    <p><strong>Severity:</strong> {{ disease.severity }}</p>
+                </div>
+                
+                <div class="remedies-section">
+                    <h4>🩹 Treatment Recommendations:</h4>
+                    <ul>
+                        {% for remedy in disease.remedies %}
+                        <li>{{ remedy }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="prevention-section">
+                    <h4>🛡️ Prevention Tips:</h4>
+                    <ul>
+                        {% for tip in disease.prevention %}
+                        <li>{{ tip }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{{ url_for('disease.disease_detection') }}" class="btn btn-secondary">Detect Another</a>
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

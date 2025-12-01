@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Farming Assistant{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Green Header Section -->
+    <div class="dashboard-header">        
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Dashboard</h1>
+                <p>Monitor your farm's performance and get insights</p>
+            </div>
+            <div class="header-right">
+                <button class="action-btn govt-btn">🏛️ Govt Schemes</button>
+                <button class="action-btn tools-btn">🔧 Tools</button>
+                <span class="header-date">📅 {{ current_date }}</span>
+                <button class="logout-button" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+                <button class="profile-button" onclick="openProfileModal()">👤 Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🌾</span>
+                    <span class="logo-text">Farming Assistant</span>
+                </div>
+                <p class="subtitle">Smart Agriculture Platform</p>
+            </div>
+            
+            <div class="welcome-section">
+                <p class="welcome-label">Welcome back,</p>
+                <h3 class="welcome-name">{{ user_name }}! 👋</h3>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-item">
+                    <span class="nav-icon">🌱</span>
+                    <span class="nav-text">Crop Suggestion</span>
+                </a>
+                <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-item">
+                    <span class="nav-icon">🧪</span>
+                    <span class="nav-text">Fertilizer Advice</span>
+                </a>
+                <a href="{{ url_for('disease.disease_detection') }}" class="nav-item">
+                    <span class="nav-icon">🦠</span>
+                    <span class="nav-text">Disease Detection</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Content Panel -->
+        <div class="content-panel">
+            <!-- Greeting Card -->
+            <div class="greeting-card">
+                <div class="greeting-left">
+                    <h2>Good Morning, {{ user_name }}! 👋</h2>
+                    <p>Your farm is looking great today. Here's what's happening.</p>
+                </div>
+                <div class="weather-info">
+                    <div class="weather-icon">☀️</div>
+                    <div class="weather-details">
+                        <span class="temperature">28°C</span>
+                        <span class="condition">Sunny</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon chart">📊</div>
+                    <div class="stat-info">
+                        <h3>{{ stats.total_recommendations }}</h3>
+                        <p>Total Recommendations</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon plant">🌱</div>
+                    <div class="stat-info">
+                        <h3>{{ stats.crops_suggested }}</h3>
+                        <p>Crops Monitoring</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon disease">🦠</div>
+                    <div class="stat-info">
+                        <h3>{{ stats.diseases_detected }}</h3>
+                        <p>Diseases Detected</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon fertilizer">🧪</div>
+                    <div class="stat-info">
+                        <h3>{{ stats.fertilizers_saved }}</h3>
+                        <p>Saved Fertilizers</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="recent-activity">
+                <h3 class="section-title">Recent Activity</h3>
+                {% if recent_activity %}
+                <ul class="activity-list">
+                    {% for item in recent_activity %}
+                    <li class="activity-item">
+                        <span class="activity-time">{{ item.time }}</span>
+                        <span class="activity-text">{{ item.text }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-activity">No recent activity. Your dashboard will show actions like recommendations and detections here.</p>
+                {% endif %}
+            </div>
+            <div class="progress-section">
+                <h3 class="section-title">Crop Progress</h3>
+                {% if saved_crops %}
+                    {% for crop in saved_crops %}
+                    <div class="crop-progress">
+                        <div class="crop-header">
+                            <h4 class="crop-name">{{ crop.crop_name }}</h4>
+                            <span class="crop-percentage">{{ "%.0f"|format(crop.probability * 100) }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ crop.probability * 100 }}%"></div>
+                        </div>
+                        <p class="crop-details">Sowing Date: {{ crop.sowing_date }} • Status: {{ crop.status|title }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-crops">
+                        <p>No crops being monitored. <a href="{{ url_for('crop.crop_suggestion') }}">Get started with crop recommendations</a></p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>👤 User Profile</h2>
+            <span class="close-modal" onclick="closeProfileModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="profile-info">
+                <div class="profile-item">
+                    <label>Full Name:</label>
+                    <span>{{ user.name or 'Not provided' }}</span>
+                </div>
+                <div class="profile-item">
+                    <label>Email:</label>
+                    <span>{{ user.email or 'Not provided' }}</span>
+                </div>
+                <div class="profile-item">
+                    <label>Phone:</label>
+                    <span>{{ user.phone or 'Not provided' }}</span>
+                </div>
+                <div class="profile-item">
+                    <label>State:</label>
+                    <span>{{ user.state or 'Not provided' }}</span>
+                </div>
+                <div class="profile-item">
+                    <label>District:</label>
+                    <span>{{ user.district or 'Not provided' }}</span>
+                </div>
+                <div class="profile-item">
+                    <label>Member Since:</label>
+                    <span>
+                        {% if user.created_at %}
+                            {{ user.created_at.strftime('%B %d, %Y') }}
+                        {% else %}
+                            Registration date not available
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openProfileModal() {
+    document.getElementById('profileModal').style.display = 'block';
+}
+
+function closeProfileModal() {
+    document.getElementById('profileModal').style.display = 'none';
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('profileModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+};
+</script>
+{% endblock %}

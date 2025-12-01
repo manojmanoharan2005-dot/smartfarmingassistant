@@ -1,0 +1,30 @@
+import bcrypt
+from flask import session, redirect, url_for
+from functools import wraps
+
+def hash_password(password):
+    """Hash a password using bcrypt"""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def check_password(password, hashed):
+    """Check if password matches hashed password"""
+    return bcrypt.checkpw(password.encode('utf-8'), hashed)
+
+def login_required(f):
+    """Decorator to require login for certain routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def create_session(user):
+    """Create user session"""
+    session['user_id'] = str(user['_id'])
+    session['user_name'] = user['name']
+    session['user_email'] = user['email']
+
+def clear_session():
+    """Clear user session"""
+    session.clear()

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Features - Smart Farming Assistant{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero">
+    <div class="container">
+        <h1>Platform Features</h1>
+        <p>Comprehensive tools and insights for modern farming success</p>
+    </div>
+</section>
+
+<!-- Features Content -->
+<section class="features-detailed">
+    <div class="container">
+        <div class="feature-showcase">
+            <div class="feature-content">
+                <h2>🌾 Smart Crop Recommendations</h2>
+                <p>Our AI-powered system analyzes your soil composition, local weather patterns, and historical data to recommend the most suitable crops for your land. Get personalized suggestions that maximize yield potential.</p>
+                <ul class="feature-list">
+                    <li>✅ Soil analysis integration</li>
+                    <li>✅ Weather pattern consideration</li>
+                    <li>✅ Market demand insights</li>
+                    <li>✅ Success probability scoring</li>
+                </ul>
+            </div>
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/farm-field.jpg') }}" alt="Crop recommendation">
+            </div>
+        </div>
+        
+        <div class="feature-showcase reverse">
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/farm-rows.jpg') }}" alt="Fertilizer recommendation">
+            </div>
+            <div class="feature-content">
+                <h2>🧪 Fertilizer Optimization</h2>
+                <p>Get precise fertilizer recommendations based on your crop type, soil conditions, and growth stage. Optimize nutrient application while reducing costs and environmental impact.</p>
+                <ul class="feature-list">
+                    <li>✅ Crop-specific recommendations</li>
+                    <li>✅ Timing optimization</li>
+                    <li>✅ Cost-effective solutions</li>
+                    <li>✅ Environmental safety</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="feature-showcase">
+            <div class="feature-content">
+                <h2>🦠 Disease Detection</h2>
+                <p>Upload plant images for instant disease identification using advanced computer vision. Get early detection warnings and treatment recommendations to protect your crops.</p>
+                <ul class="feature-list">
+                    <li>✅ AI-powered image analysis</li>
+                    <li>✅ Early detection capabilities</li>
+                    <li>✅ Treatment recommendations</li>
+                    <li>✅ Prevention strategies</li>
+                </ul>
+            </div>
+            <div class="feature-image">
+                <img src="{{ url_for('static', filename='images/farm-field.jpg') }}" alt="Disease detection">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Farming?</h2>
+            <p>Join thousands of farmers who are already using our platform to increase their productivity and profits.</p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started Today</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

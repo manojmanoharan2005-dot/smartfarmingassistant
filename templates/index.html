@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Farming Assistant for Modern Farmers{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Smart Farming Assistant for Modern Farmers</h1>
+                <p>Get crop suggestions, weather updates, market prices, and more — all at one place.</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='images/farm-field.jpg') }}" alt="Green farm field">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Everything You Need for Smart Farming</h2>
+            <p>Our comprehensive platform provides all the tools and information modern farmers need to maximize their harvest and profits.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🌾</div>
+                <h3>Crop Suggestion</h3>
+                <p>Suggest crops based on soil & season</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🌤️</div>
+                <h3>Weather Updates</h3>
+                <p>Live weather forecasts</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💰</div>
+                <h3>Govt Schemes</h3>
+                <p>Latest subsidies & schemes</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Section -->
+<section class="technology-section">
+    <div class="container">
+        <div class="tech-content">
+            <div class="tech-image">
+                <img src="{{ url_for('static', filename='images/farm-rows.jpg') }}" alt="Farm crop rows">
+            </div>
+            <div class="tech-text">
+                <h2>Empowering Farmers with Technology</h2>
+                <p>Our mission is to empower farmers with technology for smarter agriculture. We believe that by providing easy access to data, insights, and modern farming techniques, we can help increase productivity and sustainability.</p>
+                <p>From crop suggestions based on soil conditions to real-time weather updates and market prices, we're building the future of farming, one field at a time.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🌾 Farming Assistant</h3>
+                <p>Empowering farmers with world-class technology solutions.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <p>📞 +91 (0000) 42100</p>
+                <p>✉️ support@farmingassistant.com</p>
+                <p>📍 Agricultural Innovation Center</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('features') }}">Features</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">💼</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 Farming Assistant. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
