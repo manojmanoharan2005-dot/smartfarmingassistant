@@ -1,12 +1,26 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from utils.auth import login_required
 from datetime import datetime
+import sys
+import os
+
+# Add path for ML model
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ml_models'))
 
 # Optional DB helper - safe import
 try:
     from utils.db import save_fertilizer_recommendation
 except Exception:
     save_fertilizer_recommendation = None
+
+# Import ML predictor
+try:
+    from predict import FertilizerPredictor
+    ml_predictor = FertilizerPredictor()
+    print("✓ ML Fertilizer Predictor loaded successfully")
+except Exception as e:
+    print(f"✗ Warning: Could not load ML predictor: {e}")
+    ml_predictor = None
 
 fertilizer_bp = Blueprint('fertilizer', __name__, url_prefix='/fertilizer')
 
@@ -72,46 +86,116 @@ def generate_fertilizer_recommendations(crop_type, n, p, k, temperature, humidit
 @login_required
 def fertilizer_recommend():
     if request.method == 'GET':
+        # Get available options from ML model
+        available_soils = []
+        available_crops = []
+        if ml_predictor:
+            try:
+                available_soils = ml_predictor.get_available_soils()
+                available_crops = ml_predictor.get_available_crops()
+            except:
+                pass
+        
         return render_template('fertilizer_recommend.html',
                                user_name=session.get('user_name', 'Farmer'),
-                               current_date=datetime.now().strftime('%B %d, %Y'))
+                               current_date=datetime.now().strftime('%B %d, %Y'),
+                               available_soils=available_soils,
+                               available_crops=available_crops)
 
-    # POST: compute recommendations
+    # POST: Get ML-based recommendations
     try:
-        crop_type = request.form.get('crop_type', '')
+        # Get form data - support both old and new format
+        temperature = float(request.form.get('temperature', 0))
+        moisture = float(request.form.get('moisture', request.form.get('humidity', 0))) / 100.0 if 'humidity' in request.form else float(request.form.get('moisture', 0))
+        rainfall = float(request.form.get('rainfall', 200))
+        ph = float(request.form.get('ph', 7))
         nitrogen = float(request.form.get('nitrogen', 0))
         phosphorous = float(request.form.get('phosphorous', 0))
         potassium = float(request.form.get('potassium', 0))
-        temperature = float(request.form.get('temperature', 0))
-        humidity = float(request.form.get('humidity', 0))
-        soil_moisture = float(request.form.get('soil_moisture', 0))
+        carbon = float(request.form.get('carbon', 1.5))
+        soil = request.form.get('soil', 'Loamy Soil')
+        crop = request.form.get('crop_type', request.form.get('crop', 'rice'))
 
-        recommendations = generate_fertilizer_recommendations(
-            crop_type, nitrogen, phosphorous, potassium, temperature, humidity, soil_moisture
-        )
+        # Use ML model if available
+        if ml_predictor:
+            result = ml_predictor.predict(
+                temperature=temperature,
+                moisture=moisture,
+                rainfall=rainfall,
+                ph=ph,
+                nitrogen=nitrogen,
+                phosphorous=phosphorous,
+                potassium=potassium,
+                carbon=carbon,
+                soil=soil,
+                crop=crop
+            )
+            
+            if result.get('success'):
+                # Format recommendations for template
+                recommendations = result.get('top_recommendations', [])
+                
+                # Convert to old format for compatibility
+                formatted_recs = []
+                for rec in recommendations:
+                    formatted_recs.append({
+                        'name': rec['fertilizer'],
+                        'dosage': rec['dosage'],
+                        'usage': rec['use'],
+                        'note': rec['notes'],
+                        'confidence_percentage': rec['confidence'],
+                        'priority': 'High' if rec['confidence'] >= 60 else 'Medium' if rec['confidence'] >= 30 else 'Low',
+                        'probability': rec['confidence'] / 100.0
+                    })
+                
+                input_data = {
+                    'crop_type': crop,
+                    'nitrogen': nitrogen,
+                    'phosphorous': phosphorous,
+                    'potassium': potassium,
+                    'temperature': temperature,
+                    'humidity': moisture * 100,
+                    'soil_moisture': moisture * 100
+                }
+                
+                flash('🧪 AI-powered fertilizer recommendations generated successfully!', 'success')
+                return render_template('fertilizer_recommend.html',
+                                       recommendations=formatted_recs,
+                                       input_data=input_data,
+                                       user_name=session.get('user_name', 'Farmer'),
+                                       current_date=datetime.now().strftime('%B %d, %Y'),
+                                       available_soils=ml_predictor.get_available_soils() if ml_predictor else [],
+                                       available_crops=ml_predictor.get_available_crops() if ml_predictor else [])
+            else:
+                flash(f'ML Model Error: {result.get("error")}', 'error')
+        else:
+            # Fallback to rule-based if ML not available
+            recommendations = generate_fertilizer_recommendations(
+                crop, nitrogen, phosphorous, potassium, temperature, moisture * 100, moisture * 100
+            )
+            
+            input_data = {
+                'crop_type': crop,
+                'nitrogen': nitrogen,
+                'phosphorous': phosphorous,
+                'potassium': potassium,
+                'temperature': temperature,
+                'humidity': moisture * 100,
+                'soil_moisture': moisture * 100
+            }
 
-        input_data = {
-            'crop_type': crop_type,
-            'nitrogen': nitrogen,
-            'phosphorous': phosphorous,
-            'potassium': potassium,
-            'temperature': temperature,
-            'humidity': humidity,
-            'soil_moisture': soil_moisture
-        }
+            flash('🔍 Rule-based fertilizer recommendations (ML model not available)', 'info')
+            return render_template('fertilizer_recommend.html',
+                                   recommendations=recommendations,
+                                   input_data=input_data,
+                                   user_name=session.get('user_name', 'Farmer'),
+                                   current_date=datetime.now().strftime('%B %d, %Y'))
 
-        flash('🔍 Fertilizer recommendations generated', 'success')
-        return render_template('fertilizer_recommend.html',
-                               recommendations=recommendations,
-                               input_data=input_data,
-                               user_name=session.get('user_name', 'Farmer'),
-                               current_date=datetime.now().strftime('%B %d, %Y'))
-
-    except ValueError:
-        flash('Please provide valid numeric inputs', 'error')
+    except ValueError as e:
+        flash(f'❌ Please provide valid numeric inputs: {e}', 'error')
         return redirect(url_for('fertilizer.fertilizer_recommend'))
     except Exception as e:
-        flash(f'Unexpected error: {e}', 'error')
+        flash(f'❌ Unexpected error: {e}', 'error')
         return redirect(url_for('fertilizer.fertilizer_recommend'))
 
 @fertilizer_bp.route('/save', methods=['POST'])

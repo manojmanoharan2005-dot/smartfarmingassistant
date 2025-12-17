@@ -49,6 +49,10 @@ def about():
 def features():
     return render_template('features.html')
 
+@app.route('/toast-demo')
+def toast_demo():
+    return render_template('toast_demo.html')
+
 # Create upload directory
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 

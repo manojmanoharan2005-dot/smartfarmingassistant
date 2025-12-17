@@ -51,8 +51,8 @@ def crop_suggestion():
                 crop_recommendations = prediction_result['top_recommendations']
                 print(f"✅ Got {len(crop_recommendations)} crop recommendations")
                 
-                # Add success message
-                flash(f'🎯 Generated crop recommendations based on your soil analysis!', 'success')
+                # Add success message with count
+                flash(f'🌾 Success! Generated {len(crop_recommendations)} crop recommendations based on your soil analysis!', 'success')
                 
             else:
                 # Fallback to enhanced mock data based on input conditions

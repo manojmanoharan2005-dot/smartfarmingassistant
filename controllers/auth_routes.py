@@ -3,8 +3,21 @@ from utils.db import create_user, find_user_by_email, get_db
 from utils.auth import hash_password, check_password, create_session, clear_session
 import json
 import os
+import re
 
 auth_bp = Blueprint('auth', __name__)
+
+def validate_password_strength(password):
+    """Validate password strength"""
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long"
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter"
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter"
+    if not re.search(r'[0-9]', password):
+        return False, "Password must contain at least one number"
+    return True, "Password is strong"
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -29,11 +42,11 @@ def login():
             session['user_name'] = user_with_password['name']
             session['user_email'] = user_with_password['email']
             
-            flash('Login successful!', 'success')
+            flash('🎉 Login successful! Welcome back, ' + user_with_password['name'] + '!', 'success')
             return redirect(url_for('dashboard.dashboard'))
         else:
-            flash('Invalid email or password!', 'error')
-            return redirect(url_for('auth.register'))
+            flash('❌ Invalid email or password. Please try again.', 'error')
+            return render_template('login.html')
     
     return render_template('login.html')
 
@@ -61,20 +74,27 @@ def register():
         
         # Check if user already exists
         if find_user_by_email(email):
-            flash('Email already registered!', 'error')
+            flash('⚠️ Email already registered! Please use a different email or login.', 'warning')
+            return render_template('register.html', states_districts=states_districts)
+        
+        # Validate password strength
+        is_strong, message = validate_password_strength(password)
+        if not is_strong:
+            flash(f'🔒 {message}', 'warning')
             return render_template('register.html', states_districts=states_districts)
         
         # Hash password and create user
         hashed_password = hash_password(password)
         create_user(name, email, hashed_password, phone, state, district)
         
-        flash('Registration successful! Please login.', 'success')
+        flash('✅ Registration successful! Welcome to Smart Farming Assistant. Please login.', 'success')
         return redirect(url_for('auth.login'))
     
     return render_template('register.html', states_districts=states_districts)
 
 @auth_bp.route('/logout')
 def logout():
+    user_name = session.get('user_name', 'User')
     clear_session()
-    flash('Logged out successfully!', 'success')
+    flash(f'👋 Goodbye {user_name}! You have been logged out successfully.', 'success')
     return redirect(url_for('index'))

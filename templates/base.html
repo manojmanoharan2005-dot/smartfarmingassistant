@@ -5,6 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Smart Farming Assistant{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.4s ease-out;
+            border-left: 4px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast.hiding {
+            animation: slideOutRight 0.4s ease-in forwards;
+        }
+
+        .toast-success {
+            border-left-color: #4CAF50;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8f4 100%);
+        }
+
+        .toast-error {
+            border-left-color: #f44336;
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+        }
+
+        .toast-warning {
+            border-left-color: #ff9800;
+            background: linear-gradient(135deg, #ffffff 0%, #fff8f0 100%);
+        }
+
+        .toast-info {
+            border-left-color: #2196F3;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon { color: #4CAF50; }
+        .toast-error .toast-icon { color: #f44336; }
+        .toast-warning .toast-icon { color: #ff9800; }
+        .toast-info .toast-icon { color: #2196F3; }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.3;
+            animation: progressBar 5s linear forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes progressBar {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+            .toast {
+                min-width: auto;
+            }
+        }
+    </style>
     {% block styles %}{% endblock %}
 </head>
 <body>
@@ -12,10 +161,64 @@
         {% include 'navbar.html' %}
     {% endif %}
     
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
     <main>
         {% block content %}{% endblock %}
     </main>
     
+    <script>
+        // Toast Notification System
+        function showToast(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+
+            const titles = {
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Information'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${titles[type] || titles.info}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+                <div class="toast-progress"></div>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto remove after duration
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 400);
+            }, duration);
+        }
+
+        // Show Flask flash messages as toasts
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            document.addEventListener('DOMContentLoaded', function() {
+                {% for category, message in messages %}
+                showToast('{{ message }}', '{{ category }}');
+                {% endfor %}
+            });
+        {% endif %}
+        {% endwith %}
+    </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

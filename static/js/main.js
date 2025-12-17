@@ -19,3 +19,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Global toast notification function (accessible from anywhere)
+window.showToast = function(message, type = 'info', duration = 5000) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+
+    const titles = {
+        success: 'Success',
+        error: 'Error',
+        warning: 'Warning',
+        info: 'Information'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || icons.info}</div>
+        <div class="toast-content">
+            <div class="toast-title">${titles[type] || titles.info}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        <div class="toast-progress"></div>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto remove after duration
+    setTimeout(() => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
+};

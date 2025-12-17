@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fertilizer Recommendation - Smart Farming</title>
+    <link rel="stylesheet" href="../static/css/fertilizer.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 AI-Powered Fertilizer Recommendation</h1>
+            <p>Get intelligent fertilizer suggestions based on soil and crop conditions</p>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #333;">Enter Soil & Crop Details</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Temperature (°C)</label>
+                    <input type="number" id="temperature" step="0.1" placeholder="e.g., 25.5" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Moisture (0-1)</label>
+                    <input type="number" id="moisture" step="0.01" min="0" max="1" placeholder="e.g., 0.7" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Rainfall (mm)</label>
+                    <input type="number" id="rainfall" step="0.1" placeholder="e.g., 200" required>
+                </div>
+
+                <div class="form-group">
+                    <label>pH Level</label>
+                    <input type="number" id="ph" step="0.1" min="0" max="14" placeholder="e.g., 6.5" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nitrogen (kg/ha)</label>
+                    <input type="number" id="nitrogen" step="0.1" placeholder="e.g., 70" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phosphorous (kg/ha)</label>
+                    <input type="number" id="phosphorous" step="0.1" placeholder="e.g., 80" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Potassium (kg/ha)</label>
+                    <input type="number" id="potassium" step="0.1" placeholder="e.g., 100" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Carbon (%)</label>
+                    <input type="number" id="carbon" step="0.1" placeholder="e.g., 1.5" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Soil Type</label>
+                    <select id="soil" required>
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Crop Type</label>
+                    <select id="crop" required>
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="getFertilizerRecommendation()">
+                🔍 Get AI Recommendation
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #4CAF50; font-weight: 600;">Analyzing with AI...</p>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+        </div>
+
+        <div class="prediction-card" id="recommendation-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/fertilizer';
+        let availableOptions = { soils: [], crops: [] };
+
+        // Load available options on page load
+        async function loadOptions() {
+            try {
+                const response = await fetch(`${API_BASE}/options`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    availableOptions = data;
+                    populateDropdowns();
+                } else {
+                    showError('Failed to load options: ' + data.error);
+                }
+            } catch (error) {
+                showError('Failed to connect to server. Please ensure backend is running.');
+                console.error('Error loading options:', error);
+            }
+        }
+
+        function populateDropdowns() {
+            const soilSelect = document.getElementById('soil');
+            const cropSelect = document.getElementById('crop');
+
+            // Populate soil types
+            soilSelect.innerHTML = '<option value="">-- Select Soil Type --</option>';
+            availableOptions.soils.forEach(soil => {
+                soilSelect.innerHTML += `<option value="${soil}">${soil}</option>`;
+            });
+
+            // Populate crops
+            cropSelect.innerHTML = '<option value="">-- Select Crop Type --</option>';
+            availableOptions.crops.forEach(crop => {
+                const displayName = crop.charAt(0).toUpperCase() + crop.slice(1);
+                cropSelect.innerHTML += `<option value="${crop}">${displayName}</option>`;
+            });
+        }
+
+        async function getFertilizerRecommendation() {
+            // Hide previous results and errors
+            document.getElementById('recommendation-result').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+
+            // Collect form data
+            const formData = {
+                temperature: parseFloat(document.getElementById('temperature').value),
+                moisture: parseFloat(document.getElementById('moisture').value),
+                rainfall: parseFloat(document.getElementById('rainfall').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                nitrogen: parseFloat(document.getElementById('nitrogen').value),
+                phosphorous: parseFloat(document.getElementById('phosphorous').value),
+                potassium: parseFloat(document.getElementById('potassium').value),
+                carbon: parseFloat(document.getElementById('carbon').value),
+                soil: document.getElementById('soil').value,
+                crop: document.getElementById('crop').value
+            };
+
+            // Validate inputs
+            for (const [key, value] of Object.entries(formData)) {
+                if (value === '' || (typeof value === 'number' && isNaN(value))) {
+                    showError(`Please enter a valid ${key.replace('_', ' ')}`);
+                    return;
+                }
+            }
+
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                document.getElementById('loading').style.display = 'none';
+
+                if (data.success) {
+                    displayRecommendation(data);
+                } else {
+                    showError('Prediction error: ' + data.error);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                showError('Failed to get recommendation: ' + error.message);
+            }
+        }
+
+        function displayRecommendation(data) {
+            const resultDiv = document.getElementById('recommendation-result');
+
+            // Determine confidence color
+            let confidenceColor = '#4caf50'; // green
+            let confidenceIcon = '✅';
+            if (data.confidence < 60) {
+                confidenceColor = '#ff9800'; // orange
+                confidenceIcon = '⚠️';
+            } else if (data.confidence < 80) {
+                confidenceColor = '#2196f3'; // blue
+                confidenceIcon = '✔️';
+            }
+
+            let html = `
+                <div style="text-align: center;">
+                    <h2 style="font-size: 1.8em; margin-bottom: 20px;">🎯 AI Fertilizer Recommendation</h2>
+                    
+                    <div style="background: rgba(255,255,255,0.15); border-radius: 15px; padding: 40px; margin: 30px 0;">
+                        <div style="font-size: 4em; margin-bottom: 10px;">${confidenceIcon}</div>
+                        <h1 style="font-size: 3.5em; margin: 20px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                            ${data.recommended_fertilizer}
+                        </h1>
+                        
+                        <div style="margin: 30px 0;">
+                            <div class="info-badge" style="background: ${confidenceColor}; font-size: 1.2em; padding: 12px 30px;">
+                                ${data.confidence_level} Confidence: ${data.confidence.toFixed(1)}%
+                            </div>
+                        </div>
+
+                        <div class="confidence-bar" style="max-width: 500px; margin: 20px auto; height: 20px; background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden;">
+                            <div class="confidence-fill" style="width: ${data.confidence}%; background: ${confidenceColor}; height: 100%; transition: width 1s ease;"></div>
+                        </div>
+
+                        <p style="font-size: 1.3em; margin-top: 25px; opacity: 0.95; line-height: 1.6;">
+                            ${data.confidence_message}
+                        </p>
+                    </div>
+
+                    ${data.recommendations && data.recommendations.length > 0 ? `
+                    <div class="fertilizer-recommendations" style="margin: 40px 0;">
+                        <h2 style="font-size: 1.8em; margin-bottom: 30px; text-align: center;">🌾 Recommended Fertilizers</h2>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto;">
+                            ${data.recommendations.map((fert, index) => {
+                                let priorityColor = '#4caf50';
+                                let priorityBg = 'rgba(76, 175, 80, 0.1)';
+                                if (fert.priority === 'Medium') {
+                                    priorityColor = '#2196f3';
+                                    priorityBg = 'rgba(33, 150, 243, 0.1)';
+                                } else if (fert.priority === 'Low') {
+                                    priorityColor = '#ff9800';
+                                    priorityBg = 'rgba(255, 152, 0, 0.1)';
+                                }
+                                
+                                return `
+                                <div style="background: rgba(255,255,255,0.95); border-radius: 15px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: left; border-top: 4px solid ${priorityColor}; position: relative;">
+                                    <div style="position: absolute; top: 15px; right: 15px; background: ${priorityBg}; color: ${priorityColor}; padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold;">
+                                        #${fert.rank}
+                                    </div>
+                                    <h3 style="color: #2e7d32; font-size: 1.5em; margin-bottom: 15px; margin-top: 5px;">${fert.name}</h3>
+                                    
+                                    <div style="background: ${priorityBg}; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600; color: #333;">Confidence:</span>
+                                            <span style="color: ${priorityColor}; font-weight: bold; font-size: 1.1em;">${fert.confidence.toFixed(1)}%</span>
+                                        </div>
+                                        <div style="background: rgba(255,255,255,0.5); height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden;">
+                                            <div style="width: ${fert.confidence}%; height: 100%; background: ${priorityColor}; transition: width 1s ease;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="color: #555; line-height: 1.8;">
+                                        <div style="margin-bottom: 12px;">
+                                            <strong style="color: #333;">📦 Dosage:</strong><br>
+                                            <span style="margin-left: 10px;">${fert.dosage}</span>
+                                        </div>
+                                        <div style="margin-bottom: 12px;">
+                                            <strong style="color: #333;">⏰ Usage:</strong><br>
+                                            <span style="margin-left: 10px;">${fert.usage}</span>
+                                        </div>
+                                        <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; border-left: 3px solid ${priorityColor};">
+                                            <strong style="color: #333;">💡 Note:</strong><br>
+                                            <span style="margin-left: 10px; font-size: 0.95em;">${fert.note}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                                        <span style="display: inline-block; background: ${priorityBg}; color: ${priorityColor}; padding: 6px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600;">
+                                            ${fert.priority} Priority
+                                        </span>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="guidelines" style="background: rgba(255,255,255,0.95); border-radius: 15px; padding: 30px; margin-top: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+                        <h3 style="margin-bottom: 20px; font-size: 1.5em; text-align: center; color: #2e7d32;">📋 Application Guidelines</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 12px 0; font-size: 1.05em; border-bottom: 1px solid #e0e0e0;"><span style="color: #4caf50; font-weight: bold;">✓</span> Apply recommended fertilizer as per soil test results</li>
+                            <li style="padding: 12px 0; font-size: 1.05em; border-bottom: 1px solid #e0e0e0;"><span style="color: #4caf50; font-weight: bold;">✓</span> Follow proper dosage instructions from manufacturer</li>
+                            <li style="padding: 12px 0; font-size: 1.05em; border-bottom: 1px solid #e0e0e0;"><span style="color: #4caf50; font-weight: bold;">✓</span> Apply during appropriate crop growth stages</li>
+                            <li style="padding: 12px 0; font-size: 1.05em;"><span style="color: #4caf50; font-weight: bold;">✓</span> Monitor crop response and adjust application as needed</li>
+                        </ul>
+                    </div>
+
+                    ${data.confidence < 60 ? `
+                    <div class="warning-box" style="background: rgba(255, 152, 0, 0.1); border: 2px solid #ff9800; border-radius: 10px; padding: 20px; margin-top: 30px; color: #e65100;">
+                        <strong style="font-size: 1.2em;">⚠️ Important Note:</strong>
+                        <p style="margin-top: 10px; line-height: 1.6;">Low confidence detected. We recommend getting a professional soil test or consulting an agricultural expert for the most accurate fertilizer recommendations for optimal crop yield.</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+
+            // Smooth scroll to results
+            setTimeout(() => {
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load options when page loads
+        window.addEventListener('DOMContentLoaded', loadOptions);
+    </script>
+</body>
+</html>

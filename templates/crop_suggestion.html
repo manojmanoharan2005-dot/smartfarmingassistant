@@ -9,6 +9,41 @@
 
 {% block content %}
 <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <span class="logo-text">Farming Assistant</span>
+            </div>
+            <p class="subtitle">Smart Agriculture Platform</p>
+        </div>
+        
+        <div class="welcome-section">
+            <p class="welcome-label">Welcome back,</p>
+            <h3 class="welcome-name">{{ user_name or "Farmer" }}! 👋</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-item active">
+                <span class="nav-icon">🌱</span>
+                <span class="nav-text">Crop Suggestion</span>
+            </a>
+            <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-item">
+                <span class="nav-icon">🧪</span>
+                <span class="nav-text">Fertilizer Advice</span>
+            </a>
+            <a href="{{ url_for('disease.disease_detection') }}" class="nav-item">
+                <span class="nav-icon">🦠</span>
+                <span class="nav-text">Disease Detection</span>
+            </a>
+        </nav>
+    </div>
+
     <!-- Green Header Section -->
     <div class="dashboard-header">        
         <div class="header-content">
@@ -18,48 +53,13 @@
             </div>
             <div class="header-right">
                 <span class="header-date">📅 Today, {{ current_date or "2024" }}</span>
-                <button class="logout-button" onclick="window.location.href='{{ url_for('auth.logout') }}'">🔴 Logout</button>
+                <button class="logout-button" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
             </div>
         </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <span class="logo-icon">🌾</span>
-                    <span class="logo-text">Farming Assistant</span>
-                </div>
-                <p class="subtitle">Smart Agriculture Platform</p>
-            </div>
-            
-            <div class="welcome-section">
-                <p class="welcome-label">Welcome back,</p>
-                <h3 class="welcome-name">{{ user_name or "Farmer" }}! 👋</h3>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-item active">
-                    <span class="nav-icon">🌱</span>
-                    <span class="nav-text">Crop Suggestion</span>
-                </a>
-                <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-item">
-                    <span class="nav-icon">🧪</span>
-                    <span class="nav-text">Fertilizer Advice</span>
-                </a>
-                <a href="{{ url_for('disease.disease_detection') }}" class="nav-item">
-                    <span class="nav-icon">🦠</span>
-                    <span class="nav-text">Disease Detection</span>
-                </a>
-            </nav>
-        </div>
-
         <!-- Content Panel -->
         <div class="content-panel">
             <!-- Crop Recommendation Form -->
