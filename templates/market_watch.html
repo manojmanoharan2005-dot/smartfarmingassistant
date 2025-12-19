@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block title %}Market Watch - Smart Farming Assistant{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+.market-header {
+    background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.market-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+}
+
+.market-header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.market-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 5px solid #52b788;
+}
+
+.market-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(82, 183, 136, 0.3);
+}
+
+.market-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.commodity-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0 0 5px 0;
+}
+
+.mandi-name {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.trend-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.trend-badge.bullish {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.trend-badge.bearish {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.price-section {
+    margin: 20px 0;
+}
+
+.current-price {
+    font-size: 36px;
+    font-weight: bold;
+    color: #52b788;
+    margin: 0;
+}
+
+.price-unit {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 5px 0;
+}
+
+.price-change {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.price-change.positive {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.price-change.negative {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.prediction-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+    color: white;
+}
+
+.prediction-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+.prediction-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.confidence-bar {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    background: white;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.confidence-text {
+    font-size: 12px;
+    margin-top: 5px;
+    opacity: 0.9;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <span class="logo-text">Farming Assistant</span>
+            </div>
+            <p class="subtitle">Smart Agriculture Platform</p>
+        </div>
+        
+        <div class="welcome-section">
+            <p class="welcome-label">Welcome back,</p>
+            <h3 class="welcome-name">{{ user_name }}! 👋</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-item">
+                <span class="nav-icon">🌱</span>
+                <span class="nav-text">Crop Suggestion</span>
+            </a>
+            <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-item">
+                <span class="nav-icon">🧪</span>
+                <span class="nav-text">Fertilizer Advice</span>
+            </a>
+            <a href="{{ url_for('market.market_watch') }}" class="nav-item active">
+                <span class="nav-icon">📈</span>
+                <span class="nav-text">Market Watch</span>
+            </a>
+            <a href="{{ url_for('irrigation.smart_irrigation') }}" class="nav-item">
+                <span class="nav-icon">💧</span>
+                <span class="nav-text">Smart Irrigation</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Green Header Section -->
+    <div class="dashboard-header">        
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Market Watch</h1>
+                <p>Real-time Mandi prices with AI-powered 7-day predictions</p>
+            </div>
+            <div class="header-right">
+                <span class="header-date">📅 {{ current_date }}</span>
+                <button class="logout-button" onclick="window.location.href='{{ url_for('auth.logout') }}'">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Filters Section -->
+        <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 600;">📍 Select State</label>
+                    <select id="stateFilter" onchange="filterByState()" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; background: white;">
+                        <option value="All States" {% if selected_state == 'All States' %}selected{% endif %}>All States</option>
+                        {% for state in states %}
+                        <option value="{{ state }}" {% if selected_state == state %}selected{% endif %}>{{ state }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 200px;" id="districtFilterContainer" {% if selected_state == 'All States' %}style="display: none;"{% endif %}>
+                    <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 600;">🏘️ Select District</label>
+                    <select id="districtFilter" onchange="filterByDistrict()" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; background: white;">
+                        <option value="All Districts" {% if selected_district == 'All Districts' %}selected{% endif %}>All Districts (Show All)</option>
+                        {% for district in districts %}
+                        <option value="{{ district }}" {% if selected_district == district %}selected{% endif %}>{{ district }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="getNearbyMandis()" style="background: linear-gradient(135deg, #52b788 0%, #2d6a4f 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        📍 Nearby Mandis
+                    </button>
+                    <button onclick="refreshPrices()" style="background: #f3f4f6; color: #374151; padding: 12px 24px; border: 2px solid #e5e7eb; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {% if selected_state != 'All States' %}
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%); border: 2px solid #52b788; border-radius: 15px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0; color: #065f46; font-size: 18px;">
+                        📊 Showing: {{ selected_state }}{% if selected_district != 'All Districts' %} - {{ selected_district }}{% endif %}
+                    </h3>
+                    <p style="margin: 0; color: #047857; font-size: 14px;">
+                        {{ market_data|length }} market records found | All Vegetables, Fruits & Crops
+                    </p>
+                </div>
+                {% if selected_district != 'All Districts' %}
+                <button onclick="document.getElementById('districtFilter').value='All Districts'; filterByDistrict();" style="background: white; color: #065f46; border: 2px solid #52b788; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    Show All Districts
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if market_data|length == 0 %}
+        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 15px; padding: 30px; text-align: center; margin-bottom: 25px;">
+            <h3 style="color: #92400e; margin: 0 0 10px 0;">⚠️ No Market Data Available</h3>
+            <p style="color: #78350f; margin: 0;">No market prices found for the selected state. Please select a different state or try again later.</p>
+        </div>
+        {% endif %}
+
+        <div class="market-grid">
+            {% for item in market_data %}
+            <div class="market-card">
+                <div class="market-card-header">
+                    <div>
+                        <h3 class="commodity-name">{{ item.commodity }}</h3>
+                        <p class="mandi-name">{{ item.mandi }}, {{ item.district }}</p>
+                        <p class="mandi-name" style="color: #52b788; font-weight: 600;">📍 {{ item.state }}</p>
+                    </div>
+                    <span class="trend-badge {{ 'bullish' if item.trend == 'Bullish' else 'bearish' }}">
+                        {{ item.trend }}
+                    </span>
+                </div>
+
+                <div class="price-section">
+                    <h2 class="current-price">₹{{ item.current_price }}</h2>
+                    <p class="price-unit">{{ item.unit }}</p>
+                    <span class="price-change {{ 'positive' if '+' in item.change else 'negative' }}">
+                        {{ item.change }}
+                    </span>
+                </div>
+
+                <div class="prediction-section">
+                    <div class="prediction-header">
+                        🤖 7-Day Price Prediction (LSTM)
+                    </div>
+                    <div class="prediction-value">₹{{ item.prediction_7d }}</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: {{ item.confidence }}%"></div>
+                    </div>
+                    <div class="confidence-text">Confidence: {{ item.confidence }}%</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="background: #f0fdf4; border-left: 4px solid #52b788; padding: 20px; border-radius: 10px;">
+            <h3 style="color: #52b788; margin: 0 0 10px 0;">📊 About Price Predictions</h3>
+            <p style="color: #4a5568; margin: 0; line-height: 1.6;">
+                Our LSTM (Long Short-Term Memory) neural network analyzes historical price data, weather patterns, seasonal trends, and market demand to predict future prices. The confidence score indicates the model's certainty based on data quality and market volatility.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterByState() {
+    const state = document.getElementById('stateFilter').value;
+    // Show/hide district filter based on state selection
+    const districtContainer = document.getElementById('districtFilterContainer');
+    if (state === 'All States') {
+        districtContainer.style.display = 'none';
+    } else {
+        districtContainer.style.display = 'block';
+    }
+    window.location.href = `{{ url_for('market.market_watch') }}?state=${encodeURIComponent(state)}`;
+}
+
+function filterByDistrict() {
+    const state = document.getElementById('stateFilter').value;
+    const district = document.getElementById('districtFilter').value;
+    let url = `{{ url_for('market.market_watch') }}?state=${encodeURIComponent(state)}`;
+    if (district !== 'All Districts') {
+        url += `&district=${encodeURIComponent(district)}`;
+    }
+    window.location.href = url;
+}
+
+function refreshPrices() {
+    const state = document.getElementById('stateFilter').value;
+    const district = document.getElementById('districtFilter') ? document.getElementById('districtFilter').value : 'All Districts';
+    let url = `{{ url_for('market.market_watch') }}?state=${encodeURIComponent(state)}`;
+    if (district !== 'All Districts') {
+        url += `&district=${encodeURIComponent(district)}`;
+    }
+    window.location.href = url;
+}
+
+function getNearbyMandis() {
+    if (navigator.geolocation) {
+        document.body.style.cursor = 'wait';
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                fetch(`{{ url_for('market.nearby_mandis') }}?lat=${lat}&lon=${lon}&radius=50`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.body.style.cursor = 'default';
+                        if (data.success) {
+                            displayNearbyMandis(data.data);
+                        } else {
+                            alert('Error fetching nearby mandis: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        document.body.style.cursor = 'default';
+                        alert('Error: ' + error);
+                    });
+            },
+            function(error) {
+                document.body.style.cursor = 'default';
+                alert('Unable to get your location. Please enable location services.');
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+}
+
+function displayNearbyMandis(mandis) {
+    if (mandis.length === 0) {
+        alert('No mandis found nearby.');
+        return;
+    }
+    
+    let html = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+            <div style="background: white; border-radius: 20px; padding: 30px; max-width: 800px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; color: #52b788;">📍 Nearby Mandis</h2>
+                    <button onclick="this.closest('div[style*=fixed]').remove()" style="background: #fee2e2; color: #991b1b; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Close</button>
+                </div>
+                <div style="display: grid; gap: 15px;">
+    `;
+    
+    mandis.forEach(mandi => {
+        html += `
+            <div style="background: #f9fafb; padding: 15px; border-radius: 10px; border-left: 4px solid #52b788;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h3 style="margin: 0 0 5px 0; color: #1a202c;">${mandi.commodity}</h3>
+                        <p style="margin: 0; color: #6b7280; font-size: 14px;">${mandi.mandi}, ${mandi.district}</p>
+                        <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 13px;">${mandi.state}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 5px;">
+                            ${mandi.distance} km away
+                        </div>
+                        <div style="font-size: 20px; font-weight: bold; color: #52b788;">₹${mandi.current_price}</div>
+                        <div style="font-size: 12px; color: #6b7280;">per quintal</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+</script>
+
+</div>
+</div>
+{% endblock %}

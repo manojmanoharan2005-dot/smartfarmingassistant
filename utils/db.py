@@ -3,8 +3,10 @@ import os
 import json
 from pymongo import MongoClient
 
-# MongoDB Atlas connection string from the screenshot
-MONGODB_URI = "mongodb+srv://manojmanokaran007_db_user:manoj28@cluster0.jgpydp.mongodb.net/?appName=Cluster0"
+# MongoDB Atlas connection string with credentials
+# Atlas SQL Interface is READ-ONLY - does not support insert/update/delete operations
+# Using file-based storage for full CRUD functionality
+MONGODB_URI = None  # Disabled - Atlas SQL endpoint doesn't support write operations
 
 # Local file-based storage directory and file paths (used when MongoDB is not available)
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
@@ -34,29 +36,41 @@ def init_db(app):
     print("✅ File-based database initialized successfully!")
     print("📁 Data will be stored in the 'data' directory")
     
-    # Try MongoDB Atlas connection as backup
-    try:
-        client = MongoClient(MONGODB_URI, 
-                           serverSelectionTimeoutMS=10000,
-                           connectTimeoutMS=10000,
-                           socketTimeoutMS=10000)
-        
-        # Use smart_farming database
-        db = client.smart_farming
-        # Test the connection
-        client.admin.command('ping')
-        print("✅ Successfully connected to MongoDB Atlas!")
-        
-        # Create indexes for better performance
+    # Try MongoDB Atlas connection as backup (only if URI is configured)
+    if MONGODB_URI:
         try:
-            db.users.create_index("email", unique=True)
-            print("📊 Database indexes created successfully")
-        except Exception as e:
-            print(f"⚠️ Index creation note: {e}")
+            print("🔄 Attempting MongoDB Atlas connection...")
+            client = MongoClient(MONGODB_URI, 
+                               serverSelectionTimeoutMS=30000,
+                               connectTimeoutMS=30000,
+                               socketTimeoutMS=30000,
+                               retryWrites=False)
             
-    except Exception as e:
-        print(f"❌ MongoDB connection failed: {e}")
-        print("🔧 Using enhanced mock database for development")
+            # Use myVirtualDatabase database
+            db = client.myVirtualDatabase
+            # Test the connection
+            client.admin.command('ping')
+            print("✅ Successfully connected to MongoDB Atlas!")
+            print(f"📊 Using database: myVirtualDatabase")
+            
+            # Create indexes for better performance (if supported)
+            try:
+                db.users.create_index("email", unique=True)
+                print("📊 Database indexes created successfully")
+            except Exception as e:
+                print(f"⚠️ Index creation note: {e}")
+                print("   (This is normal for Atlas SQL interface)")
+                
+        except Exception as e:
+            print(f"❌ MongoDB connection failed: {e}")
+            print("⚠️  Common issues:")
+            print("   1. Check if your IP address is whitelisted in MongoDB Atlas")
+            print("   2. Verify network connectivity and firewall settings")
+            print("   3. Ensure Atlas SQL interface is enabled")
+            print("🔧 Using file-based database for development")
+            db = MockDatabase()
+    else:
+        print("🔧 MongoDB disabled - using file-based database")
         db = MockDatabase()
 
 class MockDatabase:
@@ -159,30 +173,48 @@ def find_user_by_email(email):
         print(f"🔍 User found: {email}")
     return user
 
+def find_user_by_phone(phone):
+    """Find user by phone number"""
+    if hasattr(db, 'users'):
+        users = db.users
+        # Get all users and search for phone
+        all_users = users.find({})
+        for user in all_users:
+            if user.get('phone') == phone:
+                print(f"🔍 User found with phone: {phone}")
+                return user
+    return None
+
 def find_user_by_id(user_id):
     try:
         if hasattr(db, 'users') and db:
-            from bson.objectid import ObjectId
             users = db.users
-            # Explicitly exclude password field from query result
-            user = users.find_one(
-                {'_id': ObjectId(user_id)}, 
-                {'password': 0}  # Exclude password field
-            )
-            return user
+            
+            # Try with ObjectId first (for MongoDB)
+            try:
+                from bson.objectid import ObjectId
+                user = users.find_one(
+                    {'_id': ObjectId(user_id)}, 
+                    {'password': 0}  # Exclude password field
+                )
+                if user:
+                    return user
+            except:
+                pass
+            
+            # Try with string ID (for file-based storage)
+            user = users.find_one({'_id': user_id})
+            if user:
+                # Remove password from result
+                user_copy = user.copy()
+                user_copy.pop('password', None)
+                return user_copy
+                
     except Exception as e:
         print(f"Error fetching user by ID: {e}")
-        
-    # Mock user for development if database fails
-    return {
-        '_id': user_id, 
-        'name': 'Test User', 
-        'email': 'test@example.com',
-        'phone': '+91 9876543210',
-        'state': 'Karnataka',
-        'district': 'Bangalore',
-        'created_at': datetime.utcnow()
-    }
+    
+    # If user not found, return None
+    return None
 
 # Mock functions for development
 def save_crop_recommendation(user_id, crop_data, timeline_data):
@@ -206,19 +238,79 @@ def delete_crop(crop_id):
     return type('MockResult', (), {'deleted_count': 1})()
 
 def save_fertilizer_recommendation(user_id, fertilizer_data):
-    print(f"🧪 Fertilizer recommendation saved for user {user_id}: {fertilizer_data['name']}")
-    return type('MockResult', (), {'inserted_id': 'mock_fertilizer_id'})()
+    """Save fertilizer recommendation to file"""
+    import uuid
+    try:
+        # Load existing fertilizers
+        with open(FERTILIZERS_FILE, 'r') as f:
+            fertilizer_db = json.load(f)
+        
+        # Generate unique ID
+        fertilizer_id = str(uuid.uuid4())
+        fertilizer_data['_id'] = fertilizer_id
+        fertilizer_data['user_id'] = user_id
+        fertilizer_data['saved_at'] = datetime.utcnow().isoformat()
+        
+        # Save fertilizer
+        if user_id not in fertilizer_db:
+            fertilizer_db[user_id] = []
+        
+        fertilizer_db[user_id].append(fertilizer_data)
+        
+        # Write back to file
+        with open(FERTILIZERS_FILE, 'w') as f:
+            json.dump(fertilizer_db, f, indent=2)
+        
+        print(f"🧪 Fertilizer recommendation saved for user {user_id}: {fertilizer_data.get('name')}")
+        return type('MockResult', (), {'inserted_id': fertilizer_id})()
+    except Exception as e:
+        print(f"Error saving fertilizer: {e}")
+        return None
 
 def get_user_fertilizers(user_id):
-    # Return some mock data for testing
-    return [
-        {
-            '_id': 'fert1',
-            'fertilizer_name': 'Urea',
-            'crop_type': 'Rice',
-            'priority': 'High'
-        }
-    ]
+    """Get user's saved fertilizers from file"""
+    try:
+        with open(FERTILIZERS_FILE, 'r') as f:
+            fertilizer_db = json.load(f)
+        
+        # Get user's fertilizers
+        user_fertilizers = fertilizer_db.get(user_id, [])
+        return user_fertilizers
+    except Exception as e:
+        print(f"Error loading fertilizers: {e}")
+        return []
+
+def delete_fertilizer_recommendation(fertilizer_id, user_id):
+    """Delete a fertilizer recommendation from file"""
+    try:
+        # Load existing fertilizers
+        with open(FERTILIZERS_FILE, 'r') as f:
+            fertilizer_db = json.load(f)
+        
+        # Get user's fertilizers
+        user_fertilizers = fertilizer_db.get(user_id, [])
+        
+        # Find and remove the fertilizer
+        initial_count = len(user_fertilizers)
+        user_fertilizers = [f for f in user_fertilizers if f.get('_id') != fertilizer_id]
+        
+        if len(user_fertilizers) < initial_count:
+            # Fertilizer was found and removed
+            fertilizer_db[user_id] = user_fertilizers
+            
+            # Write back to file
+            with open(FERTILIZERS_FILE, 'w') as f:
+                json.dump(fertilizer_db, f, indent=2)
+            
+            print(f"🗑️ Successfully deleted fertilizer {fertilizer_id} for user {user_id}")
+            return True
+        else:
+            print(f"⚠️ Fertilizer {fertilizer_id} not found for user {user_id}")
+            return False
+            
+    except Exception as e:
+        print(f"Error deleting fertilizer: {e}")
+        return False
 
 def save_disease_detection(user_id, disease_data):
     print(f"🦠 Disease detection saved for user {user_id}: {disease_data['disease_name']}")

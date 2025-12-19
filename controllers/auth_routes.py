@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from utils.db import create_user, find_user_by_email, get_db
+from utils.db import create_user, find_user_by_email, get_db, find_user_by_phone
 from utils.auth import hash_password, check_password, create_session, clear_session
 import json
 import os
@@ -41,6 +41,9 @@ def login():
             session['user_id'] = str(user_with_password['_id'])
             session['user_name'] = user_with_password['name']
             session['user_email'] = user_with_password['email']
+            session['user_phone'] = user_with_password.get('phone', 'Not provided')
+            session['user_state'] = user_with_password.get('state', 'Not provided')
+            session['user_district'] = user_with_password.get('district', 'Not provided')
             
             flash('🎉 Login successful! Welcome back, ' + user_with_password['name'] + '!', 'success')
             return redirect(url_for('dashboard.dashboard'))
@@ -54,9 +57,18 @@ def login():
 def register():
     # Load states and districts
     try:
-        with open('states_districts.json', 'r') as f:
-            states_districts = json.load(f)
-    except FileNotFoundError:
+        # Try to load from current directory (production)
+        if os.path.exists('states_districts.json'):
+            with open('states_districts.json', 'r', encoding='utf-8') as f:
+                states_districts = json.load(f)
+        else:
+            # Try to load from script directory (fallback)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            filepath = os.path.join(script_dir, '..', 'states_districts.json')
+            with open(filepath, 'r', encoding='utf-8') as f:
+                states_districts = json.load(f)
+    except FileNotFoundError as e:
+        print(f"Warning: states_districts.json not found: {e}")
         # Fallback states and districts
         states_districts = {
             "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"],
@@ -72,9 +84,14 @@ def register():
         state = request.form['state']
         district = request.form['district']
         
-        # Check if user already exists
+        # Check if user already exists by email
         if find_user_by_email(email):
             flash('⚠️ Email already registered! Please use a different email or login.', 'warning')
+            return render_template('register.html', states_districts=states_districts)
+        
+        # Check if phone number is already registered
+        if find_user_by_phone(phone):
+            flash('⚠️ Phone number already registered! Please use a different phone number or login.', 'warning')
             return render_template('register.html', states_districts=states_districts)
         
         # Validate password strength

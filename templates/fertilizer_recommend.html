@@ -36,9 +36,13 @@
 				<span class="nav-icon">🧪</span>
 				<span class="nav-text">Fertilizer Advice</span>
 			</a>
-			<a href="{{ url_for('disease.disease_detection') }}" class="nav-item">
-				<span class="nav-icon">🦠</span>
-				<span class="nav-text">Disease Detection</span>
+			<a href="{{ url_for('market.market_watch') }}" class="nav-item">
+				<span class="nav-icon">📈</span>
+				<span class="nav-text">Market Watch</span>
+			</a>
+			<a href="{{ url_for('irrigation.smart_irrigation') }}" class="nav-item">
+				<span class="nav-icon">💧</span>
+				<span class="nav-text">Smart Irrigation</span>
 			</a>
 		</nav>
 	</div>
@@ -154,12 +158,60 @@
 											<option value="{{ crop }}" {% if input_data and input_data.crop_type==crop %}selected{% endif %}>{{ crop|title }}</option>
 											{% endfor %}
 										{% else %}
-											<option value="rice">Rice</option>
-											<option value="wheat">Wheat</option>
-											<option value="maize">Maize</option>
-											<option value="cotton">Cotton</option>
-											<option value="jute">Jute</option>
-											<option value="banana">Banana</option>
+											<optgroup label="Cereals">
+												<option value="rice">Rice</option>
+												<option value="wheat">Wheat</option>
+												<option value="maize">Maize / Corn</option>
+												<option value="barley">Barley</option>
+												<option value="sorghum">Sorghum</option>
+												<option value="millet">Millet</option>
+											</optgroup>
+											<optgroup label="Pulses & Legumes">
+												<option value="chickpea">Chickpea</option>
+												<option value="lentil">Lentil</option>
+												<option value="kidney_beans">Kidney Beans</option>
+												<option value="black_gram">Black Gram</option>
+												<option value="mung_bean">Mung Bean</option>
+												<option value="pigeon_peas">Pigeon Peas</option>
+												<option value="soybean">Soybean</option>
+											</optgroup>
+											<optgroup label="Cash Crops">
+												<option value="cotton">Cotton</option>
+												<option value="jute">Jute</option>
+												<option value="sugarcane">Sugarcane</option>
+												<option value="tobacco">Tobacco</option>
+												<option value="coffee">Coffee</option>
+												<option value="tea">Tea</option>
+											</optgroup>
+											<optgroup label="Vegetables">
+												<option value="potato">Potato</option>
+												<option value="tomato">Tomato</option>
+												<option value="onion">Onion</option>
+												<option value="cabbage">Cabbage</option>
+												<option value="cauliflower">Cauliflower</option>
+												<option value="carrot">Carrot</option>
+												<option value="brinjal">Brinjal / Eggplant</option>
+												<option value="okra">Okra / Lady Finger</option>
+												<option value="pepper">Pepper</option>
+												<option value="cucumber">Cucumber</option>
+											</optgroup>
+											<optgroup label="Fruits">
+												<option value="banana">Banana</option>
+												<option value="mango">Mango</option>
+												<option value="apple">Apple</option>
+												<option value="orange">Orange</option>
+												<option value="grapes">Grapes</option>
+												<option value="pomegranate">Pomegranate</option>
+												<option value="papaya">Papaya</option>
+												<option value="watermelon">Watermelon</option>
+											</optgroup>
+											<optgroup label="Spices">
+												<option value="turmeric">Turmeric</option>
+												<option value="ginger">Ginger</option>
+												<option value="garlic">Garlic</option>
+												<option value="chili">Chili</option>
+												<option value="coriander">Coriander</option>
+											</optgroup>
 										{% endif %}
 									</select>
 									<small>Select crop to grow</small>
@@ -218,8 +270,10 @@
 								<input type="hidden" name="fertilizer_name" value="{{ fert.name }}">
 								<input type="hidden" name="crop_type" value="{{ input_data.crop_type }}">
 								<input type="hidden" name="priority" value="{{ fert.priority }}">
-								<input type="hidden" name="description" value="{{ fert.note }}">
-								<input type="hidden" name="application_rate" value="{{ fert.dosage }}">
+								<input type="hidden" name="dosage" value="{{ fert.dosage }}">
+								<input type="hidden" name="usage" value="{{ fert.usage }}">
+								<input type="hidden" name="note" value="{{ fert.note }}">
+								<input type="hidden" name="confidence" value="{{ fert.confidence_percentage }}">
 								<button type="submit" class="btn-start">💾 Save</button>
 							</form>
 							<button class="btn-outline" onclick="viewFertilizerDetails('{{ fert.name }}')">📄 Details</button>

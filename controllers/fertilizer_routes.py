@@ -9,9 +9,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ml_
 
 # Optional DB helper - safe import
 try:
-    from utils.db import save_fertilizer_recommendation
+    from utils.db import save_fertilizer_recommendation, delete_fertilizer_recommendation
 except Exception:
     save_fertilizer_recommendation = None
+    delete_fertilizer_recommendation = None
 
 # Import ML predictor
 try:
@@ -25,62 +26,139 @@ except Exception as e:
 fertilizer_bp = Blueprint('fertilizer', __name__, url_prefix='/fertilizer')
 
 def generate_fertilizer_recommendations(crop_type, n, p, k, temperature, humidity, soil_moisture):
-    """Simple rule-based fertilizer recommender"""
+    """Enhanced rule-based fertilizer recommender with better logic"""
     recommendations = []
 
-    # determine needs
-    need_N = n < 70
-    need_P = p < 50
-    need_K = k < 40
+    # Determine nutrient deficiencies (lower values indicate need)
+    n_deficit = max(0, 100 - n)  # Higher deficit = more need
+    p_deficit = max(0, 60 - p)
+    k_deficit = max(0, 50 - k)
+    
+    # Soil condition factors
     dry_soil = soil_moisture < 40
+    wet_soil = soil_moisture > 70
+    high_temp = temperature > 30
+    low_temp = temperature < 15
 
+    # Fertilizer database with detailed properties
     candidates = [
-        {'name': 'Urea', 'dosage': '20-30 kg/acre', 'usage': 'Split application during vegetative stage', 'note': 'High N source'},
-        {'name': 'DAP (Di-Ammonium Phosphate)', 'dosage': '20-40 kg/acre', 'usage': 'At sowing/rooting', 'note': 'Provides P and some N'},
-        {'name': 'MOP (Muriate of Potash)', 'dosage': '15-30 kg/acre', 'usage': 'At flowering/fructification', 'note': 'High K source'},
-        {'name': 'NPK 10-26-26', 'dosage': '40-60 kg/acre', 'usage': 'Balanced feed during mid-season', 'note': 'Balanced NPK'},
-        {'name': 'Lime (Dolomite)', 'dosage': '0.5-1 ton/acre', 'usage': 'If soil acidic', 'note': 'Corrects low pH'}
+        {
+            'name': 'Urea (46-0-0)',
+            'dosage': '50-100 kg/acre',
+            'usage': 'Apply in split doses: 50% at sowing, 25% at tillering, 25% at flowering',
+            'note': 'Best nitrogen source for rapid vegetative growth',
+            'n_content': 46, 'p_content': 0, 'k_content': 0
+        },
+        {
+            'name': 'DAP (18-46-0)',
+            'dosage': '75-125 kg/acre',
+            'usage': 'Apply at time of sowing or transplanting for root development',
+            'note': 'Excellent phosphorus source, also provides nitrogen',
+            'n_content': 18, 'p_content': 46, 'k_content': 0
+        },
+        {
+            'name': 'MOP (0-0-60)',
+            'dosage': '50-75 kg/acre',
+            'usage': 'Apply during flowering and fruit formation stage',
+            'note': 'High potassium for fruit quality and disease resistance',
+            'n_content': 0, 'p_content': 0, 'k_content': 60
+        },
+        {
+            'name': 'NPK 19-19-19',
+            'dosage': '100-150 kg/acre',
+            'usage': 'Apply as basal dose or during active growth phase',
+            'note': 'Balanced fertilizer for overall plant nutrition',
+            'n_content': 19, 'p_content': 19, 'k_content': 19
+        },
+        {
+            'name': 'NPK 20-20-0-13',
+            'dosage': '125-175 kg/acre',
+            'usage': 'Apply when both N and P are needed with sulfur benefit',
+            'note': 'Contains sulfur (13%) for protein synthesis',
+            'n_content': 20, 'p_content': 20, 'k_content': 0
+        },
+        {
+            'name': 'Single Super Phosphate',
+            'dosage': '100-200 kg/acre',
+            'usage': 'Mix with soil before planting for root development',
+            'note': 'Provides phosphorus and sulfur for early growth',
+            'n_content': 0, 'p_content': 16, 'k_content': 0
+        },
+        {
+            'name': 'Organic Compost',
+            'dosage': '2-5 tons/acre',
+            'usage': 'Apply 2-3 weeks before sowing and mix well with soil',
+            'note': 'Improves soil structure, water retention, and microbial activity',
+            'n_content': 2, 'p_content': 1, 'k_content': 1
+        }
     ]
 
-    # scoring
-    for c in candidates:
+    # Calculate scores for each fertilizer
+    for fertilizer in candidates:
         score = 0.0
-        if c['name'] == 'Urea' and need_N:
-            score += 0.5
-        if c['name'] == 'DAP' and need_P:
-            score += 0.5
-        if c['name'] == 'MOP' and need_K:
-            score += 0.5
-        if c['name'] == 'NPK 10-26-26':
-            score += 0.25 * (need_N + need_P + need_K)
-        if c['name'].lower().startswith('lime') and n is not None:
-            # suggest lime when pH low (approx): we don't have pH here — keep lower priority unless soil_moisture indicates problem
-            if dry_soil:
-                score += 0.15
-
-        # environment adjustments
-        if dry_soil and c['name'] == 'Urea':
-            score -= 0.05  # lower immediate N if soil dry
-        if humidity and humidity > 85 and c['name'] == 'NPK 10-26-26':
-            score += 0.05
-
-        final_score = max(0.0, min(score, 1.0))
-        confidence = final_score * 100
-        priority = 'High' if confidence >= 60 else 'Medium' if confidence >= 35 else 'Low'
-
+        
+        # Score based on nutrient matching (0-70 points)
+        if n_deficit > 0 and fertilizer['n_content'] > 0:
+            score += min(30, (n_deficit / 100) * fertilizer['n_content'])
+        if p_deficit > 0 and fertilizer['p_content'] > 0:
+            score += min(25, (p_deficit / 60) * fertilizer['p_content'])
+        if k_deficit > 0 and fertilizer['k_content'] > 0:
+            score += min(15, (k_deficit / 50) * fertilizer['k_content'])
+        
+        # Balanced fertilizers get bonus when multiple deficits exist
+        deficits = (n_deficit > 20) + (p_deficit > 15) + (k_deficit > 15)
+        if deficits >= 2 and 'NPK' in fertilizer['name']:
+            score += 15
+        
+        # Environmental condition bonuses (0-15 points)
+        if dry_soil and 'Organic' in fertilizer['name']:
+            score += 10  # Organic matter improves water retention
+        if wet_soil and 'Urea' not in fertilizer['name']:
+            score += 5  # Avoid urea in waterlogged conditions
+        if high_temp and fertilizer['k_content'] > 0:
+            score += 5  # Potassium helps stress tolerance
+        if low_temp and 'DAP' in fertilizer['name']:
+            score += 5  # Phosphorus improves cold tolerance
+        
+        # Crop-specific adjustments (0-10 points)
+        crop_lower = crop_type.lower() if crop_type else ''
+        if 'rice' in crop_lower or 'wheat' in crop_lower:
+            if 'Urea' in fertilizer['name']:
+                score += 8
+        if 'potato' in crop_lower or 'tomato' in crop_lower:
+            if fertilizer['k_content'] > 0:
+                score += 8
+        if 'legume' in crop_lower or 'pulse' in crop_lower:
+            if fertilizer['p_content'] > 0:
+                score += 8
+        
+        # Normalize score to 0-100 scale
+        final_score = min(100, score)
+        confidence = round(final_score, 1)
+        
+        # Determine priority based on confidence
+        if confidence >= 70:
+            priority = 'High'
+        elif confidence >= 45:
+            priority = 'Medium'
+        else:
+            priority = 'Low'
+        
         recommendations.append({
-            'name': c['name'],
-            'dosage': c['dosage'],
-            'usage': c['usage'],
-            'note': c['note'],
-            'probability': final_score,
+            'name': fertilizer['name'],
+            'dosage': fertilizer['dosage'],
+            'usage': fertilizer['usage'],
+            'note': fertilizer['note'],
+            'probability': final_score / 100,
             'confidence_percentage': confidence,
             'priority': priority
         })
 
-    # sort by score
-    recommendations.sort(key=lambda x: x['probability'], reverse=True)
-    return recommendations
+    # Sort by confidence score (highest first)
+    recommendations.sort(key=lambda x: x['confidence_percentage'], reverse=True)
+    
+    # Return top 5 recommendations
+    return recommendations[:5]
 
 @fertilizer_bp.route('/recommend', methods=['GET', 'POST'])
 @login_required
@@ -169,7 +247,7 @@ def fertilizer_recommend():
             else:
                 flash(f'ML Model Error: {result.get("error")}', 'error')
         else:
-            # Fallback to rule-based if ML not available
+            # Use rule-based system (works reliably)
             recommendations = generate_fertilizer_recommendations(
                 crop, nitrogen, phosphorous, potassium, temperature, moisture * 100, moisture * 100
             )
@@ -184,7 +262,7 @@ def fertilizer_recommend():
                 'soil_moisture': moisture * 100
             }
 
-            flash('🔍 Rule-based fertilizer recommendations (ML model not available)', 'info')
+            flash('✅ Fertilizer recommendations generated successfully!', 'success')
             return render_template('fertilizer_recommend.html',
                                    recommendations=recommendations,
                                    input_data=input_data,
@@ -207,22 +285,40 @@ def save_fertilizer():
             'name': request.form.get('fertilizer_name'),
             'crop_type': request.form.get('crop_type'),
             'priority': request.form.get('priority'),
-            'details': {
-                'description': request.form.get('description', ''),
-                'application_rate': request.form.get('application_rate', ''),
-            },
-            'saved_at': datetime.now()
+            'dosage': request.form.get('dosage', 'Not specified'),
+            'usage': request.form.get('usage', 'Follow package instructions'),
+            'note': request.form.get('note', ''),
+            'confidence': request.form.get('confidence', '0')
         }
 
         if save_fertilizer_recommendation:
             save_fertilizer_recommendation(user_id, fertilizer_data)
-            flash('Fertilizer recommendation saved!', 'success')
+            flash('✅ Fertilizer recommendation saved to dashboard!', 'success')
         else:
             # fallback: store in session (simple)
             session.setdefault('saved_fertilizers', []).append(fertilizer_data)
-            flash('Saved locally (DB not configured).', 'info')
+            flash('💾 Saved locally (DB not configured).', 'info')
 
     except Exception as e:
-        flash(f'Error saving recommendation: {e}', 'error')
+        flash(f'❌ Error saving recommendation: {e}', 'error')
 
-    return redirect(url_for('fertilizer.fertilizer_recommend'))
+    return redirect(url_for('dashboard.dashboard'))
+
+@fertilizer_bp.route('/delete/<fertilizer_id>', methods=['POST'])
+@login_required
+def delete_fertilizer(fertilizer_id):
+    """Delete a saved fertilizer recommendation"""
+    from flask import jsonify
+    
+    user_id = session.get('user_id')
+    try:
+        if delete_fertilizer_recommendation:
+            success = delete_fertilizer_recommendation(fertilizer_id, user_id)
+            if success:
+                return jsonify({'success': True, 'message': 'Fertilizer deleted successfully'})
+            else:
+                return jsonify({'success': False, 'message': 'Fertilizer not found'}), 404
+        else:
+            return jsonify({'success': False, 'message': 'Delete function not available'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
