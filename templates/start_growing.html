@@ -427,11 +427,40 @@
                     <div class="date-info">
                         <div class="date-card">
                             <div class="date-label">🌱 Start Date</div>
-                            <input type="date" name="start_date" value="{{ start_date.strftime('%Y-%m-%d') }}" class="date-input" required>
+                            <input type="date" name="start_date" id="start_date" value="{{ start_date.strftime('%Y-%m-%d') }}" class="date-input" required>
                         </div>
                         <div class="date-card">
                             <div class="date-label">🎯 Expected Harvest</div>
-                            <input type="date" name="harvest_date" value="{{ harvest_date.strftime('%Y-%m-%d') }}" class="date-input" required readonly>
+                            <input type="date" name="harvest_date" id="harvest_date" value="{{ harvest_date.strftime('%Y-%m-%d') }}" class="date-input" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task_selection">📅 Schedule Your Tasks (Optional)</label>
+                        <div id="task_calendar" style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">Select tasks and set specific dates for each farming activity:</p>
+                            
+                            <!-- Task Selection Dropdown -->
+                            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 12px; margin-bottom: 20px; align-items: end;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #374151; font-weight: 600;">Select Task</label>
+                                    <select id="task_selector" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: white;">
+                                        <option value="">-- Choose a task --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-size: 13px; color: #374151; font-weight: 600;">Task Date</label>
+                                    <input type="date" id="task_date_selector" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 160px;">
+                                </div>
+                                <button type="button" onclick="addSelectedTask()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; height: 42px;">
+                                    ➕ Add
+                                </button>
+                            </div>
+                            
+                            <!-- Added Tasks List -->
+                            <div id="added_tasks_list" style="display: grid; gap: 10px;">
+                                <!-- Selected tasks will appear here -->
+                            </div>
                         </div>
                     </div>
 
@@ -450,6 +479,146 @@
 </div>
 
 <script>
+// Crop tasks data
+const cropTasks = {{ crop.tasks|tojson }};
+let addedTasks = [];
+
+console.log('Crop tasks:', cropTasks);
+
+// Populate task dropdown
+function populateTaskDropdown() {
+    const taskSelector = document.getElementById('task_selector');
+    
+    if (!cropTasks || cropTasks.length === 0) {
+        taskSelector.innerHTML = '<option value="">No tasks available</option>';
+        return;
+    }
+    
+    taskSelector.innerHTML = '<option value="">-- Choose a task --</option>';
+    
+    cropTasks.forEach((task, index) => {
+        const taskFull = typeof task === 'string' ? task : (task.task || task.name || 'Task ' + (index + 1));
+        
+        // Extract simple task name (first few words or key action)
+        let taskSimple = taskFull;
+        if (taskFull.toLowerCase().includes('sow')) taskSimple = 'Sowing';
+        else if (taskFull.toLowerCase().includes('irrigation') || taskFull.toLowerCase().includes('water')) taskSimple = 'Irrigation';
+        else if (taskFull.toLowerCase().includes('thinning')) taskSimple = 'Thinning';
+        else if (taskFull.toLowerCase().includes('fertilizer') || taskFull.toLowerCase().includes('manure')) taskSimple = 'Fertilizer Application';
+        else if (taskFull.toLowerCase().includes('training') || taskFull.toLowerCase().includes('vine')) taskSimple = 'Training/Mulching';
+        else if (taskFull.toLowerCase().includes('pollination')) taskSimple = 'Pollination';
+        else if (taskFull.toLowerCase().includes('monitor') || taskFull.toLowerCase().includes('pest')) taskSimple = 'Pest Monitoring';
+        else if (taskFull.toLowerCase().includes('maturity') || taskFull.toLowerCase().includes('check')) taskSimple = 'Maturity Check';
+        else if (taskFull.toLowerCase().includes('harvest')) taskSimple = 'Harvesting';
+        else if (taskFull.toLowerCase().includes('weed')) taskSimple = 'Weeding';
+        else if (taskFull.toLowerCase().includes('spray')) taskSimple = 'Spraying';
+        else if (taskFull.toLowerCase().includes('prune') || taskFull.toLowerCase().includes('trim')) taskSimple = 'Pruning';
+        else if (taskFull.toLowerCase().includes('prepare') || taskFull.toLowerCase().includes('land')) taskSimple = 'Land Preparation';
+        else {
+            // Take first 2-3 words as fallback
+            taskSimple = taskFull.split(' ').slice(0, 3).join(' ');
+        }
+        
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = taskSimple;
+        option.setAttribute('data-full', taskFull);
+        taskSelector.appendChild(option);
+    });
+    
+    // Set minimum date for task date selector
+    updateTaskDateMin();
+}
+
+function updateTaskDateMin() {
+    const startDate = document.getElementById('start_date').value;
+    const taskDateSelector = document.getElementById('task_date_selector');
+    if (startDate && taskDateSelector) {
+        taskDateSelector.min = startDate;
+    }
+}
+
+function addSelectedTask() {
+    const taskSelector = document.getElementById('task_selector');
+    const taskDateSelector = document.getElementById('task_date_selector');
+    
+    const selectedIndex = taskSelector.value;
+    const selectedDate = taskDateSelector.value;
+    
+    if (!selectedIndex) {
+        alert('Please select a task');
+        return;
+    }
+    
+    if (!selectedDate) {
+        alert('Please select a date for the task');
+        return;
+    }
+    
+    const selectedOption = taskSelector.options[taskSelector.selectedIndex];
+    const taskSimple = selectedOption.textContent;
+    
+    // Check if task already added
+    if (addedTasks.some(t => t.index === selectedIndex)) {
+        alert('This task has already been added. Remove it first to change the date.');
+        return;
+    }
+    
+    // Add to list
+    addedTasks.push({
+        index: selectedIndex,
+        name: taskSimple,
+        date: selectedDate
+    });
+    
+    // Render added tasks
+    renderAddedTasks();
+    
+    // Reset selectors
+    taskSelector.value = '';
+    taskDateSelector.value = '';
+}
+
+function removeTask(index) {
+    addedTasks = addedTasks.filter(t => t.index !== index);
+    renderAddedTasks();
+}
+
+function renderAddedTasks() {
+    const addedTasksList = document.getElementById('added_tasks_list');
+    
+    if (addedTasks.length === 0) {
+        addedTasksList.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 20px; font-size: 14px;">No tasks scheduled yet. Select a task above to add it.</p>';
+        return;
+    }
+    
+    addedTasksList.innerHTML = '';
+    
+    addedTasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.style.cssText = 'background: white; padding: 12px 15px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;';
+        
+        const formattedDate = new Date(task.date).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        
+        taskDiv.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                <span style="font-weight: 600; color: #374151;">${task.name}</span>
+                <span style="color: #6b7280; font-size: 14px;">📅 ${formattedDate}</span>
+            </div>
+            <button type="button" onclick="removeTask('${task.index}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                🗑️ Remove
+            </button>
+            <input type="hidden" name="task_date_${task.index}" value="${task.date}">
+        `;
+        
+        addedTasksList.appendChild(taskDiv);
+    });
+}
+
 // Auto-calculate harvest date when start date changes
 const startDateInput = document.querySelector('input[name="start_date"]');
 const harvestDateInput = document.querySelector('input[name="harvest_date"]');
@@ -467,7 +636,16 @@ if (startDateInput && harvestDateInput) {
         const day = String(harvestDate.getDate()).padStart(2, '0');
         
         harvestDateInput.value = `${year}-${month}-${day}`;
+        
+        // Update minimum date for task selector
+        updateTaskDateMin();
     });
 }
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    populateTaskDropdown();
+    renderAddedTasks();
+});
 </script>
 {% endblock %}

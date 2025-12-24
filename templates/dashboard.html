@@ -273,6 +273,22 @@
             </div>
             {% endif %}
 
+            <!-- Recent Activity Section -->
+            <div class="recent-activity">
+                <h3 class="section-title">Recent Activity</h3>
+                {% if recent_activity %}
+                <ul class="activity-list">
+                    {% for item in recent_activity %}
+                    <li class="activity-item">
+                        <span class="activity-text">{{ item.text }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-activity">No recent activity. Your dashboard will show actions like recommendations and detections here.</p>
+                {% endif %}
+            </div>
+
             <!-- Saved Fertilizers Section -->
             {% if saved_fertilizers %}
             <div class="progress-section">
@@ -295,6 +311,10 @@
                             <p class="saved-date"><small>Saved: {{ fert.saved_at[:10] }}</small></p>
                             {% endif %}
                         </div>
+                        <div class="fertilizer-actions" style="display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                            <button onclick="viewFertilizerDetails('{{ fert.name }}', '{{ fert.crop_type }}', '{{ fert.dosage }}', '{{ fert.usage }}')" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">👁️ View Details</button>
+                            <button onclick="buyFertilizer('{{ fert.name }}')" style="flex: 1; background: #10b981; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">🛒 Buy Now</button>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
@@ -310,7 +330,7 @@
                     <div class="crop-header">
                         <h4 class="crop-name">{{ activity.crop_display_name }}</h4>
                         <div class="crop-actions">
-                            <span class="crop-percentage">{{ activity.current_stage }}/{{ activity.tasks|length }} tasks</span>
+                            <span class="crop-percentage">{{ activity.current_stage }}/{{ activity.tasks|length }} tasks • {{ ((activity.current_stage / activity.tasks|length) * 100)|int }}% complete</span>
                             <button class="delete-btn" onclick="deleteActivity('{{ activity._id }}')">🗑️</button>
                         </div>
                     </div>
@@ -322,23 +342,6 @@
                 {% endfor %}
             </div>
             {% endif %}
-
-            <!-- Recent Activity Section -->
-            <div class="recent-activity">
-                <h3 class="section-title">Recent Activity</h3>
-                {% if recent_activity %}
-                <ul class="activity-list">
-                    {% for item in recent_activity %}
-                    <li class="activity-item">
-                        <span class="activity-time">{{ item.time }}</span>
-                        <span class="activity-text">{{ item.text }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p class="no-activity">No recent activity. Your dashboard will show actions like recommendations and detections here.</p>
-                {% endif %}
-            </div>
         </div>
     </div>
 </div>
@@ -1900,6 +1903,40 @@ function deleteActivity(activityId) {
             alert('Error deleting activity. Please try again.');
         });
     }
+}
+
+// View fertilizer details
+function viewFertilizerDetails(name, crop, dosage, usage) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    
+    modal.innerHTML = `
+        <div style="background: white; padding: 30px; border-radius: 16px; max-width: 500px; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #1a202c; font-size: 22px;">📋 Fertilizer Details</h3>
+                <button onclick="this.closest('div').parentElement.remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            <div style="line-height: 1.8;">
+                <p><strong style="color: #374151;">Name:</strong> <span style="color: #10b981; font-weight: 600;">${name}</span></p>
+                <p><strong style="color: #374151;">For Crop:</strong> ${crop}</p>
+                <p><strong style="color: #374151;">Dosage:</strong> ${dosage}</p>
+                <p><strong style="color: #374151;">Usage Instructions:</strong></p>
+                <p style="background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; margin: 10px 0;">${usage}</p>
+            </div>
+            <div style="margin-top: 25px; display: flex; gap: 10px;">
+                <button onclick="buyFertilizer('${name}')" style="flex: 1; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">🛒 Buy Now</button>
+                <button onclick="this.closest('div').parentElement.remove()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">Close</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Buy fertilizer
+function buyFertilizer(fertilizerName) {
+    const searchQuery = encodeURIComponent(fertilizerName + ' fertilizer shop near me');
+    window.open(`https://www.google.com/maps/search/${searchQuery}`, '_blank');
 }
 
 // Delete fertilizer recommendation

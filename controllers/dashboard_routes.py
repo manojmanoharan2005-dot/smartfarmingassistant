@@ -9,12 +9,48 @@ import requests
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-# Weather cache to prevent random changes on every refresh
+# Cache to prevent random changes on every refresh
 weather_cache = {}
-WEATHER_CACHE_DURATION = 300  # 5 minutes in seconds
+price_predictions_cache = {}
+CACHE_DURATION = 300  # 5 minutes in seconds
+
+def format_time_ago(date_obj):
+    """Format datetime to human-readable time ago string"""
+    now = datetime.now()
+    
+    # Handle timezone-aware datetimes
+    if date_obj.tzinfo is not None:
+        now = datetime.now(date_obj.tzinfo)
+    
+    diff = now - date_obj
+    seconds = diff.total_seconds()
+    
+    if seconds < 60:
+        return "Just now"
+    elif seconds < 3600:
+        minutes = int(seconds / 60)
+        return f"{minutes}m ago"
+    elif seconds < 86400:
+        hours = int(seconds / 3600)
+        return f"{hours}h ago"
+    elif seconds < 604800:
+        days = int(seconds / 86400)
+        return f"{days}d ago"
+    else:
+        return date_obj.strftime('%b %d')
 
 def get_price_predictions(user_district, user_state):
     """Generate price trend predictions for user's district"""
+    # Check cache first
+    cache_key = f"{user_state}_{user_district}"
+    current_time = datetime.now()
+    
+    if cache_key in price_predictions_cache:
+        cached_data, cache_time = price_predictions_cache[cache_key]
+        # Return cached data if less than 5 minutes old
+        if (current_time - cache_time).total_seconds() < CACHE_DURATION:
+            return cached_data
+    
     # Load market data
     market_file = 'data/market_prices.json'
     if not os.path.exists(market_file):
@@ -75,6 +111,9 @@ def get_price_predictions(user_district, user_state):
                 'market': item['market']
             })
     
+    # Cache the predictions
+    price_predictions_cache[cache_key] = (predictions, current_time)
+    
     return predictions
 
 def get_weather_notifications(user_district, user_state):
@@ -86,7 +125,7 @@ def get_weather_notifications(user_district, user_state):
     if cache_key in weather_cache:
         cached_data, cache_time = weather_cache[cache_key]
         # Return cached data if less than 5 minutes old
-        if (current_time - cache_time).total_seconds() < WEATHER_CACHE_DURATION:
+        if (current_time - cache_time).total_seconds() < CACHE_DURATION:
             return cached_data
     
     # Use real WeatherAPI
@@ -301,6 +340,52 @@ def dashboard():
     growing_activities = get_user_growing_activities(user_id)
     notifications = get_dashboard_notifications(user_id)
     
+    # Generate recent activity based on saved items and growing activities
+    recent_activity = []
+    
+    # Add fertilizer saves to recent activity
+    for fert in saved_fertilizers[:5]:  # Latest 5
+        saved_date = fert.get('saved_at', '')
+        if saved_date:
+            date_obj = datetime.fromisoformat(saved_date.replace('Z', '+00:00')) if isinstance(saved_date, str) else saved_date
+            time_ago = format_time_ago(date_obj)
+            recent_activity.append({
+                'time': time_ago,
+                'text': f'💊 Saved {fert.get("name", "fertilizer")} recommendation for {fert.get("crop_type", "crop").title()}',
+                'timestamp': date_obj
+            })
+    
+    # Add growing activities to recent activity
+    for activity in growing_activities[:5]:  # Latest 5
+        start_date = activity.get('start_date', '')
+        if start_date:
+            try:
+                date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+                time_ago = format_time_ago(date_obj)
+                recent_activity.append({
+                    'time': time_ago,
+                    'text': f'🌱 Started growing {activity.get("crop_display_name", "crop")}',
+                    'timestamp': date_obj
+                })
+            except:
+                pass
+    
+    # Add crop recommendations to recent activity
+    for crop in saved_crops[:5]:  # Latest 5
+        saved_date = crop.get('saved_at', '')
+        if saved_date:
+            date_obj = datetime.fromisoformat(saved_date.replace('Z', '+00:00')) if isinstance(saved_date, str) else saved_date
+            time_ago = format_time_ago(date_obj)
+            recent_activity.append({
+                'time': time_ago,
+                'text': f'🌾 Saved {crop.get("crop", "crop")} recommendation',
+                'timestamp': date_obj
+            })
+    
+    # Sort by timestamp (newest first) and limit to 10
+    recent_activity.sort(key=lambda x: x.get('timestamp', datetime.min), reverse=True)
+    recent_activity = recent_activity[:10]
+    
     # Get price predictions for user's district
     price_predictions = []
     weather_data = {}
@@ -324,6 +409,7 @@ def dashboard():
                          weather_data=weather_data,
                          notifications=notifications,
                          price_predictions=price_predictions,
+                         recent_activity=recent_activity,
                          stats=stats)
 
 @dashboard_bp.route('/api/weather-update')

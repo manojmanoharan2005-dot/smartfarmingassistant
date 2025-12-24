@@ -798,6 +798,19 @@ def save_growing():
             flash('Invalid crop selected', 'error')
             return redirect(url_for('dashboard.dashboard'))
         
+        # Collect task dates from form
+        task_dates = {}
+        completed_tasks = []
+        current_date = datetime.now().date()
+        
+        for i in range(len(manual['tasks'])):
+            task_date = request.form.get(f'task_date_{i}')
+            if task_date:
+                task_dates[i] = task_date
+                # Auto-mark as complete if date has passed
+                if datetime.strptime(task_date, '%Y-%m-%d').date() <= current_date:
+                    completed_tasks.append(i)
+        
         # Create growing activity
         activity = {
             'user_id': session.get('user_id'),
@@ -806,10 +819,11 @@ def save_growing():
             'start_date': start_date,
             'harvest_date': harvest_date,
             'duration_days': manual['duration_days'],
-            'current_stage': 0,
+            'current_stage': len(completed_tasks),
             'status': 'active',
             'tasks': manual['tasks'],
-            'completed_tasks': [],
+            'task_dates': task_dates,
+            'completed_tasks': completed_tasks,
             'notes': notes,
             'created_at': datetime.now().isoformat(),
             'updated_at': datetime.now().isoformat()
