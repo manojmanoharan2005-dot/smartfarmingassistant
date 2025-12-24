@@ -1598,6 +1598,233 @@ body {
     transform: scale(0.95);
 }
 
+/* Price Predictions Section */
+.price-predictions-section {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.section-header {
+    margin-bottom: 25px;
+}
+
+.prediction-subtitle {
+    display: block;
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.predictions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.prediction-card {
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.prediction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.prediction-card.bullish {
+    border-left: 4px solid #10b981;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.prediction-card.bearish {
+    border-left: 4px solid #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.prediction-card.stable {
+    border-left: 4px solid #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.prediction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.commodity-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+}
+
+.market-name {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.trend-icon {
+    font-size: 32px;
+}
+
+.price-comparison {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.current-price-box, .predicted-price-box {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.current-price-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.predicted-price-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #fbbf24;
+}
+
+.price-label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.price-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.price-value.predicted {
+    color: #d97706;
+}
+
+.price-unit {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+
+.price-kg {
+    display: block;
+    font-size: 13px;
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.arrow-icon {
+    font-size: 24px;
+    color: #9ca3af;
+    font-weight: bold;
+}
+
+.prediction-message {
+    background: #f9fafb;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.prediction-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    flex: 1;
+}
+
+.change-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.change-badge.bullish {
+    background: #10b981;
+    color: white;
+}
+
+.change-badge.bearish {
+    background: #ef4444;
+    color: white;
+}
+
+.change-badge.stable {
+    background: #3b82f6;
+    color: white;
+}
+
+.prediction-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.confidence-label, .forecast-period {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.confidence-label strong {
+    color: #1f2937;
+}
+
+.prediction-info {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #3b82f6;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 20px;
+}
+
+.prediction-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #1e40af;
+    line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+    .predictions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .chatbot-modal-content {
@@ -1619,5 +1846,14 @@ body {
     .chatbot-btn {
         padding: 10px 16px;
         font-size: 13px;
+    }
+    
+    .price-comparison {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .arrow-icon {
+        transform: rotate(90deg);
     }
 }

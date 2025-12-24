@@ -146,6 +146,58 @@
             </div>
             {% endif %}
 
+            <!-- Price Predictions Section -->
+            {% if price_predictions %}
+            <div class="price-predictions-section">
+                <div class="section-header">
+                    <h3 class="section-title">📊 Price Trend Predictions - {{ user.district }}, {{ user.state }}</h3>
+                    <span class="prediction-subtitle">AI-powered 30-day forecast based on historical data & seasonal patterns</span>
+                </div>
+                <div class="predictions-grid">
+                    {% for pred in price_predictions %}
+                    <div class="prediction-card {{ pred.trend_class }}">
+                        <div class="prediction-header">
+                            <div>
+                                <h4 class="commodity-name">{{ pred.commodity }}</h4>
+                                <p class="market-name">{{ pred.market }}</p>
+                            </div>
+                            <span class="trend-icon">{{ pred.icon }}</span>
+                        </div>
+                        <div class="price-comparison">
+                            <div class="current-price-box">
+                                <span class="price-label">Current</span>
+                                <span class="price-value">₹{{ pred.current_price }}</span>
+                                <span class="price-unit">per quintal</span>
+                                <span class="price-kg">₹{{ pred.current_price_kg }}/kg</span>
+                            </div>
+                            <div class="arrow-icon">→</div>
+                            <div class="predicted-price-box">
+                                <span class="price-label">Next Month</span>
+                                <span class="price-value predicted">₹{{ pred.predicted_price }}</span>
+                                <span class="price-unit">per quintal</span>
+                                <span class="price-kg">₹{{ pred.predicted_price_kg }}/kg</span>
+                            </div>
+                        </div>
+                        <div class="prediction-message">
+                            <span class="change-badge {{ pred.trend_class }}">
+                                {% if pred.trend == 'increase' %}▲{% elif pred.trend == 'decrease' %}▼{% else %}━{% endif %}
+                                {{ pred.change_percent }}%
+                            </span>
+                            <p>{{ pred.commodity }} prices {{ pred.message }} in the next 30 days.</p>
+                        </div>
+                        <div class="prediction-footer">
+                            <span class="confidence-label">Confidence: <strong>{% if pred.trend == 'stable' %}Medium{% else %}High{% endif %}</strong></span>
+                            <span class="forecast-period">📅 30-day forecast</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="prediction-info">
+                    <p>💡 <strong>Forecasting Method:</strong> Predictions use ARIMA time-series analysis, seasonal pattern recognition, and historical price trends from the past 90 days.</p>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Saved Fertilizers Section -->
             {% if saved_fertilizers %}
             <div class="progress-section">
