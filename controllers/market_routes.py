@@ -19,16 +19,19 @@ MARKET_DATA_FILE = 'data/market_prices.json'
 # District coordinates file path
 DISTRICT_COORDS_FILE = 'data/district_coordinates.json'
 
-# Indian states list
-INDIAN_STATES = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli",
-    "Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
-]
+# States and districts file path
+STATES_DISTRICTS_FILE = 'states_districts.json'
+
+def load_states_districts():
+    """Load all Indian states and districts from JSON file"""
+    try:
+        if os.path.exists(STATES_DISTRICTS_FILE):
+            with open(STATES_DISTRICTS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    except Exception as e:
+        print(f"Error loading states_districts.json: {str(e)}")
+        return {}
 
 def load_district_coordinates():
     """Load district coordinates mapping"""
@@ -233,6 +236,10 @@ def market_watch():
     user_name = session.get('user_name', 'Guest')
     user_state = session.get('user_state', None)
     
+    # Load all states and districts from JSON file
+    states_districts = load_states_districts()
+    all_states = sorted(list(states_districts.keys()))
+    
     # Get state and district filters from query params
     selected_state = request.args.get('state', user_state if user_state else 'All States')
     selected_district = request.args.get('district', 'All Districts')
@@ -246,17 +253,38 @@ def market_watch():
     if market_data is None:
         market_data = []
     
-    # Get unique districts for the selected state
-    districts = set()
-    if selected_state != 'All States':
+    # Get districts for the selected state
+    if selected_state != 'All States' and selected_state in states_districts:
+        districts = sorted(states_districts[selected_state])
+    else:
+        # Get unique districts from market data
+        districts = set()
         for item in market_data:
             if item.get('district'):
                 districts.add(item['district'])
-    districts = sorted(list(districts))
+        districts = sorted(list(districts))
     
     # Filter by district if selected
     if selected_district != 'All Districts' and selected_district:
         market_data = [item for item in market_data if item.get('district') == selected_district]
+    
+    # Categorize into vegetables and fruits - MUST match generate_market_data.py exactly
+    vegetables_list = [
+        "Potato", "Tomato", "Onion", "Carrot", "Cabbage", "Cauliflower",
+        "Spinach", "Brinjal (Eggplant)", "Lady's Finger (Okra)", "Beetroot",
+        "Radish", "Capsicum", "Pumpkin", "Bottle Gourd", "Bitter Gourd",
+        "Ridge Gourd", "Green Peas", "Beans", "Mushroom", "Corn"
+    ]
+    
+    fruits_list = [
+        "Apple", "Banana", "Mango", "Orange", "Grapes", "Papaya",
+        "Pineapple", "Guava", "Watermelon", "Muskmelon", "Pomegranate",
+        "Strawberry", "Cherry", "Kiwi", "Lemon", "Pear", "Peach",
+        "Plum", "Coconut", "Custard Apple"
+    ]
+    
+    vegetables = [item for item in market_data if item.get('commodity') in vegetables_list]
+    fruits = [item for item in market_data if item.get('commodity') in fruits_list]
     
     # Format current date
     current_date = datetime.now().strftime('%B %d, %Y')
@@ -264,7 +292,10 @@ def market_watch():
     return render_template('market_watch.html', 
                          user_name=user_name,
                          market_data=market_data,
-                         states=INDIAN_STATES,
+                         vegetables=vegetables,
+                         fruits=fruits,
+                         states=all_states,
+                         states_districts=states_districts,
                          selected_state=selected_state,
                          districts=districts,
                          selected_district=selected_district,

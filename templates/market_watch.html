@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Market Watch - Smart Farming Assistant{% endblock %}
+{% block title %}Market Price - Smart Farming Assistant{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
@@ -196,7 +196,7 @@
             </a>
             <a href="{{ url_for('market.market_watch') }}" class="nav-item active">
                 <span class="nav-icon">📈</span>
-                <span class="nav-text">Market Watch</span>
+                <span class="nav-text">Market Price</span>
             </a>
         </nav>
     </div>
@@ -205,8 +205,8 @@
     <div class="dashboard-header">        
         <div class="header-content">
             <div class="header-left">
-                <h1>Market Watch</h1>
-                <p>Real-time Mandi prices with AI-powered 7-day predictions</p>
+                <h1>Market Price</h1>
+                <p>Real-time Mandi prices across India</p>
             </div>
             <div class="header-right">
                 <span class="header-date">📅 {{ current_date }}</span>
@@ -277,9 +277,17 @@
         </div>
         {% endif %}
 
-        <div class="market-grid">
-            {% for item in market_data %}
-            <div class="market-card">
+        <!-- Vegetables Section -->
+        {% if vegetables|length > 0 %}
+        <div style="margin-bottom: 40px;">
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%); padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #52b788;">
+                <h2 style="margin: 0; color: #065f46; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                    🥬 Vegetables <span style="font-size: 16px; color: #047857; font-weight: normal;">({{ vegetables|length }} items)</span>
+                </h2>
+            </div>
+            <div class="market-grid">
+                {% for item in vegetables %}
+                <div class="market-card">
                 <div class="market-card-header">
                     <div>
                         <h3 class="commodity-name">{{ item.commodity }}</h3>
@@ -298,40 +306,88 @@
                         {{ item.change }}
                     </span>
                 </div>
-
-                <div class="prediction-section">
-                    <div class="prediction-header">
-                        🤖 7-Day Price Prediction (LSTM)
-                    </div>
-                    <div class="prediction-value">₹{{ item.prediction_7d }}</div>
-                    <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;">₹{{ item.prediction_7d_kg }}/kg</div>
-                    <div class="confidence-bar">
-                        <div class="confidence-fill" style="width: {{ item.confidence }}%"></div>
-                    </div>
-                    <div class="confidence-text">Confidence: {{ item.confidence }}%</div>
-                </div>
             </div>
             {% endfor %}
+            </div>
         </div>
+        {% endif %}
 
-        <div style="background: #f0fdf4; border-left: 4px solid #52b788; padding: 20px; border-radius: 10px;">
-            <h3 style="color: #52b788; margin: 0 0 10px 0;">📊 About Price Predictions</h3>
-            <p style="color: #4a5568; margin: 0; line-height: 1.6;">
-                Our LSTM (Long Short-Term Memory) neural network analyzes historical price data, weather patterns, seasonal trends, and market demand to predict future prices. The confidence score indicates the model's certainty based on data quality and market volatility.
-            </p>
+        <!-- Fruits Section -->
+        {% if fruits|length > 0 %}
+        <div style="margin-bottom: 40px;">
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #f59e0b;">
+                <h2 style="margin: 0; color: #92400e; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                    🍎 Fruits <span style="font-size: 16px; color: #b45309; font-weight: normal;">({{ fruits|length }} items)</span>
+                </h2>
+            </div>
+            <div class="market-grid">
+                {% for item in fruits %}
+                <div class="market-card">
+                    <div class="market-card-header">
+                        <div>
+                            <h3 class="commodity-name">{{ item.commodity }}</h3>
+                            <p class="mandi-name">{{ item.mandi }}, {{ item.district }}</p>
+                            <p class="mandi-name" style="color: #52b788; font-weight: 600;">📍 {{ item.state }}</p>
+                        </div>
+                        <span class="trend-badge {{ 'bullish' if item.trend == 'Bullish' else 'bearish' }}">
+                            {{ item.trend }}
+                        </span>
+                    </div>
+
+                    <div class="price-section">
+                        <h2 class="current-price">₹{{ item.current_price }}</h2>
+                        <p class="price-unit">per {{ item.unit }} • ₹{{ item.current_price_kg }}/kg</p>
+                        <span class="price-change {{ 'positive' if '+' in item.change else 'negative' }}">
+                            {{ item.change }}
+                        </span>
+                    </div>
+
+                    <div class="price-range">
+                        <div>
+                            <span class="price-label">Min Price</span>
+                            <span class="price-value">₹{{ item.min_price }}</span>
+                            <span style="font-size: 12px; color: #6b7280;"> (₹{{ item.min_price_kg }}/kg)</span>
+                        </div>
+                        <div>
+                            <span class="price-label">Max Price</span>
+                            <span class="price-value">₹{{ item.max_price }}</span>
+                            <span style="font-size: 12px; color: #6b7280;"> (₹{{ item.max_price_kg }}/kg)</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
+// States and districts data
+const statesDistricts = {{ states_districts|tojson|safe }};
+
 function filterByState() {
     const state = document.getElementById('stateFilter').value;
     // Show/hide district filter based on state selection
     const districtContainer = document.getElementById('districtFilterContainer');
+    const districtSelect = document.getElementById('districtFilter');
+    
     if (state === 'All States') {
         districtContainer.style.display = 'none';
     } else {
         districtContainer.style.display = 'block';
+        
+        // Update district dropdown options dynamically
+        districtSelect.innerHTML = '<option value="All Districts">All Districts (Show All)</option>';
+        
+        if (statesDistricts[state]) {
+            statesDistricts[state].forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        }
     }
     window.location.href = `{{ url_for('market.market_watch') }}?state=${encodeURIComponent(state)}`;
 }
