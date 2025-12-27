@@ -427,6 +427,10 @@ def dashboard():
     except Exception as e:
         print(f"Error loading market prices: {e}")
     
+    # Stage names for conversion
+    STAGE_NAMES = ['Seed Sowing', 'Germination', 'Seedling', 'Vegetative Growth', 
+                   'Flowering', 'Fruit Development', 'Maturity', 'Harvest Ready']
+    
     # Format growing activities for display
     formatted_activities = []
     for activity in growing_activities:
@@ -438,10 +442,17 @@ def dashboard():
                 duration = activity.get('duration_days', 90)
                 progress = min(100, int((days_since / duration) * 100))
                 
+                # Convert stage number to name if needed
+                current_stage = activity.get('current_stage', 'Growing')
+                if isinstance(current_stage, int):
+                    current_stage = STAGE_NAMES[current_stage] if current_stage < len(STAGE_NAMES) else 'Growing'
+                elif current_stage is None or current_stage == '':
+                    current_stage = 'Seed Sowing'
+                
                 formatted_activities.append({
                     'id': activity.get('_id', ''),
                     'crop': activity.get('crop_display_name', activity.get('crop', '')),
-                    'current_stage': activity.get('current_stage', 'Growing'),
+                    'current_stage': current_stage,
                     'progress': progress,
                     'started': start.strftime('%b %d'),
                     'current_day': days_since,

@@ -287,5 +287,81 @@
       "updated_at": "2025-12-27T15:02:10.844297",
       "_id": "409bc9c9-c7e5-4ec4-8bee-227ad2dfe171"
     }
+  ],
+  "43500d18-5f6c-43a5-9b4b-d82ae68ba6a9": [
+    {
+      "user_id": "43500d18-5f6c-43a5-9b4b-d82ae68ba6a9",
+      "crop_name": "coffee",
+      "crop_display_name": "Coffee",
+      "start_date": "2025-12-27",
+      "harvest_date": "2026-12-27",
+      "duration_days": 365,
+      "current_stage": "Harvest Ready",
+      "status": "active",
+      "tasks": [
+        {
+          "week": 4,
+          "task": "Prepare pits with organic manure"
+        },
+        {
+          "week": 6,
+          "task": "Transplant 6-month seedlings"
+        },
+        {
+          "week": 8,
+          "task": "Provide shade during establishment"
+        },
+        {
+          "week": 12,
+          "task": "First fertilizer application"
+        },
+        {
+          "week": 16,
+          "task": "Pruning and training"
+        },
+        {
+          "week": 20,
+          "task": "Mulching and weed control"
+        },
+        {
+          "week": 24,
+          "task": "Second fertilizer dose"
+        },
+        {
+          "week": 28,
+          "task": "Monitor for leaf rust"
+        },
+        {
+          "week": 32,
+          "task": "Third fertilizer application"
+        },
+        {
+          "week": 40,
+          "task": "Watch for berry borer"
+        },
+        {
+          "week": 48,
+          "task": "Check berry ripening"
+        },
+        {
+          "week": 52,
+          "task": "Selective harvest of ripe berries"
+        }
+      ],
+      "task_dates": {
+        "2": "2025-12-28"
+      },
+      "completed_tasks": {
+        "watering": false,
+        "fertilizer": false,
+        "pest": false,
+        "weeding": false
+      },
+      "notes": "",
+      "created_at": "2025-12-27T16:12:23.879261",
+      "updated_at": "2025-12-27T16:16:15.399874",
+      "_id": "3200f322-f538-4f65-818a-ba12483be864",
+      "progress": 100
+    }
   ]
 }
