@@ -125,65 +125,102 @@ Keep prices realistic for December 2025."""
         print(f"Error generating prices with AI: {str(e)}")
         return generate_fallback_prices()
 
+def load_states_districts():
+    """Load all states and districts from states_districts.json"""
+    try:
+        with open('states_districts.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading states_districts.json: {str(e)}")
+        return {}
+
 def generate_fallback_prices():
-    """Fallback realistic prices - ALL vegetables and fruits for EACH district"""
-    # Base prices (in ₹/quintal)
-    base_prices = {
-        # Vegetables (₹/quintal) - 20 types
-        "Potato": (1200, 2000), "Onion": (1500, 3000), "Tomato": (1000, 2500),
-        "Cabbage": (800, 1500), "Cauliflower": (1000, 1800), "Carrot": (1200, 2000),
-        "Brinjal": (1500, 2500), "Okra": (2000, 3500), "Pumpkin": (600, 1200),
-        "Drumstick": (2500, 4000), "Beans": (1800, 3000), "Green Peas": (2000, 3500),
-        "Capsicum": (2500, 4500), "Green Chilli": (3000, 6000), "Cucumber": (800, 1500),
-        "Bitter Gourd": (1500, 2500), "Bottle Gourd": (800, 1500), "Ridge Gourd": (1200, 2000),
-        "Radish": (800, 1400), "Coriander": (2000, 4000),
-        # Fruits (₹/quintal) - 10 types
-        "Mango": (3000, 6000), "Banana": (1500, 3000), "Apple": (6000, 10000),
-        "Grapes": (4000, 8000), "Papaya": (1000, 2000), "Orange": (2500, 4500),
-        "Litchi": (4000, 7000), "Pomegranate": (5000, 9000), "Watermelon": (800, 1500),
-        "Guava": (1500, 2500)
-    }
+    """Fallback realistic prices - ALL vegetables and fruits for EACH district (28,400 entries)"""
     
-    # All vegetables and fruits - EVERY district will have ALL of these (30 total)
-    all_vegetables = ["Potato", "Onion", "Tomato", "Cabbage", "Cauliflower", "Carrot", "Brinjal", "Okra", "Pumpkin", "Drumstick", 
-                     "Beans", "Green Peas", "Capsicum", "Green Chilli", "Cucumber", "Bitter Gourd", "Bottle Gourd", "Ridge Gourd", "Radish", "Coriander"]
-    all_fruits = ["Mango", "Banana", "Apple", "Grapes", "Papaya", "Orange", "Litchi", "Pomegranate", "Watermelon", "Guava"]
-    all_commodities = all_vegetables + all_fruits
+    # Load all states and districts from JSON file
+    states_districts = load_states_districts()
+    
+    # Base prices (in ₹/quintal) - 20 Vegetables + 20 Fruits = 40 commodities
+    base_prices = {
+        # 🥕 Vegetables (20 types)
+        "Potato": (800, 2000, ["Local", "Hybrid", "Imported"]),
+        "Tomato": (1000, 4000, ["Local", "Hybrid", "Cherry"]),
+        "Onion": (1200, 3500, ["Red", "White", "Pink"]),
+        "Carrot": (1500, 3000, ["Local", "Hybrid", "Ooty"]),
+        "Cabbage": (800, 2000, ["Green", "Red", "Grade A"]),
+        "Cauliflower": (1000, 2500, ["Local", "Grade A", "Premium"]),
+        "Spinach": (1000, 2500, ["Local", "Organic", "Premium"]),
+        "Brinjal (Eggplant)": (1200, 3000, ["Long", "Round", "Green"]),
+        "Lady's Finger (Okra)": (1500, 3500, ["Local", "Hybrid", "Premium"]),
+        "Beetroot": (1200, 2800, ["Local", "Organic", "Grade A"]),
+        "Radish": (800, 2000, ["White", "Red", "Local"]),
+        "Capsicum": (2000, 5000, ["Green", "Red", "Yellow"]),
+        "Pumpkin": (600, 1500, ["Local", "Sweet", "Yellow"]),
+        "Bottle Gourd": (800, 2000, ["Local", "Long", "Round"]),
+        "Bitter Gourd": (1500, 3500, ["Local", "Green", "White"]),
+        "Ridge Gourd": (1200, 2800, ["Local", "Long", "Short"]),
+        "Green Peas": (3000, 6000, ["Local", "Frozen", "Premium"]),
+        "Beans": (2000, 4500, ["French", "Cluster", "Local"]),
+        "Mushroom": (8000, 15000, ["Button", "Oyster", "Shiitake"]),
+        "Corn": (1500, 3000, ["Sweet", "Baby", "Local"]),
+        
+        # 🍎 Fruits (20 types)
+        "Apple": (5000, 12000, ["Shimla", "Kashmiri", "Imported"]),
+        "Banana": (1500, 3500, ["Robusta", "Yelakki", "Nendran"]),
+        "Mango": (3000, 10000, ["Alphonso", "Kesar", "Langra"]),
+        "Orange": (2500, 5000, ["Nagpur", "Kinnow", "Mandarin"]),
+        "Grapes": (4000, 10000, ["Green", "Black", "Red"]),
+        "Papaya": (1500, 3500, ["Local", "Taiwan", "Hybrid"]),
+        "Pineapple": (2000, 4500, ["Queen", "Giant Kew", "Mauritius"]),
+        "Guava": (2000, 4000, ["Allahabad", "Pink", "White"]),
+        "Watermelon": (800, 2000, ["Striped", "Black", "Seedless"]),
+        "Muskmelon": (1500, 3500, ["Local", "Netted", "Honeydew"]),
+        "Pomegranate": (5000, 12000, ["Bhagwa", "Arakta", "Ganesh"]),
+        "Strawberry": (10000, 25000, ["Camarosa", "Chandler", "Local"]),
+        "Cherry": (15000, 35000, ["Kashmiri", "Imported", "Bing"]),
+        "Kiwi": (12000, 25000, ["Green", "Golden", "Imported"]),
+        "Lemon": (2000, 5000, ["Kagzi", "Galgal", "Sweet"]),
+        "Pear": (4000, 8000, ["Kashmir", "Chinese", "Bartlett"]),
+        "Peach": (5000, 10000, ["Local", "Imported", "Yellow"]),
+        "Plum": (4000, 9000, ["Black", "Red", "Yellow"]),
+        "Coconut": (1500, 3500, ["Tender", "Dry", "Hybrid"]),
+        "Custard Apple": (3000, 7000, ["Local", "Balanagar", "Arka Sahan"])
+    }
     
     market_data = []
     date_today = datetime.now().strftime('%Y-%m-%d')
     
-    # Generate data for all states - EACH DISTRICT gets ALL vegetables and fruits
-    for state in INDIAN_STATES:
-        markets = MARKETS_BY_STATE.get(state, [f"{state} - Main Market"])
-        
-        # For each market/district in the state
-        for i in range(5):  # 5 markets per state
-            market = markets[i] if i < len(markets) else markets[0]
-            district = market.split(' - ')[0]
-            
-            # Generate ALL 30 commodities for this district
-            for commodity in all_commodities:
-                min_base, max_base = base_prices[commodity]
-                min_price = int(min_base * random.uniform(0.90, 1.10))
-                max_price = int(max_base * random.uniform(0.90, 1.10))
-                modal_price = int((min_price + max_price) / 2)
+    # Generate data for ALL states and ALL districts from states_districts.json
+    for state, districts in states_districts.items():
+        for district in districts:
+            # Generate ALL 40 commodities for this district
+            for commodity, (min_base, max_base, varieties) in base_prices.items():
+                # Add regional price variation (±20%)
+                regional_factor = random.uniform(0.8, 1.2)
+                min_price = int(min_base * regional_factor * random.uniform(0.9, 1.0))
+                max_price = int(max_base * regional_factor * random.uniform(1.0, 1.1))
+                modal_price = int((min_price + max_price) / 2 * random.uniform(0.95, 1.05))
+                
+                # Random date within last 7 days
+                days_ago = random.randint(0, 6)
+                from datetime import timedelta
+                price_date = (datetime.now() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
                 
                 market_data.append({
                     "commodity": commodity,
-                    "variety": "Grade A",
-                    "market": market,
+                    "variety": random.choice(varieties),
+                    "market": f"{district} Mandi",
                     "state": state,
                     "district": district,
                     "min_price": min_price,
                     "max_price": max_price,
                     "modal_price": modal_price,
-                    "price_date": date_today,
-                    "arrival": f"{random.randint(50, 800)} quintals",
+                    "price_date": price_date,
+                    "arrival": f"{random.randint(50, 1000)} quintals",
                     "unit": "Quintal"
                 })
     
-    print(f"✅ Fallback data: {len(market_data)} records covering ALL vegetables and fruits for all India")
+    print(f"✅ Generated {len(market_data)} records covering 40 commodities for {len(states_districts)} states and all districts")
     return market_data
 
 def save_market_data(data):
