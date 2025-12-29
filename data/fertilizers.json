@@ -80,5 +80,23 @@
       "user_id": "694fda7586def4f38072ebf5",
       "saved_at": "2025-12-27T13:11:01.809305"
     }
+  ],
+  "66cc658c-174a-4335-aba7-4b19becabd30": [
+    {
+      "name": "MOP (0-0-60)",
+      "crop_type": "millets",
+      "priority": null,
+      "dosage": "50-75 kg/acre",
+      "usage": "Apply during flowering and fruit formation stage",
+      "note": "",
+      "confidence": "0",
+      "soil_type": "Peaty Soil",
+      "nitrogen": "100.0",
+      "phosphorus": "100.0",
+      "potassium": "10.0",
+      "_id": "c6a8ebb7-5444-4cb1-b9ed-79f8f07c426e",
+      "user_id": "66cc658c-174a-4335-aba7-4b19becabd30",
+      "saved_at": "2025-12-29T09:21:17.175522"
+    }
   ]
 }
