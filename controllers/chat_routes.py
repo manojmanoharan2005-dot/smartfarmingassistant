@@ -9,13 +9,21 @@ load_dotenv()
 chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
 
 # Configure Gemini API from environment variable
+# Configure Gemini API from environment variable
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY not found in .env file. Please add your API key to .env")
-genai.configure(api_key=GEMINI_API_KEY)
 
-# Initialize the model - use gemma-3-4b-it
-model = genai.GenerativeModel('gemma-3-4b-it')
+# Global model variable
+model = None
+
+if not GEMINI_API_KEY:
+    print("WARNING: GEMINI_API_KEY not set. Chatbot features will be disabled.")
+else:
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        # Initialize the model - use gemma-3-4b-it
+        model = genai.GenerativeModel('gemma-3-4b-it')
+    except Exception as e:
+        print(f"Error configuring Gemini API: {e}")
 
 # System context for the chatbot
 SYSTEM_CONTEXT = """You are a helpful Smart Farming AI Assistant. You help farmers with information about:
@@ -57,6 +65,12 @@ def chat_message():
                 'success': False,
                 'error': 'Please login to use the chatbot'
             }), 401
+            
+        if not GEMINI_API_KEY:
+            return jsonify({
+                'success': False,
+                'error': 'Chatbot service is currently unavailable (API Key missing). Please contact administrator.'
+            }), 503
         
         data = request.get_json()
         user_message = data.get('message', '').strip()
