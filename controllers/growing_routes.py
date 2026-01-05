@@ -759,6 +759,7 @@ CROP_MANUALS = {
 def start_growing(crop_name):
     """Show crop cultivation manual and setup growing activity"""
     crop_name = crop_name.lower()
+    probability = request.args.get('probability', '85') # Fallback to 85
     
     if crop_name not in CROP_MANUALS:
         flash(f'Cultivation manual not available for {crop_name}', 'error')
@@ -773,6 +774,7 @@ def start_growing(crop_name):
     return render_template('start_growing.html',
                          crop=manual,
                          crop_name=crop_name,
+                         probability=probability,
                          start_date=start_date,
                          harvest_date=harvest_date,
                          user_name=session.get('user_name', 'Farmer'),
@@ -1050,3 +1052,50 @@ def save_expense_api():
     except Exception as e:
         print(f"Error in save_expense_api: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@growing_bp.route('/api/crop-activity/add', methods=['POST'])
+@login_required
+def add_crop_activity_api():
+    """API endpoint to save crop activity with tasks and harvest plan"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
+        # Add user_id and timestamps
+        user_id = session.get('user_id')
+        data['user_id'] = user_id
+        data['created_at'] = datetime.now().isoformat()
+        data['updated_at'] = datetime.now().isoformat()
+        data['status'] = 'active'
+        
+        # Calculate current day if start_date is provided
+        if data.get('start_date'):
+            try:
+                start = datetime.fromisoformat(data['start_date'].replace('Z', '+00:00'))
+                current = datetime.now()
+                data['current_day'] = max(1, (current - start).days + 1)
+            except:
+                data['current_day'] = 1
+        else:
+            data['current_day'] = 1
+        
+        # Save to database
+        from utils.db import save_growing_activity
+        result = save_growing_activity(data)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'message': 'Crop activity saved successfully!',
+                'activity_id': str(result)
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to save crop activity'}), 500
+            
+    except Exception as e:
+        print(f"Error in add_crop_activity_api: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500

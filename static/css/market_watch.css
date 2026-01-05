@@ -1,0 +1,294 @@
+.filter-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.filter-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.filter-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+}
+
+.market-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent-green);
+}
+
+.market-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.market-card.bearish {
+    border-left-color: var(--accent-red);
+}
+
+.market-card-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.commodity-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.commodity-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent-green), #059669);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.commodity-info h3 {
+    font-size: 18px;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+}
+
+.commodity-info .location {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.trend-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.trend-badge.bullish {
+    background: var(--accent-green-light);
+    color: #059669;
+}
+
+.trend-badge.bearish {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.market-card-body {
+    padding: 20px;
+}
+
+.price-display {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.price-display .price {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent-green);
+}
+
+.price-display .unit {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.price-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.price-change.positive {
+    background: var(--accent-green-light);
+    color: #059669;
+}
+
+.price-change.negative {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.price-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.price-detail {
+    text-align: center;
+}
+
+.price-detail .value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.price-detail .label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.summary-card .icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.summary-card .icon.green {
+    background: var(--accent-green-light);
+}
+
+.summary-card .icon.blue {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.summary-card .icon.orange {
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.summary-card .icon.purple {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.summary-card .info h4 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.summary-card .info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 4px 0 0 0;
+}

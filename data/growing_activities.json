@@ -477,5 +477,132 @@
       "_id": "3db897fc-452b-49e8-9a94-23a092cf8293"
     }
   ],
-  "694fda7586def4f38072ebf5": []
+  "694fda7586def4f38072ebf5": [],
+  "53e10c1a-232a-4aa4-861d-edefaa1db51b": [
+    {
+      "crop": "rice",
+      "crop_display_name": "rice",
+      "tasks": [
+        {
+          "id": 1767589279720,
+          "type": "Field Preparation & Leveling",
+          "date": "2026-01-06",
+          "description": "",
+          "cropName": "rice",
+          "completed": false,
+          "createdAt": "2026-01-05T05:01:19.720Z"
+        }
+      ],
+      "harvest_plan": {},
+      "task_completion": 0,
+      "total_tasks": 1,
+      "completed_tasks": 0,
+      "start_date": "2026-01-05",
+      "duration_days": 90,
+      "expected_harvest_date": null,
+      "current_stage": "Planning",
+      "progress": 0,
+      "created_at": "2026-01-05T10:31:23.031738",
+      "user_id": "53e10c1a-232a-4aa4-861d-edefaa1db51b",
+      "updated_at": "2026-01-05T10:31:23.031745",
+      "status": "active",
+      "current_day": 1,
+      "_id": "30c87e0f-942c-425c-9aa1-dbd0cf473e9b"
+    }
+  ],
+  "44444550-7058-4cab-961d-b22f34368d71": [
+    {
+      "crop": "chickpea",
+      "crop_display_name": "chickpea",
+      "tasks": [
+        {
+          "id": 1767593201607,
+          "type": "Deep Plowing",
+          "date": "2026-01-05",
+          "description": "",
+          "cropName": "chickpea",
+          "completed": false,
+          "createdAt": "2026-01-05T06:06:41.607Z"
+        }
+      ],
+      "harvest_plan": {},
+      "task_completion": 0,
+      "total_tasks": 1,
+      "completed_tasks": 0,
+      "start_date": "2026-01-05",
+      "duration_days": 90,
+      "expected_harvest_date": null,
+      "current_stage": "Planning",
+      "progress": 0,
+      "created_at": "2026-01-05T11:40:30.368587",
+      "user_id": "44444550-7058-4cab-961d-b22f34368d71",
+      "updated_at": "2026-01-05T11:40:30.368599",
+      "status": "active",
+      "current_day": 1,
+      "_id": "4fa6280a-e8e0-437f-a4d0-2a48a7ee9b6d"
+    },
+    {
+      "crop": "maize",
+      "crop_display_name": "maize",
+      "tasks": [
+        {
+          "id": 1767593799012.6233,
+          "type": "Sowing/Planting",
+          "date": "2026-01-08",
+          "description": "Initial sowing based on harvest plan.",
+          "cropName": "maize",
+          "completed": false,
+          "createdAt": "2026-01-05T06:16:39.012Z"
+        },
+        {
+          "id": 1767593799012.2263,
+          "type": "Harvesting",
+          "date": "2026-04-08",
+          "description": "Expected harvest date.",
+          "cropName": "maize",
+          "completed": false,
+          "createdAt": "2026-01-05T06:16:39.012Z"
+        },
+        {
+          "id": 1767593816069,
+          "type": "Soil Preparation",
+          "date": "2026-01-05",
+          "description": "",
+          "cropName": "maize",
+          "completed": false,
+          "createdAt": "2026-01-05T06:16:55.716Z"
+        },
+        {
+          "id": 1767593835883,
+          "type": "Thinning & Gap Filling",
+          "date": "2026-01-09",
+          "description": "",
+          "cropName": "maize",
+          "completed": false,
+          "createdAt": "2026-01-05T06:17:15.261Z"
+        }
+      ],
+      "harvest_plan": {
+        "crop": "maize",
+        "sowingDate": "2026-01-08",
+        "duration": 90,
+        "harvestDate": "2026-04-08",
+        "createdAt": "2026-01-05T06:16:39.012Z"
+      },
+      "task_completion": 0,
+      "total_tasks": 4,
+      "completed_tasks": 0,
+      "start_date": "2026-01-08",
+      "duration_days": 90,
+      "expected_harvest_date": "2026-04-08",
+      "current_stage": "Planning",
+      "progress": 0,
+      "created_at": "2026-01-05T11:47:17.343450",
+      "user_id": "44444550-7058-4cab-961d-b22f34368d71",
+      "updated_at": "2026-01-05T11:47:17.343464",
+      "status": "active",
+      "current_day": 1,
+      "_id": "df1ee2a5-8eb9-40a8-95c1-faaa9e46ddab"
+    }
+  ]
 }

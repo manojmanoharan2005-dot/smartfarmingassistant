@@ -532,45 +532,185 @@ def get_dashboard_notifications(user_id):
     from datetime import datetime, timedelta
     notifications = []
     
+    # Get user's last read timestamp
+    user = find_user_by_id(user_id)
+    last_read_at = datetime.min
+    if user and 'last_notification_read_at' in user:
+        if isinstance(user['last_notification_read_at'], str):
+            last_read_at = datetime.fromisoformat(user['last_notification_read_at'])
+        else:
+            last_read_at = user['last_notification_read_at']
+    
     # Get active growing activities
     activities = get_user_growing_activities(user_id)
     
     for activity in activities:
-        # Check for upcoming tasks
-        start_date = datetime.fromisoformat(activity['created_at'])
-        days_passed = (datetime.now() - start_date).days
-        weeks_passed = days_passed // 7
-        
-        # Find pending tasks for current week
-        for task in activity['tasks']:
-            if task['week'] == weeks_passed + 1:
-                notifications.append({
-                    'type': 'task',
-                    'crop': activity['crop_display_name'],
-                    'message': f"Week {task['week']} task: {task['task']}",
-                    'priority': 'high',
-                    'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                })
+        # Check for upcoming tasks (only if tasks have 'week' key - old structure)
+        if 'tasks' in activity and activity['tasks']:
+            # Check if it's the old task structure with 'week' key
+            if isinstance(activity['tasks'], list) and len(activity['tasks']) > 0:
+                first_task = activity['tasks'][0]
+                if isinstance(first_task, dict) and 'week' in first_task:
+                    # Old structure - process weekly tasks
+                    start_date = datetime.fromisoformat(activity['created_at'])
+                    days_passed = (datetime.now() - start_date).days
+                    weeks_passed = days_passed // 7
+                    
+                    # Find pending tasks for current week
+                    for task in activity['tasks']:
+                        if task.get('week') == weeks_passed + 1:
+                            # Deterministic timestamp: Start of the current week (approx)
+                            notif_time = start_date + timedelta(weeks=weeks_passed)
+                            if notif_time > last_read_at:
+                                notifications.append({
+                                    'type': 'task',
+                                    'crop': activity.get('crop_display_name', activity.get('crop', 'Unknown')),
+                                    'message': f"Week {task['week']} task: {task['task']}",
+                                    'priority': 'high',
+                                    'created_at': notif_time.isoformat(),
+                                    'time_ago': 'This week'
+                                })
+                elif isinstance(first_task, dict) and 'date' in first_task:
+                    # New structure - process date-based tasks
+                    for task in activity['tasks']:
+                        try:
+                            task_date = datetime.strptime(task['date'], '%Y-%m-%d')
+                        except:
+                            try:
+                                task_date = datetime.fromisoformat(task['date'])
+                            except:
+                                continue
+
+                        days_until = (task_date.date() - datetime.now().date()).days
+                        
+                        # Notify for tasks within next 3 days
+                        if 0 <= days_until <= 3 and not task.get('completed', False):
+                            # Deterministic timestamp: 6 AM of the task date (or today if overdue/today)
+                            # Actually, we want it to show up TODAY if it is due TODAY.
+                            # So logical timestamp is: max(task_date - 3 days, today 00:00)?
+                            # Simplest: notification timestamp is the start of today for this specific alert
+                            # But if I read it at 8am, I don't want to see it at 9am.
+                            # So consistent creation time = today 00:00:00.
+                            today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                            
+                            # However, if the task was due yesterday (overdue), distinct alert?
+                            # Let's use today_start. If user cleared after today_start, they won't see it.
+                            if today_start > last_read_at:
+                                notifications.append({
+                                    'type': 'task',
+                                    'crop': activity.get('crop_display_name', activity.get('crop', 'Unknown')),
+                                    'message': f"{task['type']} scheduled for {task_date.strftime('%b %d')}",
+                                    'priority': 'high' if days_until == 0 else 'medium',
+                                    'created_at': today_start.isoformat(), 
+                                    'time_ago': 'Today' if days_until == 0 else f'In {days_until} days'
+                                })
+                        
+                        # Also check for OVERDUE tasks
+                        if days_until < 0 and not task.get('completed', False) and days_until > -7:
+                             today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                             if today_start > last_read_at:
+                                notifications.append({
+                                    'type': 'warning',
+                                    'crop': activity.get('crop_display_name', activity.get('crop', 'Unknown')),
+                                    'message': f"Overdue: {task['type']} was due on {task_date.strftime('%b %d')}",
+                                    'priority': 'high',
+                                    'created_at': today_start.isoformat(),
+                                    'time_ago': f'{abs(days_until)} days ago'
+                                })
+
         
         # Check if harvest is near (within 7 days)
-        harvest_date = datetime.strptime(activity['harvest_date'], '%Y-%m-%d')
-        days_to_harvest = (harvest_date - datetime.now()).days
-        
-        if 0 <= days_to_harvest <= 7:
-            notifications.append({
-                'type': 'harvest',
-                'crop': activity['crop_display_name'],
-                'message': f"Harvest ready in {days_to_harvest} days!",
-                'priority': 'high',
-                'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            })
+        if 'harvest_date' in activity or 'expected_harvest_date' in activity:
+            harvest_date_str = activity.get('expected_harvest_date') or activity.get('harvest_date')
+            if harvest_date_str:
+                try:
+                    harvest_date = datetime.fromisoformat(harvest_date_str) if 'T' in harvest_date_str else datetime.strptime(harvest_date_str, '%Y-%m-%d')
+                    days_to_harvest = (harvest_date - datetime.now()).days
+                    
+                    if 0 <= days_to_harvest <= 7:
+                         today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                         if today_start > last_read_at:
+                            notifications.append({
+                                'type': 'harvest',
+                                'crop': activity.get('crop_display_name', activity.get('crop', 'Unknown')),
+                                'message': f"Harvest ready in {days_to_harvest} days!",
+                                'priority': 'high',
+                                'created_at': today_start.isoformat(),
+                                'time_ago': f'In {days_to_harvest} days'
+                            })
+                except Exception as e:
+                    print(f"Error parsing harvest date: {e}")
     
     # Add persistent notifications
     persistent = get_persistent_notifications(user_id)
-    notifications.extend(persistent)
+    # Filter persistent ones that are not read
+    unread_persistent = [n for n in persistent if not n.get('read', False)]
+    notifications.extend(unread_persistent)
+    
+    # Sort by date
+    notifications.sort(key=lambda x: x['created_at'], reverse=True)
     
     return notifications
 
+def mark_user_notifications_read(user_id):
+    """Mark all notifications as read for a user"""
+    try:
+        # 1. Update persistent notifications
+        if os.path.exists(NOTIFICATIONS_FILE):
+             with open(NOTIFICATIONS_FILE, 'r') as f:
+                all_notifs = json.load(f)
+             
+             updated = False
+             for n in all_notifs:
+                 if n.get('user_id') == str(user_id) and not n.get('read', False):
+                     n['read'] = True
+                     updated = True
+             
+             if updated:
+                 with open(NOTIFICATIONS_FILE, 'w') as f:
+                    json.dump(all_notifs, f, indent=2)
+
+        # 2. Update user's last_notification_read_at timestamp
+        users = db.users
+        timestamp = datetime.now().isoformat()
+        
+        if hasattr(users, 'update_one'):
+            # MongoDB
+            users.update_one(
+                {'_id': user_id} if not isinstance(user_id, str) else {'email': user_id}, 
+                {'$set': {'last_notification_read_at': timestamp}}
+            )
+        else:
+            # File-based DB (MockCollection)
+            user_found = False
+            # If using dict store (email keys)
+            if hasattr(users, 'data_store') and isinstance(users.data_store, dict):
+                 for email, u in users.data_store.items():
+                     if str(u.get('_id')) == str(user_id) or u.get('email') == str(user_id):
+                         u['last_notification_read_at'] = timestamp
+                         user_found = True
+                         break
+            # If using list store (unlikely for users but possible)
+            elif hasattr(users, 'data_store') and isinstance(users.data_store, list):
+                for u in users.data_store:
+                     if str(u.get('_id')) == str(user_id) or u.get('email') == str(user_id):
+                         u['last_notification_read_at'] = timestamp
+                         user_found = True
+                         break
+            
+            if user_found and os.path.exists(USERS_FILE):
+                with open(USERS_FILE, 'w') as f:
+                    # Determine what to save based on data_store type
+                    data_to_save = users.data_store
+                    json.dump(data_to_save, f, indent=2, default=str)
+
+        return True
+
+        return True
+    except Exception as e:
+        print(f"Error marking notifications read: {e}")
+        return False
+        
 def add_notification(user_id, type, message, priority='medium', title=None, data=None):
     """Save a user notification to file"""
     try:

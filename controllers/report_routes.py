@@ -321,7 +321,7 @@ def get_market_report_data():
         
         if not district_prices:
             # Fallback to state data if district is empty
-            district_prices = [item for item in all_data if item.get('state') == state][:20]
+            district_prices = [item for item in all_data if item.get('state') == state][:100]
         
         # Smart selection: ensure fruits are included
         fruits_list = ['Apple', 'Banana', 'Mango', 'Orange', 'Grapes', 'Papaya', 'Pineapple', 
@@ -344,10 +344,10 @@ def get_market_report_data():
             state_fruits = [item for item in all_data 
                            if item.get('state') == state and 
                            any(f.lower() in item.get('commodity', '').lower() for f in fruits_list)]
-            fruits = state_fruits[:10]
+            fruits = state_fruits[:25]
             
         # Combine: 10 vegetables + up to 10 fruits
-        selected_prices = vegetables[:10] + fruits[:10]
+        selected_prices = vegetables[:50] + fruits[:25]
         
         # Final safety check if still empty
         if not selected_prices:

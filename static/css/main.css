@@ -67,7 +67,7 @@ img {
 /* ===== Toast Notifications ===== */
 .toast-container {
     position: fixed;
-    top: 100px;
+    top: 20px;
     right: 20px;
     z-index: 10000;
     display: flex;
@@ -76,51 +76,56 @@ img {
 }
 
 .toast {
-    background: var(--bg-card);
-    border-radius: 12px;
+    background: #333;
+    color: white;
     padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow-lg);
-    border-left: 4px solid var(--primary);
-    animation: slideIn 0.3s ease;
+    justify-content: space-between;
     min-width: 300px;
     max-width: 400px;
-}
-
-.toast.success { border-left-color: var(--success); }
-.toast.error { border-left-color: var(--danger); }
-.toast.warning { border-left-color: var(--warning); }
-.toast.info { border-left-color: var(--info); }
-
-.toast i {
-    font-size: 1.25rem;
-}
-
-.toast.success i { color: var(--success); }
-.toast.error i { color: var(--danger); }
-.toast.warning i { color: var(--warning); }
-.toast.info i { color: var(--info); }
-
-.toast-message {
-    flex: 1;
-    color: var(--text-primary);
+    animation: slideIn 0.3s ease;
     font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.toast.toast-success {
+    background-color: var(--success);
+}
+
+.toast.toast-error {
+    background-color: var(--danger);
+}
+
+.toast.toast-warning {
+    background-color: #f59e0b;
+}
+
+.toast.toast-info {
+    background-color: var(--info);
+}
+
+.toast-content {
+    flex-grow: 1;
+    margin-right: 12px;
 }
 
 .toast-close {
-    background: none;
+    background: transparent;
     border: none;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
     cursor: pointer;
-    padding: 4px;
-    font-size: 1.1rem;
-    transition: var(--transition);
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
 }
 
 .toast-close:hover {
-    color: var(--text-primary);
+    color: white;
 }
 
 @keyframes slideIn {
@@ -128,9 +133,21 @@ img {
         transform: translateX(100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+.toast.hiding {
+    animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateX(100%);
+        opacity: 0;
     }
 }
 
@@ -299,7 +316,7 @@ img {
     right: 0;
     bottom: 0;
     background: radial-gradient(circle at 30% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 70% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -433,8 +450,17 @@ img {
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.2); opacity: 0.8; }
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
 }
 
 /* ===== Features Section ===== */
@@ -1179,7 +1205,7 @@ img {
     direction: rtl;
 }
 
-.feature-detailed-card:nth-child(even) > * {
+.feature-detailed-card:nth-child(even)>* {
     direction: ltr;
 }
 
@@ -1427,20 +1453,52 @@ img {
 }
 
 /* ===== Utility Classes ===== */
-.text-center { text-align: center; }
-.text-primary { color: var(--primary) !important; }
-.text-muted { color: var(--text-muted) !important; }
-.mb-0 { margin-bottom: 0 !important; }
-.mb-2 { margin-bottom: 0.5rem !important; }
-.mb-3 { margin-bottom: 1rem !important; }
-.mb-4 { margin-bottom: 1.5rem !important; }
-.mt-4 { margin-top: 1.5rem !important; }
-.py-3 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.text-center {
+    text-align: center;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+.py-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
 
 /* ===== Animations ===== */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
@@ -1448,6 +1506,7 @@ img {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

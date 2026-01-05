@@ -1,14 +1,17 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Mobile menu toggle
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navMenu = document.querySelector('.nav-menu');
-    
+
     if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
+        mobileMenuBtn.addEventListener('click', function () {
+            const navMenu = document.querySelector('.navbar-menu');
+            if (navMenu) {
+                navMenu.classList.toggle('active');
+            }
         });
     }
-    
+
     // Smooth scrolling
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -21,20 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Global toast notification function (accessible from anywhere)
-window.showToast = function(message, type = 'info', duration = 5000) {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
+window.showToast = function (message, type = 'info', duration = 5000) {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
     const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
+        success: '<i class="fas fa-check-circle"></i>',
+        error: '<i class="fas fa-exclamation-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        info: '<i class="fas fa-info-circle"></i>'
     };
 
     const titles = {
-        success: 'Success',
-        error: 'Error',
+        success: 'Action Successful',
+        error: 'Error Occurred',
         warning: 'Warning',
         info: 'Information'
     };
@@ -42,20 +50,29 @@ window.showToast = function(message, type = 'info', duration = 5000) {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
-        <div class="toast-icon">${icons[type] || icons.info}</div>
         <div class="toast-content">
-            <div class="toast-title">${titles[type] || titles.info}</div>
-            <div class="toast-message">${message}</div>
+            ${message}
         </div>
-        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-        <div class="toast-progress"></div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
     `;
 
+    toast.style.setProperty('--duration', `${duration}ms`);
     container.appendChild(toast);
 
-    // Auto remove after duration
     setTimeout(() => {
         toast.classList.add('hiding');
         setTimeout(() => toast.remove(), 400);
     }, duration);
+};
+
+/**
+ * Global Navbar Toggle
+ */
+window.toggleMobileMenu = function () {
+    const navMenu = document.querySelector('.navbar-menu');
+    if (navMenu) {
+        navMenu.classList.toggle('active');
+    }
 };

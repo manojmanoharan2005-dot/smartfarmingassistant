@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify
 from utils.auth import login_required
-from utils.db import get_user_crops, get_user_fertilizers, find_user_by_id, get_dashboard_notifications, get_user_growing_activities
+from utils.db import get_user_crops, get_user_fertilizers, find_user_by_id, get_dashboard_notifications, get_user_growing_activities, mark_user_notifications_read
 from datetime import datetime, timedelta
 import json
 import os
@@ -580,3 +580,15 @@ def weather_update():
         return jsonify(weather_data)
     
     return jsonify({'error': 'Location not set'}), 400
+
+@dashboard_bp.route('/mark-notifications-read', methods=['POST'])
+@login_required
+def mark_notifications_read():
+    """Mark all notifications as read"""
+    try:
+        user_id = session.get('user_id')
+        success = mark_user_notifications_read(user_id)
+        return jsonify({'success': success})
+    except Exception as e:
+        print(f"Error in mark_notifications_read route: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500

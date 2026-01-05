@@ -14,67 +14,72 @@
                 <h2 class="auth-title">Create Your Account</h2>
                 <p class="auth-subtitle">Join thousands of farmers using smart technology</p>
             </div>
-            
+
             <form method="POST" class="auth-form">
                 <div class="form-group">
                     <label for="name">Full Name</label>
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your full name">
+                        <input type="text" id="name" name="name" class="form-control" required
+                            placeholder="Enter your full name">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <div class="input-group">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your email">
+                        <input type="email" id="email" name="email" class="form-control" required
+                            placeholder="Enter your email">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="password" name="password" class="form-control" required placeholder="Create password">
+                        <input type="password" id="password" name="password" class="form-control" required
+                            placeholder="Create password">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
                     <div class="input-group">
                         <i class="fas fa-phone"></i>
-                        <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{10}" required placeholder="10-digit mobile number">
+                        <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{10}" required
+                            placeholder="10-digit mobile number">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="state">State</label>
                     <select id="state" name="state" class="form-control" required onchange="updateDistricts()">
                         <option value="">Select your state</option>
                         {% for state in states_districts.keys() %}
-                            <option value="{{ state }}">{{ state }}</option>
+                        <option value="{{ state }}">{{ state }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="district">District</label>
                     <select id="district" name="district" class="form-control" required>
                         <option value="">Select your district</option>
                     </select>
                 </div>
-                
+
                 <div class="form-check">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
+                    <label for="terms">I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a>
+                        and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary btn-auth">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
             </form>
-            
+
             <div class="auth-footer">
                 <p>Already have an account? <a href="{{ url_for('auth.login') }}">Sign in here</a></p>
             </div>
@@ -82,32 +87,9 @@
     </div>
 </section>
 
-<script>
-// Store states and districts data safely
-var statesDistricts = {};
-{% for state, districts in states_districts.items() %}
-statesDistricts["{{ state }}"] = [
-    {% for district in districts %}
-    "{{ district }}"{{ "," if not loop.last else "" }}
-    {% endfor %}
-];
-{% endfor %}
-
-function updateDistricts() {
-    const stateSelect = document.getElementById('state');
-    const districtSelect = document.getElementById('district');
-    const selectedState = stateSelect.value;
-    
-    districtSelect.innerHTML = '<option value="">Select your district</option>';
-    
-    if (selectedState && statesDistricts[selectedState]) {
-        statesDistricts[selectedState].forEach(function(district) {
-            const option = document.createElement('option');
-            option.value = district;
-            option.textContent = district;
-            districtSelect.appendChild(option);
-        });
-    }
-}
+<script id="states-districts-data" type="application/json">
+    {{ states_districts | tojson | safe }}
 </script>
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+
 {% endblock %}
