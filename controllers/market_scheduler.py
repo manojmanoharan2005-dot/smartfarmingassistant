@@ -140,51 +140,61 @@ def generate_fallback_prices():
     # Load all states and districts from JSON file
     states_districts = load_states_districts()
     
-    # Base prices (in ₹/quintal) - 20 Vegetables + 20 Fruits = 40 commodities
+    # Base prices (in ₹/quintal) - 30 Vegetables + 20 Fruits = 50 commodities
     base_prices = {
-        # 🥕 Vegetables (20 types)
-        "Potato": (800, 2000, ["Local", "Hybrid", "Imported"]),
+        # 🥕 Vegetables (30 types)
         "Tomato": (1000, 4000, ["Local", "Hybrid", "Cherry"]),
         "Onion": (1200, 3500, ["Red", "White", "Pink"]),
-        "Carrot": (1500, 3000, ["Local", "Hybrid", "Ooty"]),
+        "Potato": (800, 2000, ["Local", "Hybrid", "Imported"]),
+        "Brinjal": (1200, 3000, ["Long", "Round", "Green"]),
         "Cabbage": (800, 2000, ["Green", "Red", "Grade A"]),
         "Cauliflower": (1000, 2500, ["Local", "Grade A", "Premium"]),
-        "Spinach": (1000, 2500, ["Local", "Organic", "Premium"]),
-        "Brinjal (Eggplant)": (1200, 3000, ["Long", "Round", "Green"]),
-        "Lady's Finger (Okra)": (1500, 3500, ["Local", "Hybrid", "Premium"]),
+        "Carrot": (1500, 3000, ["Local", "Hybrid", "Ooty"]),
         "Beetroot": (1200, 2800, ["Local", "Organic", "Grade A"]),
-        "Radish": (800, 2000, ["White", "Red", "Local"]),
-        "Capsicum": (2000, 5000, ["Green", "Red", "Yellow"]),
-        "Pumpkin": (600, 1500, ["Local", "Sweet", "Yellow"]),
-        "Bottle Gourd": (800, 2000, ["Local", "Long", "Round"]),
-        "Bitter Gourd": (1500, 3500, ["Local", "Green", "White"]),
-        "Ridge Gourd": (1200, 2800, ["Local", "Long", "Short"]),
-        "Green Peas": (3000, 6000, ["Local", "Frozen", "Premium"]),
+        "Green Chilli": (2500, 6000, ["Local", "Hybrid", "Long"]),
+        "Capsicum (Green)": (2000, 5000, ["Local", "Hybrid", "Premium"]),
+        "Capsicum (Red)": (3000, 7000, ["Local", "Hybrid", "Premium"]),
+        "Capsicum (Yellow)": (3000, 7000, ["Local", "Hybrid", "Premium"]),
         "Beans": (2000, 4500, ["French", "Cluster", "Local"]),
-        "Mushroom": (8000, 15000, ["Button", "Oyster", "Shiitake"]),
-        "Corn": (1500, 3000, ["Sweet", "Baby", "Local"]),
+        "Cluster Beans": (1800, 4000, ["Local", "Hybrid", "Premium"]),
+        "Lady Finger": (1500, 3500, ["Local", "Hybrid", "Premium"]),
+        "Drumstick": (2000, 5000, ["Local", "Hybrid", "Long"]),
+        "Bottle Gourd": (800, 2000, ["Local", "Long", "Round"]),
+        "Ridge Gourd": (1200, 2800, ["Local", "Long", "Short"]),
+        "Snake Gourd": (1000, 2500, ["Local", "Long", "Green"]),
+        "Bitter Gourd": (1500, 3500, ["Local", "Green", "White"]),
+        "Pumpkin": (600, 1500, ["Local", "Sweet", "Yellow"]),
+        "Ash Gourd": (700, 1800, ["Local", "Large", "Medium"]),
+        "Radish": (800, 2000, ["White", "Red", "Local"]),
+        "Turnip": (900, 2200, ["White", "Purple", "Local"]),
+        "Sweet Corn": (1800, 4000, ["Yellow", "White", "Hybrid"]),
+        "Peas": (3000, 6000, ["Local", "Frozen", "Premium"]),
+        "Garlic": (4000, 10000, ["Local", "Kashmiri", "Chinese"]),
+        "Ginger": (3000, 8000, ["Local", "Organic", "Premium"]),
+        "Coriander Leaves": (2000, 5000, ["Local", "Organic", "Fresh"]),
+        "Spinach": (1000, 2500, ["Local", "Organic", "Premium"]),
         
         # 🍎 Fruits (20 types)
         "Apple": (5000, 12000, ["Shimla", "Kashmiri", "Imported"]),
         "Banana": (1500, 3500, ["Robusta", "Yelakki", "Nendran"]),
-        "Mango": (3000, 10000, ["Alphonso", "Kesar", "Langra"]),
         "Orange": (2500, 5000, ["Nagpur", "Kinnow", "Mandarin"]),
+        "Mosambi": (2000, 4500, ["Local", "Hybrid", "Premium"]),
         "Grapes": (4000, 10000, ["Green", "Black", "Red"]),
+        "Pomegranate": (5000, 12000, ["Bhagwa", "Arakta", "Ganesh"]),
         "Papaya": (1500, 3500, ["Local", "Taiwan", "Hybrid"]),
         "Pineapple": (2000, 4500, ["Queen", "Giant Kew", "Mauritius"]),
-        "Guava": (2000, 4000, ["Allahabad", "Pink", "White"]),
         "Watermelon": (800, 2000, ["Striped", "Black", "Seedless"]),
         "Muskmelon": (1500, 3500, ["Local", "Netted", "Honeydew"]),
-        "Pomegranate": (5000, 12000, ["Bhagwa", "Arakta", "Ganesh"]),
-        "Strawberry": (10000, 25000, ["Camarosa", "Chandler", "Local"]),
-        "Cherry": (15000, 35000, ["Kashmiri", "Imported", "Bing"]),
-        "Kiwi": (12000, 25000, ["Green", "Golden", "Imported"]),
+        "Mango": (3000, 10000, ["Alphonso", "Kesar", "Langra"]),
+        "Guava": (2000, 4000, ["Allahabad", "Pink", "White"]),
         "Lemon": (2000, 5000, ["Kagzi", "Galgal", "Sweet"]),
+        "Custard Apple": (3000, 7000, ["Local", "Balanagar", "Arka Sahan"]),
+        "Sapota": (2500, 5500, ["Cricket Ball", "Oval", "Local"]),
+        "Strawberry": (10000, 25000, ["Camarosa", "Chandler", "Local"]),
+        "Kiwi": (12000, 25000, ["Green", "Golden", "Imported"]),
         "Pear": (4000, 8000, ["Kashmir", "Chinese", "Bartlett"]),
-        "Peach": (5000, 10000, ["Local", "Imported", "Yellow"]),
         "Plum": (4000, 9000, ["Black", "Red", "Yellow"]),
-        "Coconut": (1500, 3500, ["Tender", "Dry", "Hybrid"]),
-        "Custard Apple": (3000, 7000, ["Local", "Balanagar", "Arka Sahan"])
+        "Peach": (5000, 10000, ["Local", "Imported", "Yellow"])
     }
     
     market_data = []
@@ -220,7 +230,7 @@ def generate_fallback_prices():
                     "unit": "Quintal"
                 })
     
-    print(f"✅ Generated {len(market_data)} records covering 40 commodities for {len(states_districts)} states and all districts")
+    print(f"✅ Generated {len(market_data)} records covering 50 commodities for {len(states_districts)} states and all districts")
     return market_data
 
 def save_market_data(data):

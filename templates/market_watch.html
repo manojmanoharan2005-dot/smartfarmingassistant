@@ -393,7 +393,7 @@
             <div class="stat-item">
                 <div class="stat-icon orange"><i class="fas fa-carrot"></i></div>
                 <div class="stat-info">
-                    <h4>40</h4>
+                    <h4>50</h4>
                     <span>Commodities</span>
                 </div>
             </div>
@@ -453,89 +453,109 @@
                         <select name="commodity" id="commoditySelect">
                             <option value="All" {% if selected_commodity=='All' or not selected_commodity %}selected{%
                                 endif %}>All Commodities</option>
-                            <optgroup label="🥬 Vegetables (20)">
-                                <option value="Potato" {% if selected_commodity=='Potato' %}selected{% endif %}>Potato
-                                </option>
+                            <optgroup label="🥬 Vegetables (30)">
                                 <option value="Tomato" {% if selected_commodity=='Tomato' %}selected{% endif %}>Tomato
                                 </option>
                                 <option value="Onion" {% if selected_commodity=='Onion' %}selected{% endif %}>Onion
                                 </option>
-                                <option value="Carrot" {% if selected_commodity=='Carrot' %}selected{% endif %}>Carrot
+                                <option value="Potato" {% if selected_commodity=='Potato' %}selected{% endif %}>Potato
                                 </option>
+                                <option value="Brinjal" {% if selected_commodity=='Brinjal' %}selected{% endif %}>
+                                    Brinjal</option>
                                 <option value="Cabbage" {% if selected_commodity=='Cabbage' %}selected{% endif %}>
                                     Cabbage</option>
                                 <option value="Cauliflower" {% if selected_commodity=='Cauliflower' %}selected{% endif
                                     %}>Cauliflower</option>
-                                <option value="Spinach" {% if selected_commodity=='Spinach' %}selected{% endif %}>
-                                    Spinach</option>
-                                <option value="Brinjal (Eggplant)" {% if selected_commodity=='Brinjal (Eggplant)'
-                                    %}selected{% endif %}>Brinjal (Eggplant)</option>
-                                <option value="Lady's Finger (Okra)" {% if selected_commodity=="Lady's Finger (Okra)"
-                                    %}selected{% endif %}>Lady's Finger (Okra)</option>
+                                <option value="Carrot" {% if selected_commodity=='Carrot' %}selected{% endif %}>Carrot
+                                </option>
                                 <option value="Beetroot" {% if selected_commodity=='Beetroot' %}selected{% endif %}>
                                     Beetroot</option>
-                                <option value="Radish" {% if selected_commodity=='Radish' %}selected{% endif %}>Radish
-                                </option>
-                                <option value="Capsicum" {% if selected_commodity=='Capsicum' %}selected{% endif %}>
-                                    Capsicum</option>
-                                <option value="Pumpkin" {% if selected_commodity=='Pumpkin' %}selected{% endif %}>
-                                    Pumpkin</option>
-                                <option value="Bottle Gourd" {% if selected_commodity=='Bottle Gourd' %}selected{% endif
-                                    %}>Bottle Gourd</option>
-                                <option value="Bitter Gourd" {% if selected_commodity=='Bitter Gourd' %}selected{% endif
-                                    %}>Bitter Gourd</option>
-                                <option value="Ridge Gourd" {% if selected_commodity=='Ridge Gourd' %}selected{% endif
-                                    %}>Ridge Gourd</option>
-                                <option value="Green Peas" {% if selected_commodity=='Green Peas' %}selected{% endif %}>
-                                    Green Peas</option>
+                                <option value="Green Chilli" {% if selected_commodity=='Green Chilli' %}selected{% endif
+                                    %}>Green Chilli</option>
+                                <option value="Capsicum (Green)" {% if selected_commodity=='Capsicum (Green)'
+                                    %}selected{% endif %}>Capsicum (Green)</option>
+                                <option value="Capsicum (Red)" {% if selected_commodity=='Capsicum (Red)' %}selected{%
+                                    endif %}>Capsicum (Red)</option>
+                                <option value="Capsicum (Yellow)" {% if selected_commodity=='Capsicum (Yellow)'
+                                    %}selected{% endif %}>Capsicum (Yellow)</option>
                                 <option value="Beans" {% if selected_commodity=='Beans' %}selected{% endif %}>Beans
                                 </option>
-                                <option value="Mushroom" {% if selected_commodity=='Mushroom' %}selected{% endif %}>
-                                    Mushroom</option>
-                                <option value="Corn" {% if selected_commodity=='Corn' %}selected{% endif %}>Corn
+                                <option value="Cluster Beans" {% if selected_commodity=='Cluster Beans' %}selected{%
+                                    endif %}>Cluster Beans</option>
+                                <option value="Lady Finger" {% if selected_commodity=='Lady Finger' %}selected{% endif
+                                    %}>Lady Finger</option>
+                                <option value="Drumstick" {% if selected_commodity=='Drumstick' %}selected{% endif %}>
+                                    Drumstick</option>
+                                <option value="Bottle Gourd" {% if selected_commodity=='Bottle Gourd' %}selected{% endif
+                                    %}>Bottle Gourd</option>
+                                <option value="Ridge Gourd" {% if selected_commodity=='Ridge Gourd' %}selected{% endif
+                                    %}>Ridge Gourd</option>
+                                <option value="Snake Gourd" {% if selected_commodity=='Snake Gourd' %}selected{% endif
+                                    %}>Snake Gourd</option>
+                                <option value="Bitter Gourd" {% if selected_commodity=='Bitter Gourd' %}selected{% endif
+                                    %}>Bitter Gourd</option>
+                                <option value="Pumpkin" {% if selected_commodity=='Pumpkin' %}selected{% endif %}>
+                                    Pumpkin</option>
+                                <option value="Ash Gourd" {% if selected_commodity=='Ash Gourd' %}selected{% endif %}>
+                                    Ash Gourd</option>
+                                <option value="Radish" {% if selected_commodity=='Radish' %}selected{% endif %}>Radish
                                 </option>
+                                <option value="Turnip" {% if selected_commodity=='Turnip' %}selected{% endif %}>Turnip
+                                </option>
+                                <option value="Sweet Corn" {% if selected_commodity=='Sweet Corn' %}selected{% endif %}>
+                                    Sweet Corn</option>
+                                <option value="Peas" {% if selected_commodity=='Peas' %}selected{% endif %}>Peas
+                                </option>
+                                <option value="Garlic" {% if selected_commodity=='Garlic' %}selected{% endif %}>Garlic
+                                </option>
+                                <option value="Ginger" {% if selected_commodity=='Ginger' %}selected{% endif %}>Ginger
+                                </option>
+                                <option value="Coriander Leaves" {% if selected_commodity=='Coriander Leaves'
+                                    %}selected{% endif %}>Coriander Leaves</option>
+                                <option value="Spinach" {% if selected_commodity=='Spinach' %}selected{% endif %}>
+                                    Spinach</option>
                             </optgroup>
                             <optgroup label="🍎 Fruits (20)">
                                 <option value="Apple" {% if selected_commodity=='Apple' %}selected{% endif %}>Apple
                                 </option>
                                 <option value="Banana" {% if selected_commodity=='Banana' %}selected{% endif %}>Banana
                                 </option>
-                                <option value="Mango" {% if selected_commodity=='Mango' %}selected{% endif %}>Mango
-                                </option>
                                 <option value="Orange" {% if selected_commodity=='Orange' %}selected{% endif %}>Orange
                                 </option>
+                                <option value="Mosambi" {% if selected_commodity=='Mosambi' %}selected{% endif %}>
+                                    Mosambi</option>
                                 <option value="Grapes" {% if selected_commodity=='Grapes' %}selected{% endif %}>Grapes
                                 </option>
+                                <option value="Pomegranate" {% if selected_commodity=='Pomegranate' %}selected{% endif
+                                    %}>Pomegranate</option>
                                 <option value="Papaya" {% if selected_commodity=='Papaya' %}selected{% endif %}>Papaya
                                 </option>
                                 <option value="Pineapple" {% if selected_commodity=='Pineapple' %}selected{% endif %}>
                                     Pineapple</option>
-                                <option value="Guava" {% if selected_commodity=='Guava' %}selected{% endif %}>Guava
-                                </option>
                                 <option value="Watermelon" {% if selected_commodity=='Watermelon' %}selected{% endif %}>
                                     Watermelon</option>
                                 <option value="Muskmelon" {% if selected_commodity=='Muskmelon' %}selected{% endif %}>
                                     Muskmelon</option>
-                                <option value="Pomegranate" {% if selected_commodity=='Pomegranate' %}selected{% endif
-                                    %}>Pomegranate</option>
-                                <option value="Strawberry" {% if selected_commodity=='Strawberry' %}selected{% endif %}>
-                                    Strawberry</option>
-                                <option value="Cherry" {% if selected_commodity=='Cherry' %}selected{% endif %}>Cherry
+                                <option value="Mango" {% if selected_commodity=='Mango' %}selected{% endif %}>Mango
                                 </option>
-                                <option value="Kiwi" {% if selected_commodity=='Kiwi' %}selected{% endif %}>Kiwi
+                                <option value="Guava" {% if selected_commodity=='Guava' %}selected{% endif %}>Guava
                                 </option>
                                 <option value="Lemon" {% if selected_commodity=='Lemon' %}selected{% endif %}>Lemon
                                 </option>
-                                <option value="Pear" {% if selected_commodity=='Pear' %}selected{% endif %}>Pear
+                                <option value="Custard Apple" {% if selected_commodity=='Custard Apple' %}selected{%
+                                    endif %}>Custard Apple</option>
+                                <option value="Sapota" {% if selected_commodity=='Sapota' %}selected{% endif %}>Sapota
                                 </option>
-                                <option value="Peach" {% if selected_commodity=='Peach' %}selected{% endif %}>Peach
+                                <option value="Strawberry" {% if selected_commodity=='Strawberry' %}selected{% endif %}>
+                                    Strawberry</option>
+                                <option value="Kiwi" {% if selected_commodity=='Kiwi' %}selected{% endif %}>Kiwi
+                                </option>
+                                <option value="Pear" {% if selected_commodity=='Pear' %}selected{% endif %}>Pear
                                 </option>
                                 <option value="Plum" {% if selected_commodity=='Plum' %}selected{% endif %}>Plum
                                 </option>
-                                <option value="Coconut" {% if selected_commodity=='Coconut' %}selected{% endif %}>
-                                    Coconut</option>
-                                <option value="Custard Apple" {% if selected_commodity=='Custard Apple' %}selected{%
-                                    endif %}>Custard Apple</option>
+                                <option value="Peach" {% if selected_commodity=='Peach' %}selected{% endif %}>Peach
+                                </option>
                             </optgroup>
                         </select>
                     </div>
@@ -564,7 +584,7 @@
                 <div class="summary-card">
                     <div class="icon orange">🥬</div>
                     <div class="info">
-                        <h4>{{ vegetable_count or '20' }}</h4>
+                        <h4>{{ vegetable_count or '30' }}</h4>
                         <p>Vegetables</p>
                     </div>
                 </div>
@@ -579,57 +599,138 @@
 
             <!-- Market Grid -->
             {% if market_data %}
-            <div class="market-grid">
-                {% for item in market_data %}
-                <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
-                    <div class="market-card-header">
-                        <div class="commodity-info">
-                            <div class="commodity-icon">
-                                {% if item.commodity in ['Tomato', 'Potato', 'Onion', 'Cabbage', 'Cauliflower',
-                                'Carrot', 'Brinjal', 'Spinach'] %}🥬
-                                {% elif item.commodity in ['Apple', 'Banana', 'Mango', 'Orange', 'Grapes', 'Papaya',
-                                'Watermelon', 'Guava'] %}🍎
-                                {% else %}🌾{% endif %}
+
+            <!-- Vegetables Section -->
+            {% if vegetables %}
+            <div style="margin-bottom: 40px;">
+                <div
+                    style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent-green);">
+                    <div
+                        style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                        🥬
+                    </div>
+                    <div>
+                        <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Vegetables</h2>
+                        <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                            vegetables|length }} items available</p>
+                    </div>
+                </div>
+                <div class="market-grid">
+                    {% for item in vegetables %}
+                    <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
+                        <div class="market-card-header">
+                            <div class="commodity-info">
+                                <div class="commodity-icon">
+                                    🥬
+                                </div>
+                                <div>
+                                    <h3>{{ item.commodity }}</h3>
+                                    <div class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ item.district }}, {{ item.state }}
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h3>{{ item.commodity }}</h3>
-                                <div class="location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{ item.district }}, {{ item.state }}
+                            <span class="trend-badge {{ 'bullish' if item.change >= 0 else 'bearish' }}">
+                                {{ 'Bullish' if item.change >= 0 else 'Bearish' }}
+                            </span>
+                        </div>
+                        <div class="market-card-body">
+                            <div class="price-display">
+                                <span class="price">₹{{ (item.modal_price / 100)|round(2) }}</span>
+                                <span class="unit">per kg</span>
+                            </div>
+                            <span class="price-change {{ 'positive' if item.change >= 0 else 'negative' }}">
+                                <i class="fas fa-arrow-{{ 'up' if item.change >= 0 else 'down' }}"></i>
+                                {{ item.change|abs }}% from yesterday
+                            </span>
+                            <div class="price-details">
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.min_price / 100)|round(2) }}</div>
+                                    <div class="label">Min</div>
+                                </div>
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.modal_price / 100)|round(2) }}</div>
+                                    <div class="label">Modal</div>
+                                </div>
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.max_price / 100)|round(2) }}</div>
+                                    <div class="label">Max</div>
                                 </div>
                             </div>
                         </div>
-                        <span class="trend-badge {{ 'bullish' if item.change >= 0 else 'bearish' }}">
-                            {{ 'Bullish' if item.change >= 0 else 'Bearish' }}
-                        </span>
                     </div>
-                    <div class="market-card-body">
-                        <div class="price-display">
-                            <span class="price">₹{{ (item.modal_price / 100)|round(2) }}</span>
-                            <span class="unit">per kg</span>
-                        </div>
-                        <span class="price-change {{ 'positive' if item.change >= 0 else 'negative' }}">
-                            <i class="fas fa-arrow-{{ 'up' if item.change >= 0 else 'down' }}"></i>
-                            {{ item.change|abs }}% from yesterday
-                        </span>
-                        <div class="price-details">
-                            <div class="price-detail">
-                                <div class="value">₹{{ (item.min_price / 100)|round(2) }}</div>
-                                <div class="label">Min</div>
-                            </div>
-                            <div class="price-detail">
-                                <div class="value">₹{{ (item.modal_price / 100)|round(2) }}</div>
-                                <div class="label">Modal</div>
-                            </div>
-                            <div class="price-detail">
-                                <div class="value">₹{{ (item.max_price / 100)|round(2) }}</div>
-                                <div class="label">Max</div>
-                            </div>
-                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Fruits Section -->
+            {% if fruits %}
+            <div style="margin-bottom: 40px;">
+                <div
+                    style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
+                    <div
+                        style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                        🍎
+                    </div>
+                    <div>
+                        <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Fruits</h2>
+                        <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{ fruits|length }}
+                            items available</p>
                     </div>
                 </div>
-                {% endfor %}
+                <div class="market-grid">
+                    {% for item in fruits %}
+                    <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
+                        <div class="market-card-header">
+                            <div class="commodity-info">
+                                <div class="commodity-icon"
+                                    style="background: linear-gradient(135deg, #f97316, #ea580c);">
+                                    🍎
+                                </div>
+                                <div>
+                                    <h3>{{ item.commodity }}</h3>
+                                    <div class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ item.district }}, {{ item.state }}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="trend-badge {{ 'bullish' if item.change >= 0 else 'bearish' }}">
+                                {{ 'Bullish' if item.change >= 0 else 'Bearish' }}
+                            </span>
+                        </div>
+                        <div class="market-card-body">
+                            <div class="price-display">
+                                <span class="price">₹{{ (item.modal_price / 100)|round(2) }}</span>
+                                <span class="unit">per kg</span>
+                            </div>
+                            <span class="price-change {{ 'positive' if item.change >= 0 else 'negative' }}">
+                                <i class="fas fa-arrow-{{ 'up' if item.change >= 0 else 'down' }}"></i>
+                                {{ item.change|abs }}% from yesterday
+                            </span>
+                            <div class="price-details">
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.min_price / 100)|round(2) }}</div>
+                                    <div class="label">Min</div>
+                                </div>
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.modal_price / 100)|round(2) }}</div>
+                                    <div class="label">Modal</div>
+                                </div>
+                                <div class="price-detail">
+                                    <div class="value">₹{{ (item.max_price / 100)|round(2) }}</div>
+                                    <div class="label">Max</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
+            {% endif %}
+
             {% else %}
             <div class="empty-state">
                 <div class="empty-state-icon">📊</div>
@@ -647,18 +748,20 @@
 <script>
     const statesDistricts = JSON.parse(document.getElementById('states-data').textContent);
 
-    // All 40 commodities for autocomplete
+    // All 50 commodities for autocomplete
     const allCommodities = [
-        // Vegetables (20)
-        "Potato", "Tomato", "Onion", "Carrot", "Cabbage", "Cauliflower",
-        "Spinach", "Brinjal (Eggplant)", "Lady's Finger (Okra)", "Beetroot",
-        "Radish", "Capsicum", "Pumpkin", "Bottle Gourd", "Bitter Gourd",
-        "Ridge Gourd", "Green Peas", "Beans", "Mushroom", "Corn",
+        // Vegetables (30)
+        "Tomato", "Onion", "Potato", "Brinjal", "Cabbage", "Cauliflower",
+        "Carrot", "Beetroot", "Green Chilli", "Capsicum (Green)", "Capsicum (Red)",
+        "Capsicum (Yellow)", "Beans", "Cluster Beans", "Lady Finger", "Drumstick",
+        "Bottle Gourd", "Ridge Gourd", "Snake Gourd", "Bitter Gourd", "Pumpkin",
+        "Ash Gourd", "Radish", "Turnip", "Sweet Corn", "Peas", "Garlic",
+        "Ginger", "Coriander Leaves", "Spinach",
         // Fruits (20)
-        "Apple", "Banana", "Mango", "Orange", "Grapes", "Papaya",
-        "Pineapple", "Guava", "Watermelon", "Muskmelon", "Pomegranate",
-        "Strawberry", "Cherry", "Kiwi", "Lemon", "Pear", "Peach",
-        "Plum", "Coconut", "Custard Apple"
+        "Apple", "Banana", "Orange", "Mosambi", "Grapes", "Pomegranate",
+        "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Mango", "Guava",
+        "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
+        "Plum", "Peach"
     ];
 
     function updateDistricts() {

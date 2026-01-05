@@ -281,18 +281,21 @@ def market_watch():
     
     # Categorize into vegetables and fruits - MUST match generate_market_data.py exactly
     vegetables_list = [
-        "Potato", "Tomato", "Onion", "Carrot", "Cabbage", "Cauliflower",
-        "Spinach", "Brinjal (Eggplant)", "Lady's Finger (Okra)", "Beetroot",
-        "Radish", "Capsicum", "Pumpkin", "Bottle Gourd", "Bitter Gourd",
-        "Ridge Gourd", "Green Peas", "Beans", "Mushroom", "Corn"
+        "Tomato", "Onion", "Potato", "Brinjal", "Cabbage", "Cauliflower",
+        "Carrot", "Beetroot", "Green Chilli", "Capsicum (Green)", "Capsicum (Red)",
+        "Capsicum (Yellow)", "Beans", "Cluster Beans", "Lady Finger", "Drumstick",
+        "Bottle Gourd", "Ridge Gourd", "Snake Gourd", "Bitter Gourd", "Pumpkin",
+        "Ash Gourd", "Radish", "Turnip", "Sweet Corn", "Peas", "Garlic",
+        "Ginger", "Coriander Leaves", "Spinach"
     ]
     
     fruits_list = [
-        "Apple", "Banana", "Mango", "Orange", "Grapes", "Papaya",
-        "Pineapple", "Guava", "Watermelon", "Muskmelon", "Pomegranate",
-        "Strawberry", "Cherry", "Kiwi", "Lemon", "Pear", "Peach",
-        "Plum", "Coconut", "Custard Apple"
+        "Apple", "Banana", "Orange", "Mosambi", "Grapes", "Pomegranate",
+        "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Mango", "Guava",
+        "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
+        "Plum", "Peach"
     ]
+
     
     vegetables = [item for item in market_data if item.get('commodity') in vegetables_list]
     fruits = [item for item in market_data if item.get('commodity') in fruits_list]
