@@ -76,8 +76,13 @@ def format_scheduled_data_for_display(scheduled_data):
             max_price = record.get('max_price', current_price)
             
             # Calculate change and prediction
-            change_percent = random.uniform(-5, 10)
-            prediction_7d = current_price * (1 + random.uniform(0.05, 0.15))
+            # Calculate change and prediction (Stable/Deterministic)
+            import hashlib
+            seed_key = f"{record.get('commodity', '')}_{record.get('market', '')}_{datetime.now().strftime('%Y-%m-%d')}"
+            hash_val = int(hashlib.md5(seed_key.encode()).hexdigest(), 16)
+            change_percent = (hash_val % 1500) / 100.0 - 5.0  # -5% to +10%
+            pred_factor = 0.05 + ((hash_val % 1000) / 10000.0) # 0.05 to 0.15
+            prediction_7d = current_price * (1 + pred_factor)
             trend = 'Bullish' if change_percent > 0 else 'Bearish'
             
             # Calculate kg prices (1 quintal = 100 kg)
@@ -178,8 +183,15 @@ def fetch_mandi_prices_from_api(state=None, limit=20):
                         continue
                     
                     # Simulate price change and prediction for demo
-                    change_percent = random.uniform(-5, 10)
-                    prediction_7d = current_price * (1 + random.uniform(0.05, 0.15))
+                    # Simulate price change (Stable/Deterministic)
+                    import hashlib
+                    comm = record.get('Commodity') or record.get('commodity', '')
+                    mkt = record.get('Market_Name') or record.get('market', '')
+                    seed_key = f"{comm}_{mkt}_{datetime.now().strftime('%Y-%m-%d')}"
+                    hash_val = int(hashlib.md5(seed_key.encode()).hexdigest(), 16)
+                    change_percent = (hash_val % 1500) / 100.0 - 5.0
+                    pred_factor = 0.05 + ((hash_val % 1000) / 10000.0)
+                    prediction_7d = current_price * (1 + pred_factor)
                     trend = 'Bullish' if change_percent > 0 else 'Bearish'
                     
                     min_price_val = record.get('Min_Price') or record.get('min_price') or modal_price
@@ -295,10 +307,43 @@ def market_watch():
         "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
         "Plum", "Peach"
     ]
+    cereals_list = [
+        "Paddy (Rice – Common)", "Paddy (Basmati)", "Wheat", "Maize (Corn)", "Barley",
+        "Jowar (Sorghum)", "Bajra (Pearl Millet)", "Ragi (Finger Millet)"
+    ]
+    pulses_list = [
+        "Red Gram (Tur/Arhar)", "Green Gram (Moong)", "Black Gram (Urad)", "Bengal Gram (Chana)",
+        "Lentil (Masur)", "Horse Gram", "Field Pea"
+    ]
+    oilseeds_list = [
+        "Groundnut", "Mustard Seed", "Soybean", "Sunflower Seed", "Sesame (Gingelly)",
+        "Castor Seed", "Linseed"
+    ]
+    spices_list = [
+        "Dry Chilli", "Turmeric", "Coriander Seed", "Cumin Seed (Jeera)", "Pepper (Black)",
+        "Cardamom", "Clove"
+    ]
+    commercial_list = [
+        "Sugarcane", "Cotton", "Jute", "Copra (Dry Coconut)", "Tobacco", "Tea Leaves", "Coffee Beans"
+    ]
+    dry_fruits_list = [
+        "Coconut", "Cashew Nut", "Groundnut Kernel", "Almond", "Walnut", "Raisins"
+    ]
 
-    
+    animal_list = [
+        "Milk", "Cow Ghee", "Buffalo Ghee", "Egg", "Poultry Chicken", "Fish (Common Varieties)"
+    ]
+
     vegetables = [item for item in market_data if item.get('commodity') in vegetables_list]
     fruits = [item for item in market_data if item.get('commodity') in fruits_list]
+    cereals = [item for item in market_data if item.get('commodity') in cereals_list]
+    pulses = [item for item in market_data if item.get('commodity') in pulses_list]
+    oilseeds = [item for item in market_data if item.get('commodity') in oilseeds_list]
+    spices = [item for item in market_data if item.get('commodity') in spices_list]
+    commercial = [item for item in market_data if item.get('commodity') in commercial_list]
+    dry_fruits = [item for item in market_data if item.get('commodity') in dry_fruits_list]
+
+    animal = [item for item in market_data if item.get('commodity') in animal_list]
     
     # Format current date
     current_date = datetime.now().strftime('%B %d, %Y')
@@ -332,11 +377,20 @@ def market_watch():
         if 'max_price' not in item and 'current_price' in item:
             item['max_price'] = int(item['current_price'] * 1.1)
     
+    
     return render_template('market_watch.html', 
                          user_name=user_name,
                          market_data=market_data,
                          vegetables=vegetables,
                          fruits=fruits,
+                         cereals=cereals,
+                         pulses=pulses,
+                         oilseeds=oilseeds,
+                         spices=spices,
+                         commercial=commercial,
+                         dry_fruits=dry_fruits,
+
+                         animal=animal,
                          states=all_states,
                          states_districts=states_districts,
                          selected_state=selected_state,

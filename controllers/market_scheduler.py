@@ -194,7 +194,68 @@ def generate_fallback_prices():
         "Kiwi": (12000, 25000, ["Green", "Golden", "Imported"]),
         "Pear": (4000, 8000, ["Kashmir", "Chinese", "Bartlett"]),
         "Plum": (4000, 9000, ["Black", "Red", "Yellow"]),
-        "Peach": (5000, 10000, ["Local", "Imported", "Yellow"])
+        "Peach": (5000, 10000, ["Local", "Imported", "Yellow"]),
+        # 🌾 Cereals
+        "Paddy (Rice – Common)": (2000, 2500, ["Common", "Grade A"]),
+        "Paddy (Basmati)": (3500, 6000, ["Pusa", "1121", "Traditional"]),
+        "Wheat": (2200, 3000, ["Sharbati", "Lokwan", "Dara"]),
+        "Maize (Corn)": (1800, 2600, ["Yellow", "White", "Hybrid"]),
+        "Barley": (1600, 2200, ["Malt", "Feed"]),
+        "Jowar (Sorghum)": (2500, 4000, ["White", "Yellow", "Hybrid"]),
+        "Bajra (Pearl Millet)": (2000, 3000, ["Hybrid", "Desi"]),
+        "Ragi (Finger Millet)": (3000, 4500, ["Local", "Hybrid"]),
+
+        # 🌱 Pulses
+        "Red Gram (Tur/Arhar)": (6000, 11000, ["Desi", "Hybrid", "Lemon"]),
+        "Green Gram (Moong)": (7000, 10000, ["Shiny", "Medium", "Bold"]),
+        "Black Gram (Urad)": (6500, 9500, ["FAQ", "SQ", "Bold"]),
+        "Bengal Gram (Chana)": (5000, 7000, ["Desi", "Kabuli", "Kantola"]),
+        "Lentil (Masur)": (6000, 8500, ["Small", "Bold", "Canadian"]),
+        "Horse Gram": (4000, 6500, ["Red", "Brown"]),
+        "Field Pea": (3500, 5500, ["Green", "Yellow", "White"]),
+
+        # 🌰 Oilseeds
+        "Groundnut": (5500, 8000, ["Java", "Bold", "Runner"]),
+        "Mustard Seed": (4500, 6500, ["Black", "Yellow", "Mustard"]),
+        "Soybean": (4000, 6000, ["Yellow", "Black", "Mixed"]),
+        "Sunflower Seed": (4500, 6500, ["Hybrid", "Local"]),
+        "Sesame (Gingelly)": (10000, 16000, ["White", "Black", "Red"]),
+        "Castor Seed": (5000, 7000, ["Small", "Bold"]),
+        "Linseed": (5500, 7500, ["Brown", "Yellow"]),
+
+        # 🧂 Spices
+        "Dry Chilli": (12000, 25000, ["Teja", "Byadgi", "Guntur"]),
+        "Turmeric": (6000, 12000, ["Finger", "Bulb", "Powder"]),
+        "Coriander Seed": (7000, 11000, ["Eagle", "Scooter", "Badami"]),
+        "Cumin Seed (Jeera)": (25000, 55000, ["Ordinary", "Best", "Singapore"]),
+        "Pepper (Black)": (30000, 50000, ["Garbled", "Ungarbled", "Tellicherry"]),
+        "Cardamom": (100000, 250000, ["Small", "Bold", "Green"]),
+        "Clove": (60000, 90000, ["Zanzibar", "Madagascar"]),
+
+        # 🍬 Commercial
+        "Sugarcane": (300, 500, ["Co 0238", "Co 86032"]),
+        "Cotton": (5500, 9000, ["H-4", "Shanker-6", "Bunny"]),
+        "Jute": (4000, 6500, ["TD-5", "W-5", "Mesta"]),
+        "Copra (Dry Coconut)": (9000, 14000, ["Milling", "Edible"]),
+        "Tobacco": (4000, 15000, ["Flue Cured", "Burley"]),
+        "Tea Leaves": (15000, 40000, ["Darjeeling", "Assam", "Nilgiri"]),
+        "Coffee Beans": (20000, 45000, ["Arabica", "Robusta"]),
+
+        # 🥜 Dry Fruits
+        "Coconut": (1500, 3000, ["Large", "Medium", "Small"]),
+        "Cashew Nut": (80000, 120000, ["W320", "W240", "Splits"]),
+        "Groundnut Kernel": (8000, 12000, ["Bold", "Java"]),
+        "Almond": (60000, 90000, ["California", "Gurbandi", "Mamra"]),
+        "Walnut": (30000, 60000, ["Inshell", "Kernels"]),
+        "Raisins": (15000, 30000, ["Indian", "Afghan", "Black"]),
+
+        # 🐄 Animal
+        "Milk": (4000, 6500, ["Cow", "Buffalo", "Mixed"]),
+        "Cow Ghee": (45000, 70000, ["Desi", "Pure", "A2"]),
+        "Buffalo Ghee": (40000, 60000, ["Pure", "Mixed"]),
+        "Egg": (400, 700, ["White", "Brown"]),
+        "Poultry Chicken": (8000, 14000, ["Broiler", "Layer", "Cockerel"]),
+        "Fish (Common Varieties)": (10000, 25000, ["Rohu", "Catla", "Mrigal"])
     }
     
     market_data = []

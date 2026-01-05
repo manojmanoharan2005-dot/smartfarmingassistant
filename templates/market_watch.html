@@ -75,7 +75,7 @@
                     <i class="fas fa-chart-line"></i> Real-Time Updates
                 </div>
                 <h1 class="hero-title">Live Market Prices</h1>
-                <p class="hero-subtitle">Track commodity prices across 28,400+ markets in India. Updated daily at 9:00
+                <p class="hero-subtitle">Track commodity prices across 69,580+ markets in India. Updated daily at 9:00
                     AM.</p>
             </div>
         </div>
@@ -273,20 +273,7 @@
 
             <!-- Summary Cards -->
             <div class="summary-cards">
-                <div class="summary-card">
-                    <div class="icon green">📈</div>
-                    <div class="info">
-                        <h4>{{ bullish_count or '0' }}</h4>
-                        <p>Prices Rising</p>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <div class="icon blue">📉</div>
-                    <div class="info">
-                        <h4>{{ bearish_count or '0' }}</h4>
-                        <p>Prices Falling</p>
-                    </div>
-                </div>
+
                 <div class="summary-card">
                     <div class="icon orange">🥬</div>
                     <div class="info">
@@ -305,137 +292,428 @@
 
             <!-- Market Grid -->
             {% if market_data %}
-
-            <!-- Vegetables Section -->
-            {% if vegetables %}
-            <div style="margin-bottom: 40px;">
-                <div
-                    style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent-green);">
-                    <div
-                        style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                        🥬
-                    </div>
-                    <div>
-                        <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Vegetables</h2>
-                        <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                            vegetables|length }} items available</p>
-                    </div>
-                </div>
-                <div class="market-grid">
-                    {% for item in vegetables %}
-                    <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
-                        <div class="market-card-header">
-                            <div class="commodity-info">
-                                <div class="commodity-icon">
-                                    🥬
-                                </div>
-                                <div>
-                                    <h3>{{ item.commodity }}</h3>
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ item.district }}, {{ item.state }}
+            <style>
+                @media (max-width: 1024px) {
+                    .market-split-layout {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            </style>
+            <!-- Row 1: Veg vs Fruits+Cereals -->
+            <div class="market-split-layout"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
+                <div class="market-column-left">
+                    <!-- Vegetables Section -->
+                    {% if vegetables %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent-green);">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🥬</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Vegetables</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    vegetables|length }} items available</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in vegetables %}
+                            <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon">🥬</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <span class="trend-badge {{ 'bullish' if item.change >= 0 else 'bearish' }}">
-                                {{ 'Bullish' if item.change >= 0 else 'Bearish' }}
-                            </span>
-                        </div>
-                        <div class="market-card-body">
-                            <div class="price-display">
-                                <span class="price">₹{{ (item.modal_price / 100)|round(2) }}</span>
-                                <span class="unit">per kg</span>
-                            </div>
-                            <span class="price-change {{ 'positive' if item.change >= 0 else 'negative' }}">
-                                <i class="fas fa-arrow-{{ 'up' if item.change >= 0 else 'down' }}"></i>
-                                {{ item.change|abs }}% from yesterday
-                            </span>
-                            <div class="price-details">
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.min_price / 100)|round(2) }}</div>
-                                    <div class="label">Min</div>
-                                </div>
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.modal_price / 100)|round(2) }}</div>
-                                    <div class="label">Modal</div>
-                                </div>
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.max_price / 100)|round(2) }}</div>
-                                    <div class="label">Max</div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
+                    {% endif %}
                 </div>
-            </div>
-            {% endif %}
-
-            <!-- Fruits Section -->
-            {% if fruits %}
-            <div style="margin-bottom: 40px;">
-                <div
-                    style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
-                    <div
-                        style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                        🍎
-                    </div>
-                    <div>
-                        <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Fruits</h2>
-                        <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{ fruits|length }}
-                            items available</p>
-                    </div>
-                </div>
-                <div class="market-grid">
-                    {% for item in fruits %}
-                    <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
-                        <div class="market-card-header">
-                            <div class="commodity-info">
-                                <div class="commodity-icon"
-                                    style="background: linear-gradient(135deg, #f97316, #ea580c);">
-                                    🍎
-                                </div>
-                                <div>
-                                    <h3>{{ item.commodity }}</h3>
-                                    <div class="location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ item.district }}, {{ item.state }}
+                <div class="market-column-right">
+                    <!-- Fruits Section -->
+                    {% if fruits %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🍎</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Fruits</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    fruits|length }} items available</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in fruits %}
+                            <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #f97316, #ea580c);">🍎</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <span class="trend-badge {{ 'bullish' if item.change >= 0 else 'bearish' }}">
-                                {{ 'Bullish' if item.change >= 0 else 'Bearish' }}
-                            </span>
-                        </div>
-                        <div class="market-card-body">
-                            <div class="price-display">
-                                <span class="price">₹{{ (item.modal_price / 100)|round(2) }}</span>
-                                <span class="unit">per kg</span>
-                            </div>
-                            <span class="price-change {{ 'positive' if item.change >= 0 else 'negative' }}">
-                                <i class="fas fa-arrow-{{ 'up' if item.change >= 0 else 'down' }}"></i>
-                                {{ item.change|abs }}% from yesterday
-                            </span>
-                            <div class="price-details">
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.min_price / 100)|round(2) }}</div>
-                                    <div class="label">Min</div>
-                                </div>
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.modal_price / 100)|round(2) }}</div>
-                                    <div class="label">Modal</div>
-                                </div>
-                                <div class="price-detail">
-                                    <div class="value">₹{{ (item.max_price / 100)|round(2) }}</div>
-                                    <div class="label">Max</div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
+                    {% endif %}
+
+                    <!-- Cereals -->
+                    {% if cereals %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #eab308;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #eab308, #ca8a04); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🌾</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Cereals / Grains
+                                </h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    cereals|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in cereals %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #eab308, #ca8a04);">🌾</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-            {% endif %}
+
+            <!-- Row 2: Pulses vs Oilseeds -->
+            <div class="market-split-layout"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
+                <div class="market-column-left">
+                    <!-- Pulses -->
+                    {% if pulses %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #10b981;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🌱</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Pulses / Dal</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    pulses|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in pulses %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #10b981, #059669);">🌱</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="market-column-right">
+                    <!-- Oilseeds -->
+                    {% if oilseeds %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #8b5cf6;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🌰</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Oilseeds</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    oilseeds|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in oilseeds %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🌰</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Row 3: Spices vs Commercial -->
+            <div class="market-split-layout"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
+                <div class="market-column-left">
+                    <!-- Spices -->
+                    {% if spices %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #ef4444;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🧂</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Spices</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    spices|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in spices %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #ef4444, #dc2626);">🧂</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="market-column-right">
+                    <!-- Commercial -->
+                    {% if commercial %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #3b82f6;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🍬</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Commercial Crops
+                                </h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    commercial|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in commercial %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🍬</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Row 4: Dry Fruits vs Animal -->
+            <div class="market-split-layout"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+                <div class="market-column-left">
+                    <!-- Dry Fruits -->
+                    {% if dry_fruits %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🥜</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Dry Fruits</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    dry_fruits|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in dry_fruits %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #f97316, #ea580c);">🥜</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="market-column-right">
+                    <!-- Animal -->
+                    {% if animal %}
+                    <div style="margin-bottom: 40px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #06b6d4;">
+                            <div
+                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                                🐄</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Animal Related</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
+                                    animal|length }} items</p>
+                            </div>
+                        </div>
+                        <div class="market-grid">
+                            {% for item in animal %}
+                            <div class="market-card">
+                                <div class="market-card-header">
+                                    <div class="commodity-info">
+                                        <div class="commodity-icon"
+                                            style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🐄</div>
+                                        <div>
+                                            <h3>{{ item.commodity }}</h3>
+                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
+                                                }}, {{ item.state }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="market-card-body">
+                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(2)
+                                            }}</span><span class="unit">per kg</span></div>
+                                    <div class="quintal-price"
+                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Quintal Price:</span><span
+                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
+                                            }}</span></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
             {% else %}
             <div class="empty-state">
