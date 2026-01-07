@@ -143,16 +143,11 @@ def login():
 def register():
     # Load states and districts
     try:
-        # Try to load from current directory (production)
-        if os.path.exists('states_districts.json'):
-            with open('states_districts.json', 'r', encoding='utf-8') as f:
-                states_districts = json.load(f)
-        else:
-            # Try to load from script directory (fallback)
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            filepath = os.path.join(script_dir, '..', 'states_districts.json')
-            with open(filepath, 'r', encoding='utf-8') as f:
-                states_districts = json.load(f)
+        # Load from data directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.join(script_dir, '..', 'data', 'states_districts.json')
+        with open(filepath, 'r', encoding='utf-8') as f:
+            states_districts = json.load(f)
     except FileNotFoundError as e:
         print(f"Warning: states_districts.json not found: {e}")
         # Fallback states and districts

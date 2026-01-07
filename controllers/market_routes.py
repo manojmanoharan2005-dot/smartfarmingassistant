@@ -20,7 +20,7 @@ MARKET_DATA_FILE = 'data/market_prices.json'
 DISTRICT_COORDS_FILE = 'data/district_coordinates.json'
 
 # States and districts file path
-STATES_DISTRICTS_FILE = 'states_districts.json'
+STATES_DISTRICTS_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'states_districts.json')
 
 def load_states_districts():
     """Load all Indian states and districts from JSON file"""

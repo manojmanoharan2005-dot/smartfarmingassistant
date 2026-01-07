@@ -128,7 +128,8 @@ Keep prices realistic for December 2025."""
 def load_states_districts():
     """Load all states and districts from states_districts.json"""
     try:
-        with open('states_districts.json', 'r', encoding='utf-8') as f:
+        filepath = os.path.join(os.path.dirname(__file__), '..', 'data', 'states_districts.json')
+        with open(filepath, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
         print(f"Error loading states_districts.json: {str(e)}")

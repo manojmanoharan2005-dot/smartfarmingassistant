@@ -378,22 +378,29 @@ function sendChatMessage() {
 function loadPriceTrend(commodity, days = 7) {
     if (!commodity) return;
 
+    console.log('Loading price trend for:', commodity, 'days:', days);
+
     // Update active button state
     const btn7 = document.getElementById('btn-7d');
     const btn30 = document.getElementById('btn-30d');
     if (btn7) btn7.classList.toggle('active', days === 7);
     if (btn30) btn30.classList.toggle('active', days === 30);
 
-    fetch(`/api/price-trend/${commodity}?state=${userState}&district=${userDistrict}&days=${days}`)
+    fetch(`/api/price-trend/${encodeURIComponent(commodity)}?state=${userState}&district=${userDistrict}&days=${days}`)
         .then(response => response.json())
         .then(data => {
+            console.log('Price trend data received:', data);
             if (data.success) {
                 renderTrendChart(data);
             } else {
                 console.error('Trend data error:', data.error);
+                alert(`No price data available for ${commodity}. Please try another commodity.`);
             }
         })
-        .catch(error => console.error('Error fetching trend:', error));
+        .catch(error => {
+            console.error('Error fetching trend:', error);
+            alert('Failed to load price trend. Please try again.');
+        });
 }
 
 function renderTrendChart(data) {
@@ -1301,8 +1308,8 @@ async function generateReport(cardElement, reportName) {
 
         } else if (reportName === 'Market Report') {
             const prices = data.prices;
-            const maxPrice = Math.max(...prices.map(p => p.modal_price));
-            const minPrice = Math.min(...prices.map(p => p.modal_price));
+            const maxPrice = Math.max(...prices.map(p => p.modal_price)).toFixed(1);
+            const minPrice = Math.min(...prices.map(p => p.modal_price)).toFixed(1);
 
             htmlContent += `
                 <!-- Dark Blue Header -->
@@ -1346,9 +1353,9 @@ async function generateReport(cardElement, reportName) {
                         ${prices.map((item, i) => `
                             <tr style="border-bottom: 1px solid #e2e8f0; page-break-inside: avoid; background: ${i % 2 === 0 ? '#fff' : '#f8fafc'};">
                                 <td style="padding: 8px; font-weight: 600; color: #475569;">${item.commodity}</td>
-                                <td style="padding: 8px; text-align: right; font-weight: 700; color: #1e293b;">₹${item.modal_price}</td>
-                                <td style="padding: 8px; text-align: right; color: #64748b;">₹${item.min_price}</td>
-                                <td style="padding: 8px; text-align: right; color: #64748b;">₹${item.max_price}</td>
+                                <td style="padding: 8px; text-align: right; font-weight: 700; color: #1e293b;">₹${item.modal_price.toFixed(1)}</td>
+                                <td style="padding: 8px; text-align: right; color: #64748b;">₹${item.min_price.toFixed(1)}</td>
+                                <td style="padding: 8px; text-align: right; color: #64748b;">₹${item.max_price.toFixed(1)}</td>
                                 <td style="padding: 8px; text-align: right; color: #475569; font-size: 10px;">${item.market}</td>
                             </tr>
                         `).join('')}
@@ -1549,17 +1556,65 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Populate Commodity Select
-    const commodities = [
-        "Potato", "Tomato", "Onion", "Carrot", "Cabbage", "Cauliflower", "Spinach",
-        "Brinjal", "Lady's Finger", "Apple", "Banana", "Mango", "Orange", "Wheat", "Rice"
-    ];
+    // Populate Commodity Select - All 71 Commodities with Categories
+    const commodityCategories = {
+        "🥬 Vegetables (30)": [
+            "Tomato", "Onion", "Potato", "Brinjal", "Cabbage", "Cauliflower",
+            "Carrot", "Beetroot", "Green Chilli", "Capsicum (Green)", "Capsicum (Red)",
+            "Capsicum (Yellow)", "Beans", "Cluster Beans", "Lady Finger", "Drumstick",
+            "Bottle Gourd", "Ridge Gourd", "Snake Gourd", "Bitter Gourd", "Pumpkin",
+            "Ash Gourd", "Radish", "Turnip", "Sweet Corn", "Peas", "Garlic",
+            "Ginger", "Coriander Leaves", "Spinach"
+        ],
+        "🍎 Fruits (20)": [
+            "Apple", "Banana", "Orange", "Mosambi", "Grapes", "Pomegranate",
+            "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Mango", "Guava",
+            "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
+            "Plum", "Peach"
+        ],
+        "🌾 Cereals (8)": [
+            "Paddy (Rice – Common)", "Paddy (Basmati)", "Wheat", "Maize (Corn)", "Barley",
+            "Jowar (Sorghum)", "Bajra (Pearl Millet)", "Ragi (Finger Millet)"
+        ],
+        "🌱 Pulses (7)": [
+            "Red Gram (Tur/Arhar)", "Green Gram (Moong)", "Black Gram (Urad)", "Bengal Gram (Chana)",
+            "Lentil (Masur)", "Horse Gram", "Field Pea"
+        ],
+        "🌰 Oilseeds (7)": [
+            "Groundnut", "Mustard Seed", "Soybean", "Sunflower Seed", "Sesame (Gingelly)",
+            "Castor Seed", "Linseed"
+        ],
+        "🧂 Spices (7)": [
+            "Dry Chilli", "Turmeric", "Coriander Seed", "Cumin Seed (Jeera)", "Pepper (Black)",
+            "Cardamom", "Clove"
+        ],
+        "🍬 Commercial (7)": [
+            "Sugarcane", "Cotton", "Jute", "Copra (Dry Coconut)", "Tobacco", "Tea Leaves", "Coffee Beans"
+        ],
+        "🥜 Dry Fruits (6)": [
+            "Coconut", "Cashew Nut", "Groundnut Kernel", "Almond", "Walnut", "Raisins"
+        ],
+        "🐄 Animal Products (6)": [
+            "Milk", "Cow Ghee", "Buffalo Ghee", "Egg", "Poultry Chicken", "Fish (Common Varieties)"
+        ]
+    };
+
     const select = document.getElementById('commodity-select');
     if (select) {
-        commodities.sort().forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c; opt.textContent = c; opt.style.color = "#1e293b";
-            select.appendChild(opt);
+        // Add each category as an optgroup
+        Object.entries(commodityCategories).forEach(([category, items]) => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = category;
+
+            items.forEach(commodity => {
+                const opt = document.createElement('option');
+                opt.value = commodity;
+                opt.textContent = commodity;
+                opt.style.color = "#1e293b";
+                optgroup.appendChild(opt);
+            });
+
+            select.appendChild(optgroup);
         });
 
         const def = dashboardData.defaultCommodity || 'Tomato';
