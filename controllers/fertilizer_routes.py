@@ -18,9 +18,9 @@ except Exception:
 try:
     from predict import FertilizerPredictor
     ml_predictor = FertilizerPredictor()
-    print("✓ ML Fertilizer Predictor loaded successfully")
+    print("[SUCCESS] ML Fertilizer Predictor loaded successfully")
 except Exception as e:
-    print(f"✗ Warning: Could not load ML predictor: {e}")
+    print(f"[WARNING] Could not load ML predictor: {e}")
     ml_predictor = None
 
 fertilizer_bp = Blueprint('fertilizer', __name__, url_prefix='/fertilizer')

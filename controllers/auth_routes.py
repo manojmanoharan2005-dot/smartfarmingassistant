@@ -24,7 +24,7 @@ def send_reset_email(to_email, reset_link):
     sender_password = os.getenv('SMTP_PASSWORD', '')
     
     if not sender_email or not sender_password:
-        print("⚠️ Email not configured. Please set SMTP_EMAIL and SMTP_PASSWORD environment variables.")
+        print("[WARNING] Email not configured. Please set SMTP_EMAIL and SMTP_PASSWORD environment variables.")
         return False
     
     # Create email message
@@ -87,10 +87,10 @@ def send_reset_email(to_email, reset_link):
             server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, to_email, message.as_string())
-        print(f"✅ Password reset email sent to {to_email}")
+        print(f"[SUCCESS] Password reset email sent to {to_email}")
         return True
     except Exception as e:
-        print(f"❌ Failed to send email: {e}")
+        print(f"[ERROR] Failed to send email: {e}")
         return False
 
 def validate_password_strength(password):

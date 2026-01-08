@@ -4,7 +4,6 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/fertilizer_recommend.css') }}">
 
 {% endblock %}
@@ -37,6 +36,12 @@
                     <i class="fas fa-flask"></i>
                     <span>Fertilizer Advice</span>
                 </a>
+                <!-- Disease Detection - Coming Soon -->
+                <a href="#" class="nav-link" style="opacity: 0.5; cursor: not-allowed;" onclick="return false;">
+                    <i class="fas fa-microscope"></i>
+                    <span>Disease Detection</span>
+                    <span class="badge" style="background: #6b7280;">Soon</span>
+                </a>
                 <a href="{{ url_for('market.market_watch') }}" class="nav-link">
                     <i class="fas fa-chart-line"></i>
                     <span>Market Prices</span>
@@ -62,7 +67,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Hero Header -->
-        <div class="hero-header" style="background: linear-gradient(135deg, var(--accent-purple), #7c3aed);">
+        <div class="hero-header" style="background: white;">
             <div class="hero-content">
                 <div class="welcome-text">
                     <i class="fas fa-flask"></i> AI-Powered Analysis

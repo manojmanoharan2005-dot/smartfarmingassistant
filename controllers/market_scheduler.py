@@ -115,7 +115,7 @@ Keep prices realistic for December 2025."""
         if start_idx != -1 and end_idx > start_idx:
             json_text = response_text[start_idx:end_idx]
             market_data = json.loads(json_text)
-            print(f"✅ AI generated {len(market_data)} market records for all India")
+            print(f"[SUCCESS] AI generated {len(market_data)} market records for all India")
             return market_data
         else:
             print("Could not extract JSON from AI response, using fallback data")
@@ -292,7 +292,7 @@ def generate_fallback_prices():
                     "unit": "Quintal"
                 })
     
-    print(f"✅ Generated {len(market_data)} records covering 50 commodities for {len(states_districts)} states and all districts")
+    print(f"[SUCCESS] Generated {len(market_data)} records covering 50 commodities for {len(states_districts)} states and all districts")
     return market_data
 
 def save_market_data(data):
@@ -304,7 +304,7 @@ def save_market_data(data):
                 'last_updated': datetime.now().isoformat(),
                 'data': data
             }, f, indent=2, ensure_ascii=False)
-        print(f"✅ Market data saved: {len(data)} records")
+        print(f"[SUCCESS] Market data saved: {len(data)} records")
         return True
     except Exception as e:
         print(f"Error saving market data: {str(e)}")
@@ -330,9 +330,9 @@ def update_market_prices_job():
         new_prices = generate_fallback_prices()
         if new_prices:
             save_market_data(new_prices)
-            print(f"✅ All India prices updated! Total: {len(new_prices)} records for {len(INDIAN_STATES)} states")
+            print(f"[SUCCESS] All India prices updated! Total: {len(new_prices)} records for {len(INDIAN_STATES)} states")
     except Exception as e:
-        print(f"❌ Error in update job: {str(e)}")
+        print(f"[ERROR] Error in update job: {str(e)}")
 
 def is_data_stale(last_updated):
     """Check if market data is stale (older than today)"""
@@ -362,14 +362,14 @@ def init_scheduler(app):
     # Run at startup if no data OR if data is stale (from a previous day)
     data, last_updated = load_market_data()
     if not data:
-        print("📊 Generating initial market data for all India...")
+        print("[INFO] Generating initial market data for all India...")
         update_market_prices_job()
     elif is_data_stale(last_updated):
-        print(f"📊 Market data is stale (last updated: {last_updated}). Updating now...")
+        print(f"[INFO] Market data is stale (last updated: {last_updated}). Updating now...")
         update_market_prices_job()
     else:
-        print(f"📊 Loaded {len(data)} records for all India, updated: {last_updated}")
+        print(f"[INFO] Loaded {len(data)} records for all India, updated: {last_updated}")
     
     scheduler.start()
-    print("⏰ Scheduler started - Updates ALL INDIA prices daily at 9:00 AM")
+    print("[INFO] Scheduler started - Updates ALL INDIA prices daily at 9:00 AM")
     return scheduler

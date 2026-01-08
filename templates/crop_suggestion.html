@@ -4,7 +4,6 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/crop_suggestion.css') }}">
 
 {% endblock %}
@@ -36,6 +35,12 @@
                 <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-link">
                     <i class="fas fa-flask"></i>
                     <span>Fertilizer Advice</span>
+                </a>
+                <!-- Disease Detection - Coming Soon -->
+                <a href="#" class="nav-link" style="opacity: 0.5; cursor: not-allowed;" onclick="return false;">
+                    <i class="fas fa-microscope"></i>
+                    <span>Disease Detection</span>
+                    <span class="badge" style="background: #6b7280;">Soon</span>
                 </a>
                 <a href="{{ url_for('market.market_watch') }}" class="nav-link">
                     <i class="fas fa-chart-line"></i>

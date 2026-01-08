@@ -921,10 +921,10 @@ def update_activity(activity_id):
                 break
         
         if not activity:
-            print(f"❌ Activity {activity_id} not found!")
+            print(f"[ERROR] Activity {activity_id} not found!")
             return jsonify({'success': False, 'message': 'Activity not found'})
         
-        print(f"✅ Found activity: {activity.get('crop_display_name')}")
+        print(f"[SUCCESS] Found activity: {activity.get('crop_display_name')}")
         
         # Update fields
         update_data = {}

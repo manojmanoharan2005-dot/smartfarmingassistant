@@ -225,13 +225,27 @@ function closeFertilizerViewModal() {
 }
 
 function openAmazonLink() {
-    const url = 'https://www.amazon.in/s?k=' + encodeURIComponent(currentFertilizerName + ' fertilizer');
-    window.open(url, '_blank');
+    let fertilizerName = currentFertilizerName || 'fertilizer';
+    if (!fertilizerName || fertilizerName === '') {
+        fertilizerName = 'fertilizer';
+    }
+    // Clean up the search query
+    let searchQuery = fertilizerName.trim();
+    // Open Amazon India with search
+    const url = 'https://www.amazon.in/s?k=' + encodeURIComponent(searchQuery);
+    window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 function openIndiamartLink() {
-    const url = 'https://www.indiamart.com/search.mp?ss=' + encodeURIComponent(currentFertilizerName + ' fertilizer');
-    window.open(url, '_blank');
+    let fertilizerName = currentFertilizerName || 'fertilizer';
+    if (!fertilizerName || fertilizerName === '') {
+        fertilizerName = 'fertilizer';
+    }
+    // Clean up the search query
+    let searchQuery = fertilizerName.trim();
+    // Open IndiaMART with search
+    const url = 'https://www.indiamart.com/search.mp?ss=' + encodeURIComponent(searchQuery);
+    window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 /**
@@ -386,28 +400,71 @@ function loadPriceTrend(commodity, days = 7) {
     if (btn7) btn7.classList.toggle('active', days === 7);
     if (btn30) btn30.classList.toggle('active', days === 30);
 
-    fetch(`/api/price-trend/${encodeURIComponent(commodity)}?state=${userState}&district=${userDistrict}&days=${days}`)
-        .then(response => response.json())
+    fetch(`/api/price-trend/${encodeURIComponent(commodity)}?state=${encodeURIComponent(userState)}&district=${encodeURIComponent(userDistrict)}&days=${days}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             console.log('Price trend data received:', data);
             if (data.success) {
                 renderTrendChart(data);
             } else {
                 console.error('Trend data error:', data.error);
-                alert(`No price data available for ${commodity}. Please try another commodity.`);
+                console.warn(`Using fallback data for ${commodity}`);
+                // Show a less intrusive message or try to show chart anyway
+                if (data.trend_data && data.trend_data.length > 0) {
+                    renderTrendChart(data);
+                }
             }
         })
         .catch(error => {
             console.error('Error fetching trend:', error);
-            alert('Failed to load price trend. Please try again.');
+            // Don't show alert, just log it
+            console.warn('Price trend unavailable, skipping chart render');
         });
 }
 
 function renderTrendChart(data) {
+    console.log('renderTrendChart called with data:', data);
+
+    // Hide loading indicator and show canvas
+    const loadingEl = document.getElementById('chart-loading');
     const canvas = document.getElementById('priceTrendChart');
-    if (!canvas) return;
+    
+    if (!canvas) {
+        console.error('Canvas element not found!');
+        return;
+    }
+
+    console.log('Canvas found:', canvas);
+
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded!');
+        if (loadingEl) {
+            loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 8px; color: rgba(239, 68, 68, 0.5);"></i><div style="font-size: 13px;">Chart library not loaded</div>';
+        }
+        return;
+    }
 
     const ctx = canvas.getContext('2d');
+
+    if (!data.trend_data || data.trend_data.length === 0) {
+        console.error('No trend data available');
+        // Show "No data" message
+        if (loadingEl) {
+            loadingEl.style.display = 'flex';
+            loadingEl.innerHTML = '<i class="fas fa-chart-line" style="font-size: 24px; margin-bottom: 8px; color: rgba(255,255,255,0.3);"></i><div style="font-size: 13px;">No price data available</div>';
+        }
+        canvas.style.display = 'none';
+        return;
+    }
+
+    // Hide loading and show canvas
+    if (loadingEl) loadingEl.style.display = 'none';
+    canvas.style.display = 'block';
 
     const labels = data.trend_data.map(item => {
         const date = new Date(item.date);
@@ -416,73 +473,110 @@ function renderTrendChart(data) {
 
     const prices = data.trend_data.map(item => item.modal_price / 100); // per kg
 
+    console.log('Labels:', labels);
+    console.log('Prices:', prices);
+
     if (priceTrendChart) {
         priceTrendChart.destroy();
     }
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 180);
-    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
-    gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+    // Create smooth green gradient for area chart
+    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+    gradient.addColorStop(0, 'rgba(34, 197, 94, 0.35)');   // #22C55E with opacity
+    gradient.addColorStop(0.5, 'rgba(34, 197, 94, 0.15)');
+    gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
 
-    priceTrendChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: `${data.commodity} Price`,
-                data: prices,
-                backgroundColor: gradient,
-                borderColor: '#10b981',
-                borderWidth: 1,
-                borderRadius: 4,
-                hoverBackgroundColor: '#10b981',
-                hoverBorderColor: '#fff',
-                barPercentage: 0.6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
+    try {
+        priceTrendChart = new Chart(ctx, {
+            type: 'line',  // Changed from 'bar' to 'line' for area chart
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `${data.commodity} Price`,
+                    data: prices,
+                    fill: true,  // Enable area fill
+                    backgroundColor: gradient,
+                    borderColor: '#22C55E',  // Soft green line
+                    borderWidth: 2.5,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#22C55E',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#22C55E',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2.5,
+                    tension: 0.4  // Smooth curve
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
                     mode: 'index',
-                    intersect: false,
-                    backgroundColor: '#1e293b',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    borderColor: '#334155',
-                    borderWidth: 1,
-                    padding: 12,
-                    displayColors: false,
-                    callbacks: {
-                        label: function (context) {
-                            return `Price: ₹${context.raw.toFixed(2)}/kg`;
+                    intersect: false
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#22C55E',
+                        borderWidth: 1.5,
+                        padding: 12,
+                        displayColors: false,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            label: function (context) {
+                                return `Price: ₹${context.raw.toFixed(2)}/kg`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            font: { size: 11, family: "'Inter', sans-serif" },
+                            maxRotation: 0,
+                            padding: 8
+                        }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.06)',
+                            drawBorder: false,
+                            lineWidth: 1
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            font: { size: 11, family: "'Inter', sans-serif" },
+                            padding: 8,
+                            callback: function (value) { return '₹' + value.toFixed(0); }
                         }
                     }
                 }
-            },
-            scales: {
-                x: {
-                    grid: { display: false, drawBorder: false },
-                    ticks: {
-                        color: 'rgba(255, 255, 255, 0.5)',
-                        font: { size: 10 },
-                        maxRotation: 0
-                    }
-                },
-                y: {
-                    beginAtZero: false,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                    ticks: {
-                        color: 'rgba(255, 255, 255, 0.5)',
-                        font: { size: 10 },
-                        callback: function (value) { return '₹' + value; }
-                    }
-                }
             }
+        });
+
+        console.log('Chart created successfully:', priceTrendChart);
+    } catch (error) {
+        console.error('Error creating chart:', error);
+        // Show error message
+        if (loadingEl) {
+            loadingEl.style.display = 'block';
+            loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 8px; color: rgba(239, 68, 68, 0.5);"></i><div style="font-size: 13px;">Error loading chart</div>';
         }
-    });
+    }
 
     // Update summary info
     const nameEl = document.getElementById('trend-commodity-name');
@@ -503,28 +597,49 @@ function renderTrendChart(data) {
     const changeEl = document.getElementById('trend-change');
     const iconEl = document.getElementById('trend-direction-icon');
     const recEl = document.getElementById('trend-recommendation');
+    const badgeEl = document.getElementById('trend-recommendation-badge');
 
     if (dirEl) dirEl.textContent = data.analysis.direction;
     if (changeEl) {
         changeEl.textContent = (data.analysis.change_percent >= 0 ? '+' : '') + data.analysis.change_percent + '%';
     }
 
-    if (iconEl && recEl) {
+    if (iconEl && recEl && badgeEl) {
         if (data.analysis.direction === 'Rising') {
+            // WAIT - Yellow/Amber badge
             iconEl.className = 'fas fa-arrow-trend-up';
             iconEl.style.color = '#10b981';
             if (changeEl) changeEl.style.color = '#10b981';
-            recEl.innerHTML = '<span style="color: #ef4444; font-weight: 700;">Wait</span> - Price is increasing, consider selling after 3 days.';
+
+            badgeEl.style.background = 'rgba(234, 179, 8, 0.15)';
+            badgeEl.style.borderColor = '#EAB308';
+            badgeEl.querySelector('i').className = 'fas fa-clock';
+            badgeEl.querySelector('i').style.color = '#EAB308';
+            recEl.innerHTML = '<span style="color: #EAB308; font-weight: 700;">WAIT</span> - Price is increasing, consider selling after 3 days.';
+
         } else if (data.analysis.direction === 'Falling') {
+            // SELL NOW - Green badge
             iconEl.className = 'fas fa-arrow-trend-down';
             iconEl.style.color = '#ef4444';
             if (changeEl) changeEl.style.color = '#ef4444';
-            recEl.innerHTML = '<span style="color: #10b981; font-weight: 700;">Sell Now</span> - Price might drop further, sell today.';
+
+            badgeEl.style.background = 'rgba(34, 197, 94, 0.15)';
+            badgeEl.style.borderColor = '#22C55E';
+            badgeEl.querySelector('i').className = 'fas fa-circle-check';
+            badgeEl.querySelector('i').style.color = '#22C55E';
+            recEl.innerHTML = '<span style="color: #22C55E; font-weight: 700;">SELL NOW</span> - Price might drop further, sell today.';
+
         } else {
+            // HOLD/SELL - Orange badge
             iconEl.className = 'fas fa-arrows-left-right';
             iconEl.style.color = '#f97316';
             if (changeEl) changeEl.style.color = '#f97316';
-            recEl.innerHTML = '<span style="color: #f97316; font-weight: 700;">Hold/Sell</span> - Price is stable, you can sell if needed.';
+
+            badgeEl.style.background = 'rgba(249, 115, 22, 0.15)';
+            badgeEl.style.borderColor = '#F97316';
+            badgeEl.querySelector('i').className = 'fas fa-pause-circle';
+            badgeEl.querySelector('i').style.color = '#F97316';
+            recEl.innerHTML = '<span style="color: #F97316; font-weight: 700;">HOLD/SELL</span> - Price is stable, you can sell if needed.';
         }
     }
 }
@@ -565,44 +680,79 @@ function closeWeatherModal() {
     if (modal) modal.style.display = 'none';
 }
 
-function getWeatherIcon(code) {
-    if (code === 0) return '☀️';
-    if (code <= 3) return '⛅';
-    if (code <= 48) return '🌫️';
-    if (code <= 67) return '🌧️';
-    if (code <= 77) return '🌨️';
-    if (code <= 82) return '🌧️';
-    if (code <= 86) return '❄️';
-    if (code <= 99) return '⛈️';
+function getWeatherIcon(conditionText) {
+    const condition = conditionText.toLowerCase();
+    if (condition.includes('sunny') || condition.includes('clear')) return '☀️';
+    if (condition.includes('partly cloudy')) return '⛅';
+    if (condition.includes('cloudy') || condition.includes('overcast')) return '☁️';
+    if (condition.includes('mist') || condition.includes('fog')) return '🌫️';
+    if (condition.includes('rain') && !condition.includes('heavy')) return '🌦️';
+    if (condition.includes('heavy rain')) return '🌧️';
+    if (condition.includes('thunder') || condition.includes('storm')) return '⛈️';
+    if (condition.includes('snow')) return '❄️';
     return '🌤️';
 }
 
-function displayWeather(data, locationName) {
+function displayWeather(data) {
     const current = data.current;
-    const weatherIcon = getWeatherIcon(current.weather_code || 0);
+    const location = data.location;
+    const forecast = data.forecast.forecastday;
+
+    const weatherIcon = getWeatherIcon(current.condition.text);
+    const locationName = `${location.name}, ${location.region || location.country}`;
 
     const content = document.getElementById('weatherModalContent');
     if (content) {
         content.innerHTML = `
             <div style="text-align: center; padding: 20px;">
                 <div style="font-size: 64px;">${weatherIcon}</div>
-                <h2 style="margin: 12px 0 4px 0;">${Math.round(current.temperature_2m)}°C</h2>
-                <p style="color: var(--text-secondary); margin: 0;">${locationName || 'Current Location'}</p>
+                <h2 style="margin: 12px 0 4px 0;">${Math.round(current.temp_c)}°C</h2>
+                <p style="color: var(--text-secondary); margin: 0 0 4px 0; font-weight: 500;">${current.condition.text}</p>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 14px;">
+                    <i class="fas fa-map-marker-alt"></i> ${locationName}
+                </p>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px;">
                     <div style="padding: 16px; background: var(--body-bg); border-radius: 8px;">
                         <div style="font-size: 24px;">💧</div>
-                        <div style="font-weight: 700;">${current.relative_humidity_2m}%</div>
+                        <div style="font-weight: 700;">${current.humidity}%</div>
                         <div style="font-size: 12px; color: var(--text-secondary);">Humidity</div>
                     </div>
                     <div style="padding: 16px; background: var(--body-bg); border-radius: 8px;">
                         <div style="font-size: 24px;">💨</div>
-                        <div style="font-weight: 700;">${Math.round(current.wind_speed_10m)} km/h</div>
+                        <div style="font-weight: 700;">${Math.round(current.wind_kph)} km/h</div>
                         <div style="font-size: 12px; color: var(--text-secondary);">Wind</div>
                     </div>
                     <div style="padding: 16px; background: var(--body-bg); border-radius: 8px;">
                         <div style="font-size: 24px;">👁️</div>
-                        <div style="font-weight: 700;">${(current.visibility / 1000).toFixed(1)} km</div>
+                        <div style="font-weight: 700;">${current.vis_km} km</div>
                         <div style="font-size: 12px; color: var(--text-secondary);">Visibility</div>
+                    </div>
+                </div>
+                
+                <!-- 7-Day Forecast -->
+                <div style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                    <h3 style="margin: 0 0 16px 0; font-size: 16px; text-align: left; color: var(--text-primary);">
+                        <i class="fas fa-calendar-alt"></i> 7-Day Forecast
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        ${forecast.map((day, index) => {
+            const dayName = index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' });
+            const dayIcon = getWeatherIcon(day.day.condition.text);
+            return `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--body-bg); border-radius: 8px;">
+                                    <div style="flex: 1; text-align: left; font-weight: 600;">${dayName}</div>
+                                    <div style="flex: 1; text-align: center; font-size: 24px;">${dayIcon}</div>
+                                    <div style="flex: 2; text-align: center; font-size: 13px; color: var(--text-secondary);">${day.day.condition.text}</div>
+                                    <div style="flex: 1; text-align: right;">
+                                        <span style="font-weight: 700;">${Math.round(day.day.maxtemp_c)}°</span>
+                                        <span style="color: var(--text-secondary); margin-left: 4px;">${Math.round(day.day.mintemp_c)}°</span>
+                                    </div>
+                                    <div style="flex: 1; text-align: right; font-size: 12px; color: #3b82f6;">
+                                        <i class="fas fa-tint"></i> ${day.day.daily_chance_of_rain}%
+                                    </div>
+                                </div>
+                            `;
+        }).join('')}
                     </div>
                 </div>
             </div>
@@ -628,30 +778,23 @@ function searchWeatherByCity() {
         `;
     }
 
-    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`)
+    // Use weatherapi.com (same API as backend)
+    const apiKey = 'f4f904e64c374434a87104606252811';
+    fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${encodeURIComponent(city)}&days=7&aqi=no`)
         .then(response => response.json())
-        .then(geoData => {
-            if (!geoData.results || geoData.results.length === 0) {
+        .then(data => {
+            if (data.error) {
                 if (content) {
                     content.innerHTML = `
                         <div style="text-align: center; padding: 30px; color: #dc2626;">
                             <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
-                            <p>City not found. Please try another city name.</p>
+                            <p>${data.error.message || 'City not found. Please try another city name.'}</p>
                         </div>
                     `;
                 }
                 return;
             }
-
-            const location = geoData.results[0];
-            const locationName = `${location.name}${location.admin1 ? ', ' + location.admin1 : ''}${location.country ? ', ' + location.country : ''}`;
-
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,visibility,weather_code&timezone=auto`)
-                .then(response => response.json())
-                .then(data => { displayWeather(data, locationName); })
-                .catch(err => {
-                    if (content) content.innerHTML = `<div style="text-align: center; padding: 30px; color: #dc2626;"><p>Error fetching weather data.</p></div>`;
-                });
+            displayWeather(data);
         })
         .catch(err => {
             if (content) content.innerHTML = `<div style="text-align: center; padding: 30px; color: #dc2626;"><p>Error searching for city.</p></div>`;
@@ -674,10 +817,18 @@ function fetchWeatherByLocation() {
             position => {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
-                fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,visibility,weather_code&timezone=auto`)
+                // Use weatherapi.com with lat,lon
+                const apiKey = 'f4f904e64c374434a87104606252811';
+                fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${lat},${lon}&days=7&aqi=no`)
                     .then(res => res.json())
-                    .then(data => { displayWeather(data, 'Your Location'); })
-                    .catch(() => { if (content) content.innerHTML = '<p>Error.</p>'; });
+                    .then(data => {
+                        if (data.error) {
+                            if (content) content.innerHTML = `<div style="text-align: center; padding: 30px; color: #dc2626;"><p>Error: ${data.error.message}</p></div>`;
+                        } else {
+                            displayWeather(data);
+                        }
+                    })
+                    .catch(() => { if (content) content.innerHTML = '<p>Error fetching weather.</p>'; });
             },
             () => {
                 if (content) {
@@ -1538,8 +1689,36 @@ function refreshWeather() {
             set('weather-wind', c.wind_speed + ' km/h');
             set('weather-desc', c.condition);
             set('weather-location', c.location);
+            set('weather-visibility', c.visibility + ' km');
             const icon = document.querySelector('.weather-icon-large');
             if (icon) icon.textContent = c.icon;
+
+            // Update forecast section if available
+            if (data.forecast) {
+                const forecastSection = document.getElementById('weather-forecast-section');
+                if (forecastSection) {
+                    const forecastHTML = data.forecast.slice(0, 7).map(day => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 12px;">
+                            <div style="flex: 1; font-weight: 600; color: rgba(255,255,255,0.9);">${day.day}</div>
+                            <div style="flex: 0 0 30px; text-align: center; font-size: 18px;">${day.icon}</div>
+                            <div style="flex: 2; text-align: center; font-size: 11px; color: rgba(255,255,255,0.7);">${day.condition.length > 15 ? day.condition.substring(0, 15) + '...' : day.condition}</div>
+                            <div style="flex: 1; text-align: right;">
+                                <span style="font-weight: 700; color: #fbbf24;">${day.high}°</span>
+                                <span style="color: rgba(255,255,255,0.5); margin-left: 4px; font-size: 11px;">${day.low}°</span>
+                            </div>
+                            <div style="flex: 0 0 45px; text-align: right; font-size: 11px; color: #60a5fa;">
+                                <i class="fas fa-tint"></i> ${day.rain_chance}%
+                            </div>
+                        </div>
+                    `).join('');
+
+                    const forecastContainer = forecastSection.querySelector('div[style*="flex-direction: column"]');
+                    if (forecastContainer) {
+                        forecastContainer.innerHTML = forecastHTML;
+                    }
+                }
+            }
+
             if (card) card.style.opacity = '1';
         })
         .catch(() => { });

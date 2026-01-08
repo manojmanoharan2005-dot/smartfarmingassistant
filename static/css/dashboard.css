@@ -1,33 +1,69 @@
 /* ============================================
-   SMART FARMING DASHBOARD - PLEASANT THEME
+   SMART FARMING DASHBOARD - MODERN CLEAN UI
    ============================================ */
 
-/* CSS Variables - Pleasant Color Palette */
+/* CSS Variables - Modern Light Palette */
 :root {
-    --sidebar-bg: #1e3a5f;
-    --sidebar-active: #2d5a8a;
-    --header-gradient-start: #667eea;
-    --header-gradient-end: #764ba2;
-    --card-bg: #ffffff;
-    --card-dark: #1e293b;
-    --body-bg: #f1f5f9;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-light: #ffffff;
-    --accent-green: #10b981;
-    --accent-green-light: #d1fae5;
-    --accent-blue: #3b82f6;
-    --accent-purple: #8b5cf6;
-    --accent-orange: #f97316;
-    --accent-red: #ef4444;
-    --accent-yellow: #eab308;
-    --border-color: #e2e8f0;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* Primary Colors - Modern Clean Theme */
+    --bg-primary: #F8FAFC;
+    --bg-secondary: #F1F5F9;
+    --bg-white: #FFFFFF;
+    
+    /* Brand Colors */
+    --color-primary: #22C55E;
+    --color-primary-light: #86EFAC;
+    --color-primary-dark: #16A34A;
+    --color-navy: #1E293B;
+    --color-navy-light: #334155;
+    
+    /* Sidebar */
+    --sidebar-bg: #FFFFFF;
+    --sidebar-active: #F0FDF4;
+    --sidebar-hover: #F8FAFC;
+    
+    /* Text Colors */
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --text-white: #FFFFFF;
+    
+    /* Accent Colors */
+    --accent-green: #22C55E;
+    --accent-blue: #3B82F6;
+    --accent-purple: #8B5CF6;
+    --accent-orange: #F97316;
+    --accent-red: #EF4444;
+    --accent-yellow: #F59E0B;
+    
+    /* Pastel Backgrounds for Cards */
+    --pastel-green: #F0FDF4;
+    --pastel-blue: #EFF6FF;
+    --pastel-purple: #F5F3FF;
+    --pastel-orange: #FFF7ED;
+    --pastel-red: #FEF2F2;
+    --pastel-yellow: #FEFCE8;
+    
+    /* Shadows - Soft UI */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    
+    /* Border Radius */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
 }
 
 /* Reset and Base */
@@ -38,10 +74,12 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--body-bg);
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Base state for mobile elements (Hidden on Desktop) */
@@ -51,68 +89,126 @@ body {
 }
 
 /* ============================================
-   SIDEBAR STYLES
+   SIDEBAR STYLES - Modern Clean
    ============================================ */
 .sidebar {
     position: fixed;
     left: 0;
     top: 0;
-    width: 260px;
+    width: 280px;
     height: 100vh;
-    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f2744 100%);
+    background: var(--sidebar-bg);
     padding: 0;
     z-index: 1000;
     overflow-y: auto;
-    box-shadow: var(--shadow-lg);
+    border-right: 1px solid #E2E8F0;
 }
 
 .sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: var(--space-xl) var(--space-lg);
+    border-bottom: 1px solid #F1F5F9;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
+.sidebar-header h3 {
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-header h3 i {
+    color: var(--color-primary);
+    font-size: 22px;
+}
+
 .sidebar-logo {
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(135deg, var(--accent-green), #059669);
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
 }
 
 .sidebar-title {
-    color: var(--text-light);
+    color: var(--text-primary);
     font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .sidebar-subtitle {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     font-size: 12px;
     margin-top: 2px;
+    font-weight: 500;
 }
 
 .sidebar-nav {
-    padding: 20px 12px;
+    padding: var(--space-lg) 12px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 6px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sidebar-link:hover {
+    background: var(--sidebar-hover);
+    color: var(--text-primary);
+    transform: translateX(2px);
+}
+
+.sidebar-link.active {
+    background: var(--sidebar-active);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.sidebar-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
 }
 
 .nav-section {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-xl);
 }
 
 .nav-section-title {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-muted);
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.8px;
     padding: 0 12px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 600;
 }
 
@@ -121,39 +217,39 @@ body {
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     text-decoration: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     margin-bottom: 4px;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
     font-weight: 500;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-    transform: translateX(4px);
+    background: var(--sidebar-hover);
+    color: var(--text-primary);
+    transform: translateX(2px);
 }
 
 .nav-link.active {
-    background: linear-gradient(90deg, var(--accent-green), #059669);
-    color: var(--text-light);
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    background: var(--sidebar-active);
+    color: var(--color-primary);
+    font-weight: 600;
 }
 
 .nav-link i {
     width: 20px;
     text-align: center;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .nav-link .badge {
     margin-left: auto;
-    background: var(--accent-green);
+    background: var(--color-primary);
     color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
 }
@@ -164,9 +260,9 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.2);
+    padding: var(--space-lg);
+    border-top: 1px solid #F1F5F9;
+    background: #FAFAFA;
 }
 
 .user-info {
@@ -176,9 +272,9 @@ body {
 }
 
 .user-avatar {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -186,16 +282,17 @@ body {
     color: white;
     font-weight: 600;
     font-size: 16px;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
 }
 
 .user-details h4 {
-    color: var(--text-light);
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
 }
 
 .user-details span {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-secondary);
     font-size: 12px;
 }
 
@@ -203,41 +300,42 @@ body {
    MAIN CONTENT AREA
    ============================================ */
 .main-content {
-    margin-left: 260px;
+    margin-left: 280px;
     min-height: 100vh;
-    background: var(--body-bg);
+    background: var(--bg-primary);
 }
 
 /* ============================================
-   HERO HEADER
+   HERO HEADER - Clean Modern
    ============================================ */
 .hero-header {
-    background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
-    padding: 40px 40px 30px;
-    color: var(--text-light);
+    background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+    padding: var(--space-2xl) var(--space-2xl) var(--space-lg);
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .hero-header::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 400px;
-    height: 400px;
-    background: rgba(255, 255, 255, 0.1);
+    top: -20%;
+    right: -5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
     border-radius: 50%;
 }
 
 .hero-header::after {
     content: '';
     position: absolute;
-    bottom: -30%;
-    left: 20%;
-    width: 250px;
-    height: 250px;
-    background: rgba(255, 255, 255, 0.05);
+    bottom: -15%;
+    left: 10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
     border-radius: 50%;
 }
 
@@ -248,30 +346,32 @@ body {
 
 .welcome-text {
     font-size: 14px;
-    opacity: 0.9;
+    color: var(--text-secondary);
     margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 500;
 }
 
 .hero-title {
     font-size: 32px;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 8px;
-    color: var(--text-light);
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
 }
 
 .hero-subtitle {
     font-size: 16px;
-    opacity: 0.85;
+    color: var(--text-secondary);
     max-width: 600px;
-    color: var(--text-light);
+    line-height: 1.6;
 }
 
 .hero-date {
     position: absolute;
-    right: 40px;
+    right: var(--space-2xl);
     top: 50%;
     transform: translateY(-50%);
     text-align: right;
@@ -280,40 +380,52 @@ body {
 
 .hero-date .day {
     font-size: 48px;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1;
+    color: var(--text-primary);
 }
 
 .hero-date .month-year {
     font-size: 16px;
-    opacity: 0.9;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 /* ============================================
-   STATS BAR
+   STATS BAR - Modern Pill Cards
    ============================================ */
 .stats-bar {
-    background: var(--card-dark);
-    padding: 20px 40px;
+    background: var(--bg-white);
+    padding: var(--space-lg) var(--space-2xl);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: var(--space-md);
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .stat-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    color: var(--text-light);
+    gap: 14px;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
 }
 
 .stat-icon {
-    width: 44px;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -321,82 +433,90 @@ body {
 }
 
 .stat-icon.green {
-    color: var(--accent-green);
-    background: rgba(16, 185, 129, 0.2);
+    color: var(--color-primary);
+    background: var(--pastel-green);
 }
 
 .stat-icon.blue {
     color: var(--accent-blue);
-    background: rgba(59, 130, 246, 0.2);
+    background: var(--pastel-blue);
 }
 
 .stat-icon.purple {
     color: var(--accent-purple);
-    background: rgba(139, 92, 246, 0.2);
+    background: var(--pastel-purple);
 }
 
 .stat-icon.orange {
     color: var(--accent-orange);
-    background: rgba(249, 115, 22, 0.2);
+    background: var(--pastel-orange);
 }
 
 .stat-icon.yellow {
     color: var(--accent-yellow);
-    background: rgba(234, 179, 8, 0.2);
+    background: var(--pastel-yellow);
 }
 
 .stat-info h4 {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
 }
 
 .stat-info span {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 /* ============================================
    DASHBOARD GRID
    ============================================ */
 .dashboard-content {
-    padding: 30px 40px;
+    padding: var(--space-xl) var(--space-2xl);
 }
 
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr;
-    gap: 24px;
+    gap: var(--space-lg);
     align-items: start;
 }
 
 /* ============================================
-   CARD STYLES
+   CARD STYLES - Soft UI / Glassmorphism
    ============================================ */
 .card {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
+    border-color: rgba(34, 197, 94, 0.2);
 }
 
 .card-dark {
-    background: var(--card-dark);
-    color: var(--text-light);
+    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+    color: var(--text-white);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .card-blue {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
     color: #ffffff !important;
+    border: none;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
 }
 
 .card-blue .card-header {
-    border-bottom-color: rgba(255, 255, 255, 0.2);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
 }
 
 .card-blue .card-title,
@@ -408,11 +528,11 @@ body {
 }
 
 .card-blue .weather-detail-label {
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .card-blue .weather-details {
-    border-top-color: rgba(255, 255, 255, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.15);
 }
 
 .card-blue .weather-detail-icon {
@@ -421,23 +541,25 @@ body {
 }
 
 .card-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-color);
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid #F1F5F9;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .card-dark .card-header {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .card-title {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
 }
 
 .card-title i {
@@ -504,9 +626,10 @@ body {
 }
 
 .commodity-location {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-top: 2px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 3px;
+    font-weight: 500;
 }
 
 .commodity-price {

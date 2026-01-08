@@ -25,9 +25,9 @@ class FertilizerPredictor:
             self.label_encoders = joblib.load(f'{self.model_dir}/label_encoders.pkl')
             self.target_encoder = joblib.load(f'{self.model_dir}/target_encoder.pkl')
             self.scaler = joblib.load(f'{self.model_dir}/scaler.pkl')
-            print("✓ Fertilizer model loaded successfully!")
+            print("[SUCCESS] Fertilizer model loaded successfully!")
         except Exception as e:
-            print(f"✗ Error loading model: {str(e)}")
+            print(f"[ERROR] Error loading model: {str(e)}")
             raise
     
     def predict(self, temperature, moisture, rainfall, ph, nitrogen, 

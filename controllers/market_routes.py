@@ -124,7 +124,7 @@ def fetch_mandi_prices(state=None, limit=None):
         scheduled_data, last_updated = load_daily_market_data()
         
         if scheduled_data:
-            print(f"📊 Using scheduled market data from: {last_updated}")
+            print(f"[INFO] Using scheduled market data from: {last_updated}")
             formatted_data = format_scheduled_data_for_display(scheduled_data)
             
             # Filter by state if requested
@@ -135,7 +135,7 @@ def fetch_mandi_prices(state=None, limit=None):
             return formatted_data
         
         # Fallback to API if no scheduled data
-        print("⚠️ No scheduled data found, falling back to API")
+        print("[WARNING] No scheduled data found, falling back to API")
         return fetch_mandi_prices_from_api(state, limit)
         
     except Exception as e:

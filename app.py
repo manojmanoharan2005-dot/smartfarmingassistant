@@ -34,9 +34,9 @@ except Exception as e:
 # Initialize market price scheduler for daily auto-updates
 try:
     scheduler = init_scheduler(app)
-    print("✅ Market price scheduler initialized!")
+    print("[SUCCESS] Market price scheduler initialized!")
 except Exception as e:
-    print(f"⚠️ Scheduler initialization warning: {e}")
+    print(f"[WARNING] Scheduler initialization warning: {e}")
 
 # Register blueprints
 app.register_blueprint(auth_bp)

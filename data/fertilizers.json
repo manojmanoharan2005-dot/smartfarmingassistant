@@ -117,5 +117,23 @@
       "user_id": "31c3408e-ec7f-48b5-882a-2d8b938ddbe8",
       "saved_at": "2025-12-30T06:22:53.597207"
     }
+  ],
+  "b03fa90f-5a67-4349-af63-5c543eb64792": [
+    {
+      "name": "Urea",
+      "crop_type": "apple",
+      "priority": null,
+      "dosage": "20-30 kg/acre",
+      "usage": "General purpose application",
+      "note": "",
+      "confidence": "0",
+      "soil_type": "Loamy Soil",
+      "nitrogen": "100.0",
+      "phosphorus": "20.0",
+      "potassium": "50.0",
+      "_id": "0ed08a9d-b492-4fe4-8e83-5e3110eb29a9",
+      "user_id": "b03fa90f-5a67-4349-af63-5c543eb64792",
+      "saved_at": "2026-01-07T07:25:42.500639"
+    }
   ]
 }

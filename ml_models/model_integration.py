@@ -21,21 +21,21 @@ class CropPredictor:
                 self.model = joblib.load(model_path)
                 self.scaler = joblib.load(scaler_path)
                 self.use_sklearn = True
-                print("✅ Sklearn model loaded successfully!")
+                print("[SUCCESS] Sklearn model loaded successfully!")
                 return True
         except ImportError:
-            print("⚠️ Sklearn not available, using simple model")
+            print("[INFO] Sklearn not available, using simple model")
         except Exception as e:
-            print(f"⚠️ Error loading sklearn model: {e}")
+            print(f"[WARNING] Error loading sklearn model: {e}")
         
         # Fallback to simple rule-based model
         try:
             from ml_models.crop_model_simple import simple_crop_predictor
             self.simple_model = simple_crop_predictor
-            print("✅ Simple rule-based model loaded successfully!")
+            print("[SUCCESS] Simple rule-based model loaded successfully!")
             return True
         except Exception as e:
-            print(f"❌ Error loading simple model: {e}")
+            print(f"[ERROR] Error loading simple model: {e}")
             return False
     
     def predict_crop_recommendation(self, nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):

@@ -19,12 +19,12 @@ class CropRecommendationModel:
         """Load and prepare the dataset"""
         try:
             self.data = pd.read_csv(file_path)
-            print("✅ Dataset loaded successfully!")
+            print("[SUCCESS] Dataset loaded successfully!")
             print(f"📊 Dataset shape: {self.data.shape}")
             print(f"📋 Columns: {list(self.data.columns)}")
             return True
         except Exception as e:
-            print(f"❌ Error loading dataset: {e}")
+            print(f"[ERROR] Error loading dataset: {e}")
             return False
     
     def explore_data(self):
@@ -97,7 +97,7 @@ class CropRecommendationModel:
         
         print("⏳ Training Random Forest Classifier...")
         self.model.fit(X_train, y_train)
-        print("✅ Model training completed!")
+        print("[SUCCESS] Model training completed!")
         
         # Feature importance
         feature_importance = pd.DataFrame({
@@ -334,7 +334,7 @@ def main():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dataset_path = os.path.join(base_dir, "datasets", "Crop_recommendation.csv")
     if not crop_model.load_data(dataset_path):
-        print("❌ Failed to load dataset. Please check the file path.")
+        print("[ERROR] Failed to load dataset. Please check the file path.")
         return
     
     # Explore data

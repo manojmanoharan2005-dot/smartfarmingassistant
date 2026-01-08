@@ -70,14 +70,14 @@ def crop_suggestion():
             if prediction_result and prediction_result.get('top_recommendations'):
                 # Use real ML predictions
                 crop_recommendations = prediction_result['top_recommendations']
-                print(f"✅ Got {len(crop_recommendations)} crop recommendations")
+                print(f"[SUCCESS] Got {len(crop_recommendations)} crop recommendations")
                 
                 # Add success message with count
                 flash(f'🌾 Success! Generated {len(crop_recommendations)} crop recommendations based on your soil analysis!', 'success')
                 
             else:
                 # Fallback to enhanced mock data based on input conditions
-                print("⚠️ Using fallback recommendations")
+                print("[WARNING] Using fallback recommendations")
                 crop_recommendations = generate_fallback_recommendations(
                     nitrogen, phosphorous, potassium, temperature, humidity, ph, rainfall
                 )

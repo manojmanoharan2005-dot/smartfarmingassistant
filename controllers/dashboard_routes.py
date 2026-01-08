@@ -130,7 +130,13 @@ def get_weather_notifications(user_district, user_state):
     
     # Use real WeatherAPI
     api_key = 'f4f904e64c374434a87104606252811'
-    location = f"{user_district}, {user_state}, India"
+    
+    # Handle special cases like Nilgiris/Ooty
+    search_location = user_district
+    if user_district == 'Nilgiris':
+        search_location = 'Ooty'
+        
+    location = f"{search_location}, {user_state}, India"
     
     try:
         # Fetch current weather and forecast
@@ -311,7 +317,7 @@ def get_weather_notifications(user_district, user_state):
             'humidity': humidity,
             'wind_speed': wind_speed,
             'visibility': visibility,
-            'location': f"{user_district}, {user_state}"
+            'location': f"{search_location}, {user_state}" if search_location == user_district else f"{search_location} ({user_district}), {user_state}"
         },
         'forecast': forecast,
         'alerts': alerts

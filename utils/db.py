@@ -41,13 +41,13 @@ def init_db(app):
                 else:
                     json.dump({}, f)
     
-    print("✅ File-based database initialized successfully!")
-    print("📁 Data will be stored in the 'data' directory")
+    print("[SUCCESS] File-based database initialized successfully!")
+    print("[INFO] Data will be stored in the 'data' directory")
     
     # Try MongoDB Atlas connection as backup (only if URI is configured)
     if MONGODB_URI:
         try:
-            print("🔄 Attempting MongoDB Atlas connection...")
+            print("[INFO] Attempting MongoDB Atlas connection...")
             client = MongoClient(MONGODB_URI, 
                                serverSelectionTimeoutMS=30000,
                                connectTimeoutMS=30000,
@@ -58,27 +58,27 @@ def init_db(app):
             db = client.myVirtualDatabase
             # Test the connection
             client.admin.command('ping')
-            print("✅ Successfully connected to MongoDB Atlas!")
-            print(f"📊 Using database: myVirtualDatabase")
+            print("[SUCCESS] Successfully connected to MongoDB Atlas!")
+            print(f"[INFO] Using database: myVirtualDatabase")
             
             # Create indexes for better performance (if supported)
             try:
                 db.users.create_index("email", unique=True)
-                print("📊 Database indexes created successfully")
+                print("[INFO] Database indexes created successfully")
             except Exception as e:
-                print(f"⚠️ Index creation note: {e}")
+                print(f"[WARNING] Index creation note: {e}")
                 print("   (This is normal for Atlas SQL interface)")
                 
         except Exception as e:
-            print(f"❌ MongoDB connection failed: {e}")
-            print("⚠️  Common issues:")
+            print(f"[ERROR] MongoDB connection failed: {e}")
+            print("[WARNING] Common issues:")
             print("   1. Check if your IP address is whitelisted in MongoDB Atlas")
             print("   2. Verify network connectivity and firewall settings")
             print("   3. Ensure Atlas SQL interface is enabled")
-            print("🔧 Using file-based database for development")
+            print("[INFO] Using file-based database for development")
             db = MockDatabase()
     else:
-        print("🔧 MongoDB disabled - using file-based database")
+        print("[INFO] MongoDB disabled - using file-based database")
         db = MockDatabase()
 
 class MockDatabase:
@@ -88,7 +88,7 @@ class MockDatabase:
         self.crops_data = []
         self.fertilizers_data = []
         self.diseases_data = []
-        print("📝 Mock database initialized with enhanced features")
+        print("[INFO] Mock database initialized with enhanced features")
     
     @property
     def users(self):
@@ -207,13 +207,13 @@ def update_user_password(email, new_password):
                 # Save back to file
                 with open(USERS_FILE, 'w') as f:
                     json.dump(users_db, f, indent=2, default=str)
-                print(f"🔐 Password updated for user: {email}")
+                print(f"[SUCCESS] Password updated for user: {email}")
                 return True
         
-        print(f"⚠️ User not found: {email}")
+        print(f"[WARNING] User not found: {email}")
         return False
     except Exception as e:
-        print(f"❌ Error updating password: {e}")
+        print(f"[ERROR] Error updating password: {e}")
         return False
 
 def find_user_by_id(user_id):
@@ -348,10 +348,10 @@ def delete_fertilizer_recommendation(fertilizer_id, user_id):
             with open(FERTILIZERS_FILE, 'w') as f:
                 json.dump(fertilizer_db, f, indent=2)
             
-            print(f"🗑️ Successfully deleted fertilizer {fertilizer_id} for user {user_id}")
+            print(f"[SUCCESS] Successfully deleted fertilizer {fertilizer_id} for user {user_id}")
             return True
         else:
-            print(f"⚠️ Fertilizer {fertilizer_id} not found for user {user_id}")
+            print(f"[WARNING] Fertilizer {fertilizer_id} not found for user {user_id}")
             return False
             
     except Exception as e:
@@ -482,8 +482,8 @@ def update_growing_activity(activity_id, user_id, update_data):
             with open(GROWING_FILE, 'w') as f:
                 json.dump(growing_data, f, indent=2)
             
-            print(f"✅ Successfully updated activity {activity_id} for user {user_id}")
-            print(f"💾 DB: File saved to {GROWING_FILE}")
+            print(f"[SUCCESS] Successfully updated activity {activity_id} for user {user_id}")
+            print(f"[INFO] DB: File saved to {GROWING_FILE}")
             return True
         else:
             print(f"⚠️ Activity {activity_id} not found for user {user_id}")
@@ -517,7 +517,7 @@ def delete_growing_activity(activity_id, user_id):
             with open(GROWING_FILE, 'w') as f:
                 json.dump(growing_data, f, indent=2)
             
-            print(f"🗑️ Successfully deleted activity {activity_id} for user {user_id}")
+            print(f"[SUCCESS] Successfully deleted activity {activity_id} for user {user_id}")
             return True
         else:
             print(f"⚠️ Activity {activity_id} not found for user {user_id}")

@@ -4,7 +4,6 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/market_watch.css') }}">
 
 {% endblock %}
@@ -39,6 +38,12 @@
                     <i class="fas fa-flask"></i>
                     <span>Fertilizer Advice</span>
                 </a>
+                <!-- Disease Detection - Coming Soon -->
+                <a href="#" class="nav-link" style="opacity: 0.5; cursor: not-allowed;" onclick="return false;">
+                    <i class="fas fa-microscope"></i>
+                    <span>Disease Detection</span>
+                    <span class="badge" style="background: #6b7280;">Soon</span>
+                </a>
                 <a href="{{ url_for('market.market_watch') }}" class="nav-link active">
                     <i class="fas fa-chart-line"></i>
                     <span>Market Prices</span>
@@ -69,7 +74,7 @@
         </button>
 
         <!-- Hero Header -->
-        <div class="hero-header" style="background: linear-gradient(135deg, var(--accent-blue), #2563eb);">
+        <div class="hero-header" style="background: white;">
             <div class="hero-content">
                 <div class="welcome-text">
                     <i class="fas fa-chart-line"></i> Real-Time Updates
@@ -337,7 +342,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -381,7 +387,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -425,7 +432,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -474,7 +482,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -518,7 +527,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -567,7 +577,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -612,7 +623,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -661,7 +673,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -705,7 +718,8 @@
                                         style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
                                         <span>Quintal Price:</span><span
                                             style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span></div>
+                                            }}</span>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
