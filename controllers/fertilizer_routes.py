@@ -215,6 +215,46 @@ def fertilizer_recommend():
         soil = request.form.get('soil', 'Loamy Soil')
         crop = request.form.get('crop_type', request.form.get('crop', 'rice'))
 
+        # Normalize crop name to match dataset capitalization
+        crop_mapping = {
+            'adzuki beans': 'Adzuki Beans',
+            'apple': 'apple',
+            'banana': 'banana',
+            'black gram': 'Black gram',
+            'blackgram': 'Black gram',
+            'chickpea': 'Chickpea',
+            'coconut': 'Coconut',
+            'coffee': 'Coffee',
+            'cotton': 'Cotton',
+            'grapes': 'grapes',
+            'ground nut': 'Ground Nut',
+            'groundnut': 'Ground Nut',
+            'jute': 'Jute',
+            'kidney beans': 'Kidney Beans',
+            'lentil': 'Lentil',
+            'maize': 'maize',
+            'mango': 'mango',
+            'millet': 'millet',
+            'moth beans': 'Moth Beans',
+            'mung bean': 'Mung Bean',
+            'mungbean': 'Mung Bean',
+            'muskmelon': 'muskmelon',
+            'orange': 'orange',
+            'papaya': 'papaya',
+            'peas': 'Peas',
+            'pigeon peas': 'Pigeon Peas',
+            'pigeonpeas': 'Pigeon Peas',
+            'pomegranate': 'pomegranate',
+            'rice': 'rice',
+            'rubber': 'Rubber',
+            'sugarcane': 'Sugarcane',
+            'tea': 'Tea',
+            'tobacco': 'Tobacco',
+            'watermelon': 'watermelon',
+            'wheat': 'wheat'
+        }
+        crop = crop_mapping.get(crop.lower(), crop)
+
         recommendations = []
         is_ml_prediction = False
 

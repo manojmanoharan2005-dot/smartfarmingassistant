@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Prices Report - {{ date }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            padding: 40px 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .info-bar {
+            background: #f1f5f9;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-item strong {
+            color: #475569;
+        }
+        .content {
+            padding: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        thead {
+            background: #f8fafc;
+        }
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        .price {
+            font-weight: 700;
+            color: #059669;
+            font-size: 16px;
+        }
+        .commodity-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .location {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 2px solid #e2e8f0;
+        }
+        .icon {
+            display: inline-block;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Market Prices Report</h1>
+            <p>Today's Commodity Prices</p>
+        </div>
+        
+        <div class="info-bar">
+            <div class="info-item">
+                <strong>👤 Farmer:</strong> {{ user.name }}
+            </div>
+            <div class="info-item">
+                <strong>📅 Date:</strong> {{ date }}
+            </div>
+            <div class="info-item">
+                <strong>📍 Location:</strong> {{ user.district or 'All Districts' }}
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 style="margin-bottom: 20px; color: #1e293b;">Commodity Prices</h2>
+            
+            {% if prices %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Commodity</th>
+                        <th>Variety</th>
+                        <th>Market Location</th>
+                        <th>Price (₹/Quintal)</th>
+                        <th>Arrival</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for price in prices %}
+                    <tr>
+                        <td class="commodity-name">{{ price.commodity }}</td>
+                        <td>{{ price.variety }}</td>
+                        <td class="location">{{ price.market }}<br><small>{{ price.district }}, {{ price.state }}</small></td>
+                        <td class="price">₹{{ price.modal_price }}</td>
+                        <td>{{ price.arrival }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align: center; padding: 40px; color: #64748b;">No market data available.</p>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>🌾 Smart Farming Assistant | Generated on {{ date }} | For reference only</p>
+        </div>
+    </div>
+</body>
+</html>

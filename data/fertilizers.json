@@ -135,5 +135,39 @@
       "user_id": "b03fa90f-5a67-4349-af63-5c543eb64792",
       "saved_at": "2026-01-07T07:25:42.500639"
     }
+  ],
+  "3d61c07e-d859-491b-b30c-3447e7d0d3db": [
+    {
+      "name": "Organic Fertilizer",
+      "crop_type": "watermelon",
+      "priority": null,
+      "dosage": "1-2 ton/acre",
+      "usage": "General purpose application",
+      "note": "",
+      "confidence": "0",
+      "soil_type": "Loamy Soil",
+      "nitrogen": "10.0",
+      "phosphorus": "10.0",
+      "potassium": "10.0",
+      "_id": "0c360156-a86f-41a3-9de5-293e80f7b488",
+      "user_id": "3d61c07e-d859-491b-b30c-3447e7d0d3db",
+      "saved_at": "2026-01-08T07:37:52.775486"
+    },
+    {
+      "name": "Water Retaining Fertilizer",
+      "crop_type": "watermelon",
+      "priority": null,
+      "dosage": "10-20 kg/acre",
+      "usage": "General purpose application",
+      "note": "",
+      "confidence": "0",
+      "soil_type": "Loamy Soil",
+      "nitrogen": "10.0",
+      "phosphorus": "10.0",
+      "potassium": "10.0",
+      "_id": "fa07b4f9-3f2e-4d9b-969c-11934be65e31",
+      "user_id": "3d61c07e-d859-491b-b30c-3447e7d0d3db",
+      "saved_at": "2026-01-08T07:38:24.501501"
+    }
   ]
 }

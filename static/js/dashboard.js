@@ -290,6 +290,144 @@ function deleteCropActivity(activityId) {
     }
 }
 
+function viewFertilizerDetails(id, name, crop, n, p, k, soilType, savedDate) {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('fertilizerDetailModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'fertilizerDetailModal';
+        modal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; overflow-y: auto; padding: 20px;';
+        document.body.appendChild(modal);
+    }
+    
+    // Use current date if no saved date provided
+    const displayDate = savedDate || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    const displaySoilType = soilType || 'Neutral Soil';
+    
+    modal.innerHTML = `
+        <div style="background: white; border-radius: 20px; max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); padding: 28px 24px; color: white; position: relative; border-radius: 20px 20px 0 0;">
+                <button onclick="closeFertilizerDetailModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">×</button>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <div style="font-size: 36px;">🧪</div>
+                    <div>
+                        <h2 style="margin: 0; font-size: 24px; font-weight: 700;">${name || 'Fertilizer'}</h2>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 14px; opacity: 0.9;">
+                            <span>🌱</span>
+                            <span style="font-weight: 500;">For: ${crop || 'General Use'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 24px;">
+                <!-- Fertilizer Details -->
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <span style="color: #8b5cf6; font-size: 18px;">ℹ️</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Fertilizer Details</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 600;">SOIL TYPE</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #1e293b;">${displaySoilType}</div>
+                        </div>
+                        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 600;">SAVED ON</div>
+                            <div style="font-size: 16px; font-weight: 700; color: #1e293b;">${displayDate}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Soil NPK Values -->
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <span style="color: #10b981; font-size: 18px;">📊</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Soil NPK Values</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div style="background: #dcfce7; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 11px; color: #166534; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px;">NITROGEN (N)</div>
+                            <div style="font-size: 32px; font-weight: 700; color: #166534;">${n || '0'}</div>
+                        </div>
+                        <div style="background: #fef3c7; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 11px; color: #92400e; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px;">PHOSPHORUS (P)</div>
+                            <div style="font-size: 32px; font-weight: 700; color: #92400e;">${p || '0'}</div>
+                        </div>
+                        <div style="background: #e0e7ff; padding: 16px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 11px; color: #4338ca; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px;">POTASSIUM (K)</div>
+                            <div style="font-size: 32px; font-weight: 700; color: #4338ca;">${k || '0'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Application Tips -->
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <span style="font-size: 18px;">💡</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Application Tips</h3>
+                    </div>
+                    <div style="background: #fffbeb; padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                        <ul style="margin: 0; padding-left: 20px; color: #78350f;">
+                            <li style="margin-bottom: 8px;">Apply fertilizer in early morning or late evening</li>
+                            <li style="margin-bottom: 8px;">Water the soil before and after application</li>
+                            <li style="margin-bottom: 8px;">Keep away from plant stem to avoid burning</li>
+                            <li>Follow recommended dosage for best results</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Buy From -->
+                <div style="margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <span style="font-size: 18px;">🛒</span>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Buy From</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <button onclick="window.open('https://www.amazon.in/s?k=' + encodeURIComponent('` + (name || 'fertilizer') + `'), '_blank')" 
+                            style="background: #ff9900; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(255,153,0,0.3)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size: 24px;">📦</div>
+                            <div>Amazon</div>
+                        </button>
+                        <button onclick="window.open('https://www.indiamart.com/search.mp?ss=' + encodeURIComponent('` + (name || 'fertilizer') + `'), '_blank')"
+                            style="background: #0066cc; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,102,204,0.3)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size: 24px;">🏭</div>
+                            <div>IndiaMART</div>
+                        </button>
+                        <button onclick="alert('Find nearby agricultural stores in your area!')"
+                            style="background: #10b981; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="font-size: 24px;">🏪</div>
+                            <div>Nearby Stores</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    
+    // Close on outside click
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeFertilizerDetailModal();
+        }
+    };
+}
+
+function closeFertilizerDetailModal() {
+    const modal = document.getElementById('fertilizerDetailModal');
+    if (modal) modal.style.display = 'none';
+}
+
 function deleteFertilizer(fertilizerId) {
     if (confirm('Are you sure you want to delete this fertilizer recommendation?')) {
         fetch('/fertilizer/delete/' + fertilizerId, {

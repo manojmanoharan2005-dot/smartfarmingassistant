@@ -444,3 +444,205 @@ def calculate_harvest_window(activity):
         return "Next 15-20 days"
     else:
         return "More than 30 days"
+
+
+# ============== PDF Download Routes ==============
+
+@report_bp.route('/download/market-prices-pdf', methods=['GET'])
+@login_required
+def download_market_prices_pdf():
+    """Download today's market prices as PDF"""
+    try:
+        from flask import make_response, render_template
+        
+        user_id = session.get('user_id')
+        user = find_user_by_id(user_id)
+        
+        # Get market prices from data file
+        market_file = os.path.join('data', 'market_prices.json')
+        with open(market_file, 'r', encoding='utf-8') as f:
+            market_data = json.load(f)
+        
+        # Filter by user's district if available
+        user_district = user.get('district', '') if user else session.get('user_district', '')
+        prices = market_data.get('data', [])
+        
+        if user_district:
+            filtered_prices = [p for p in prices if p.get('district') == user_district]
+            if filtered_prices:
+                prices = filtered_prices[:50]
+            else:
+                prices = prices[:50]
+        else:
+            prices = prices[:50]
+        
+        # Render HTML template
+        html = render_template('pdf/market_prices.html',
+                             prices=prices,
+                             user=user or {'name': session.get('user_name', 'Farmer'), 'district': user_district or 'All Districts'},
+                             date=datetime.now().strftime('%B %d, %Y'))
+        
+        response = make_response(html)
+        response.headers['Content-Type'] = 'text/html'
+        response.headers['Content-Disposition'] = f'attachment; filename=market_prices_{datetime.now().strftime("%Y%m%d")}.html'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error generating report: {str(e)}'}), 500
+
+
+@report_bp.route('/download/weather-pdf', methods=['GET'])
+@login_required
+def download_weather_pdf():
+    """Download weather forecast as PDF"""
+    try:
+        from flask import make_response, render_template
+        
+        user_id = session.get('user_id')
+        user = find_user_by_id(user_id)
+        
+        # Get weather data from cache
+        user_district = user.get('district', '') if user else session.get('user_district', '')
+        user_state = user.get('state', '') if user else session.get('user_state', '')
+        
+        cache_key = f"{user_state}_{user_district}".replace(' ', '_')
+        weather_data = weather_cache.get(cache_key, {})
+        
+        # If no cached data, provide default structure
+        if not weather_data or not weather_data.get('current'):
+            weather_data = {
+                'current': {
+                    'temperature': 25,
+                    'condition': 'Clear',
+                    'icon': '☀️',
+                    'humidity': 65,
+                    'wind_speed': 15,
+                    'visibility': 10
+                },
+                'forecast': []
+            }
+        
+        html = render_template('pdf/weather_forecast.html',
+                             weather=weather_data,
+                             user=user or {'name': session.get('user_name', 'Farmer'), 'district': user_district, 'state': user_state},
+                             date=datetime.now().strftime('%B %d, %Y'))
+        
+        response = make_response(html)
+        response.headers['Content-Type'] = 'text/html'
+        response.headers['Content-Disposition'] = f'attachment; filename=weather_forecast_{datetime.now().strftime("%Y%m%d")}.html'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error generating report: {str(e)}'}), 500
+
+
+@report_bp.route('/download/expense-pdf', methods=['GET'])
+@login_required
+def download_expense_pdf():
+    """Download expense calculator report as PDF"""
+    try:
+        from flask import make_response, render_template
+        
+        user_id = session.get('user_id')
+        user = find_user_by_id(user_id)
+        
+        # Get expense data
+        expenses = get_user_expenses(user_id)
+        
+        # Create sample data if no expenses exist
+        if not expenses:
+            expenses = [{
+                'crop': 'Sample Crop',
+                'category': 'Seeds',
+                'description': 'No expense data recorded yet',
+                'total_cost': 0,
+                'amount': 0,
+                'date': datetime.now().strftime('%Y-%m-%d')
+            }]
+            total_expense = 0
+            total_revenue = 0
+            total_profit = 0
+        else:
+            # Calculate totals
+            total_expense = sum(e.get('total_cost', 0) or e.get('amount', 0) for e in expenses)
+            total_revenue = sum(e.get('revenue', 0) for e in expenses)
+            total_profit = total_revenue - total_expense
+        
+        html = render_template('pdf/expense_calculator.html',
+                             expenses=expenses,
+                             total_expense=total_expense,
+                             total_revenue=total_revenue,
+                             total_profit=total_profit,
+                             user=user or {'name': session.get('user_name', 'Farmer')},
+                             date=datetime.now().strftime('%B %d, %Y'))
+        
+        response = make_response(html)
+        response.headers['Content-Type'] = 'text/html'
+        response.headers['Content-Disposition'] = f'attachment; filename=expense_calculator_{datetime.now().strftime("%Y%m%d")}.html'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error generating report: {str(e)}'}), 500
+
+
+@report_bp.route('/download/crop-progress-pdf', methods=['GET'])
+@login_required
+def download_crop_progress_pdf():
+    """Download crop progress report as PDF"""
+    try:
+        from flask import make_response, render_template
+        
+        user_id = session.get('user_id')
+        user = find_user_by_id(user_id)
+        
+        # Get growing activities
+        activities = get_user_growing_activities(user_id)
+        
+        # Create sample data if no crops exist
+        if not activities:
+            activities = [{
+                'crop': 'No Active Crops',
+                'current_stage': 'Start growing',
+                'progress': 0,
+                'current_day': 0,
+                'started': 'N/A',
+                'notes': 'Start by getting a crop recommendation from the dashboard'
+            }]
+        else:
+            # Process activities to add progress calculations
+            STAGE_NAMES = ['Seed Sowing', 'Germination', 'Seedling', 'Vegetative Growth', 
+                           'Flowering', 'Fruit Development', 'Maturity', 'Harvest Ready']
+            
+            now = datetime.now()
+            for activity in activities:
+                try:
+                    start_date = activity.get('start_date', '')
+                    if start_date:
+                        start = datetime.strptime(start_date, '%Y-%m-%d')
+                        days_since = (now - start).days
+                        activity['current_day'] = days_since
+                        activity['started'] = start.strftime('%b %d, %Y')
+                    
+                    # Get stage name
+                    current_stage = activity.get('current_stage', 'Growing')
+                    if isinstance(current_stage, int) and current_stage < len(STAGE_NAMES):
+                        activity['current_stage'] = STAGE_NAMES[current_stage]
+                except:
+                    pass
+        
+        html = render_template('pdf/crop_progress.html',
+                             activities=activities,
+                             user=user or {'name': session.get('user_name', 'Farmer')},
+                             date=datetime.now().strftime('%B %d, %Y'))
+        
+        response = make_response(html)
+        response.headers['Content-Type'] = 'text/html'
+        response.headers['Content-Disposition'] = f'attachment; filename=crop_progress_{datetime.now().strftime("%Y%m%d")}.html'
+        
+        return response
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error generating report: {str(e)}'}), 500

@@ -257,6 +257,102 @@
                         }
                     </script>
 
+                    <!-- Download Button -->
+                    <div style="position: relative;">
+                        <button class="download-toggle-btn" onclick="toggleDownloadPanel()"
+                            style="width: 44px; height: 44px; font-size: 18px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.3s ease;">
+                            <i class="fas fa-download"></i>
+                        </button>
+
+                        <!-- Download Panel -->
+                        <div id="downloadPanel" class="download-panel"
+                            style="display: none; position: absolute; top: 55px; right: 0; width: 320px; background: rgba(30, 41, 59, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 1000; overflow: hidden;">
+                            <div style="padding: 18px 20px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); background: rgba(255, 255, 255, 0.03);">
+                                <h3 style="margin: 0; font-size: 1rem; font-weight: 600; color: #f1f5f9; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-download" style="color: #10b981;"></i> Download Reports
+                                </h3>
+                                <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #94a3b8;">Export your farming data</p>
+                            </div>
+                            <div style="padding: 12px;">
+                                <a href="{{ url_for('report.download_market_prices_pdf') }}" 
+                                    style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; text-decoration: none; transition: all 0.2s; margin-bottom: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);"
+                                    onmouseover="this.style.background='rgba(14, 165, 233, 0.15)'; this.style.borderColor='#0ea5e9';"
+                                    onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)';">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0ea5e9, #0284c7); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                        📊
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #f1f5f9; font-size: 0.9rem;">Market Prices</div>
+                                        <div style="font-size: 0.8rem; color: #94a3b8;">Today's commodity prices</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right" style="color: #64748b; font-size: 12px;"></i>
+                                </a>
+
+                                <a href="{{ url_for('report.download_weather_pdf') }}"
+                                    style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; text-decoration: none; transition: all 0.2s; margin-bottom: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);"
+                                    onmouseover="this.style.background='rgba(245, 158, 11, 0.15)'; this.style.borderColor='#f59e0b';"
+                                    onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)';">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                        ☁️
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #f1f5f9; font-size: 0.9rem;">Weather Forecast</div>
+                                        <div style="font-size: 0.8rem; color: #94a3b8;">7-day weather data</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right" style="color: #64748b; font-size: 12px;"></i>
+                                </a>
+
+                                <a href="{{ url_for('report.download_expense_pdf') }}"
+                                    style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; text-decoration: none; transition: all 0.2s; margin-bottom: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);"
+                                    onmouseover="this.style.background='rgba(236, 72, 153, 0.15)'; this.style.borderColor='#ec4899';"
+                                    onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)';">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ec4899, #db2777); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                        🧮
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #f1f5f9; font-size: 0.9rem;">Expense Calculator</div>
+                                        <div style="font-size: 0.8rem; color: #94a3b8;">Last calculation</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right" style="color: #64748b; font-size: 12px;"></i>
+                                </a>
+
+                                <a href="{{ url_for('report.download_crop_progress_pdf') }}"
+                                    style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; text-decoration: none; transition: all 0.2s; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);"
+                                    onmouseover="this.style.background='rgba(34, 197, 94, 0.15)'; this.style.borderColor='#22c55e';"
+                                    onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)';">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                        🌱
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #f1f5f9; font-size: 0.9rem;">Crop Progress</div>
+                                        <div style="font-size: 0.8rem; color: #94a3b8;">Active crops status</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right" style="color: #64748b; font-size: 12px;"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function toggleDownloadPanel() {
+                            const panel = document.getElementById('downloadPanel');
+                            if (panel.style.display === 'none') {
+                                panel.style.display = 'block';
+                            } else {
+                                panel.style.display = 'none';
+                            }
+                        }
+
+                        // Close panel when clicking outside
+                        document.addEventListener('click', function (event) {
+                            const panel = document.getElementById('downloadPanel');
+                            const btn = document.querySelector('.download-toggle-btn');
+                            if (panel && btn && !panel.contains(event.target) && !btn.contains(event.target)) {
+                                panel.style.display = 'none';
+                            }
+                        });
+                    </script>
+
                     <button class="chatbot-toggle" onclick="openChatbotModal()"
                         style="width: 44px; height: 44px; font-size: 18px;">
                         <i class="fas fa-robot"></i>
@@ -451,6 +547,66 @@
                                 {% endif %}
                             </div>
                         </div>
+
+                        <!-- Saved Fertilizers -->
+                        <div class="card mt-2">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-flask"></i> Saved Fertilizers
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% if saved_fertilizers %}
+                                {% for fertilizer in saved_fertilizers[:3] %}
+                                <div class="fertilizer-card" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; flex-shrink: 0;">
+                                        🧪
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 700; color: #1e293b; font-size: 16px; margin-bottom: 4px;">
+                                            {{ fertilizer.name or fertilizer.fertilizer_name or fertilizer.recommendation or 'Fertilizer' }}
+                                        </div>
+                                        <div style="font-size: 13px; color: #64748b; margin-bottom: 6px;">
+                                            <i class="fas fa-seedling" style="color: #10b981; margin-right: 4px;"></i>
+                                            <span style="font-weight: 600;">{{ fertilizer.crop_type or fertilizer.crop or 'General' }}</span>
+                                            {% if fertilizer.date %}
+                                            <span style="margin-left: 8px; color: #94a3b8;">
+                                                <i class="fas fa-calendar" style="margin-right: 4px;"></i>{{ fertilizer.date }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <div style="font-size: 12px; color: #475569;">
+                                            {% if fertilizer.nitrogen or fertilizer.phosphorus or fertilizer.potassium %}
+                                            <span style="background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 4px; margin-right: 4px;">N: {{ fertilizer.nitrogen or '0' }}</span>
+                                            <span style="background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 4px; margin-right: 4px;">P: {{ fertilizer.phosphorus or '0' }}</span>
+                                            <span style="background: #dcfce7; color: #14532d; padding: 3px 8px; border-radius: 4px;">K: {{ fertilizer.potassium or '0' }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button class="crop-action-btn view-btn" title="View Details" 
+                                            onclick="viewFertilizerDetails('{{ fertilizer._id or loop.index }}', '{{ fertilizer.name or fertilizer.fertilizer_name or fertilizer.recommendation }}', '{{ fertilizer.crop_type or fertilizer.crop }}', '{{ fertilizer.nitrogen }}', '{{ fertilizer.phosphorus or fertilizer.phosphorous }}', '{{ fertilizer.potassium }}', '{{ fertilizer.soil_type or "Neutral Soil" }}', '{{ fertilizer.saved_at[:10] if fertilizer.saved_at else fertilizer.date or "" }}')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="crop-action-btn delete-btn" title="Delete"
+                                            onclick="deleteFertilizer('{{ fertilizer._id or loop.index }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🧪</div>
+                                    <h4>No Saved Fertilizers</h4>
+                                    <p>Get personalized fertilizer recommendations</p>
+                                    <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="empty-state-btn">
+                                        <i class="fas fa-plus"></i> Get Fertilizer Advice
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Right Column -->
@@ -600,66 +756,7 @@
                             </div>
                         </div>
 
-                        <!-- Saved Fertilizer Recommendations -->
-                        {% if fertilizer_recommendations %}
-                        <div class="card card-dark mt-2">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <i class="fas fa-flask"></i> Saved Fertilizer Recommendations
-                                </div>
-                                <span class="card-badge">{{ fertilizer_recommendations|length }} Saved</span>
-                            </div>
-                            <div class="card-body">
-                                <div style="display: flex; flex-direction: column; gap: 12px;">
-                                    {% for rec in fertilizer_recommendations[:3] %}
-                                    <div
-                                        style="background: linear-gradient(135deg, #1e293b, #334155); border-radius: 12px; padding: 14px; border: 1px solid rgba(255,255,255,0.1);">
-                                        <!-- Header Row -->
-                                        <div
-                                            style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                                            <div
-                                                style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
-                                                🧪
-                                            </div>
-                                            <div style="flex: 1; min-width: 0;">
-                                                <div
-                                                    style="font-size: 14px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                    {{ rec.fertilizer }}</div>
-                                                <div style="font-size: 11px; color: #94a3b8;">
-                                                    <i class="fas fa-seedling"
-                                                        style="color: #10b981; margin-right: 3px;"></i>{{ rec.crop
-                                                    }} ·
-                                                    <i class="fas fa-calendar" style="margin: 0 3px;"></i>{{
-                                                    rec.date }}
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <!-- Action Buttons -->
-                                        <div style="display: flex; gap: 6px;">
-                                            <button data-id="{{ rec.id }}" data-fertilizer="{{ rec.fertilizer }}"
-                                                data-crop="{{ rec.crop }}" data-date="{{ rec.date }}"
-                                                data-soil="{{ rec.soil_type|default('') }}"
-                                                data-n="{{ rec.nitrogen|default('') }}"
-                                                data-p="{{ rec.phosphorus|default('') }}"
-                                                data-k="{{ rec.potassium|default('') }}"
-                                                onclick="handleFertilizerView(this)"
-                                                style="flex: 1; padding: 8px; background: linear-gradient(135deg, #10b981, #059669); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
-                                            </button>
-                                            <button onclick="deleteFertilizer('{{ rec.id }}')"
-                                                style="padding: 8px 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; color: #ef4444; font-size: 12px; cursor: pointer;"
-                                                title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>

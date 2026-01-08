@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Progress Report - {{ date }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            padding: 40px 20px;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .info-bar {
+            background: #dcfce7;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #bbf7d0;
+        }
+        .content {
+            padding: 30px;
+        }
+        .crop-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .crop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .crop-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .crop-progress {
+            font-size: 28px;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        .crop-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .detail-item .label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .detail-item .value {
+            font-size: 16px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        .progress-bar {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        .stage-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .notes {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #22c55e;
+        }
+        .notes .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        .notes .text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .footer {
+            background: #f8fafc;
+            padding: 20px 30px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 2px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Crop Progress Report</h1>
+            <p>Active Crops Status</p>
+        </div>
+        
+        <div class="info-bar">
+            <div><strong>👤 Farmer:</strong> {{ user.name }}</div>
+            <div><strong>📅 Date:</strong> {{ date }}</div>
+            <div><strong>🌾 Active Crops:</strong> {{ activities|length }}</div>
+        </div>
+        
+        <div class="content">
+            {% if activities %}
+            {% for activity in activities %}
+            <div class="crop-card">
+                <div class="crop-header">
+                    <div class="crop-name">{{ activity.crop }}</div>
+                    <div class="crop-progress">{{ activity.progress }}%</div>
+                </div>
+                
+                <div class="crop-details">
+                    <div class="detail-item">
+                        <div class="label">Current Stage:</div>
+                        <div class="value">
+                            <span class="stage-badge">{{ activity.current_stage }}</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Started:</div>
+                        <div class="value">{{ activity.started }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Days Active:</div>
+                        <div class="value">Day {{ activity.current_day }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Area:</div>
+                        <div class="value">{{ activity.area or '1' }} Acre</div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ activity.progress }}%;"></div>
+                </div>
+                
+                {% if activity.notes %}
+                <div class="notes">
+                    <div class="label">📝 Notes:</div>
+                    <div class="text">{{ activity.notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="text-align: center; padding: 40px; color: #64748b;">No active crops found.</p>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>🌾 Smart Farming Assistant | Generated on {{ date }} | For reference only</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,18 +1,2 @@
 [
-  {
-    "id": "1767593890.604894",
-    "user_id": "415747b2-0222-4297-bd75-c8c01e545142",
-    "type": "rental_request",
-    "title": "Equipment Rental",
-    "message": "\ud83e\udd1d MANOJ KUMAR wants to rent your MAHINDRA. Accept/Reject?",
-    "priority": "high",
-    "created_at": "2026-01-05T11:48:10.604905",
-    "read": false,
-    "data": {
-      "equipment_id": "7b4807fb-d7c4-4433-9e81-e4f595c1020e",
-      "requester_id": "44444550-7058-4cab-961d-b22f34368d71",
-      "requester_name": "MANOJ KUMAR",
-      "is_actionable": true
-    }
-  }
 ]
