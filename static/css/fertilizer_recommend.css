@@ -366,3 +366,345 @@
     border-color: var(--accent-green);
     color: var(--accent-green);
 }
+
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Extra Small Devices - Phones (< 576px) */
+@media (max-width: 575px) {
+    /* Page Layout */
+    .fertilizer-recommendation-page {
+        padding: 16px;
+    }
+    
+    /* Page Header */
+    .page-header {
+        padding: 20px 16px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .page-header-content h1 {
+        font-size: 20px !important;
+    }
+    
+    .page-header-content p {
+        font-size: 14px;
+    }
+    
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+    
+    /* Form Container */
+    .form-container {
+        margin-bottom: 20px;
+    }
+    
+    /* Form Card */
+    .form-card {
+        padding: 20px 16px;
+    }
+    
+    .form-card h3 {
+        font-size: 16px !important;
+    }
+    
+    /* Form Grid */
+    .form-row,
+    .input-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+    
+    /* Form Inputs */
+    .input-group label {
+        font-size: 14px !important;
+    }
+    
+    .input-field,
+    .select-field {
+        padding: 12px 14px !important;
+        font-size: 16px !important;
+        min-height: 44px;
+    }
+    
+    .input-icon {
+        font-size: 16px;
+    }
+    
+    /* Submit Button */
+    .submit-button,
+    .btn-primary {
+        width: 100%;
+        padding: 14px 20px !important;
+        font-size: 15px !important;
+        min-height: 48px;
+    }
+    
+    /* Results Section */
+    .results-container {
+        padding: 20px 16px;
+    }
+    
+    .result-header {
+        padding: 16px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .result-header h2 {
+        font-size: 18px !important;
+    }
+    
+    .fertilizer-badge {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    /* Info Cards Grid */
+    .info-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .info-card {
+        padding: 16px;
+    }
+    
+    .info-card .icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .info-card .value {
+        font-size: 18px;
+    }
+    
+    .info-card .label {
+        font-size: 12px;
+    }
+    
+    /* Description Box */
+    .description-box {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .description-box h4 {
+        font-size: 15px !important;
+    }
+    
+    .description-box p {
+        font-size: 14px;
+    }
+    
+    /* Recommendations Grid */
+    .recommendations-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+    
+    .recommendation-card {
+        padding: 16px;
+    }
+    
+    .recommendation-card h4 {
+        font-size: 15px !important;
+    }
+    
+    .recommendation-card ul li {
+        font-size: 14px;
+        padding: 8px 0;
+    }
+    
+    /* Dosage Table */
+    .dosage-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .dosage-table table {
+        font-size: 13px;
+    }
+    
+    .dosage-table th,
+    .dosage-table td {
+        padding: 10px 8px;
+        white-space: nowrap;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    
+    .action-btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+    
+    /* Charts */
+    .chart-container {
+        padding: 16px;
+        height: 250px !important;
+    }
+    
+    canvas {
+        max-height: 250px !important;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        padding: 40px 20px;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px !important;
+    }
+    
+    .empty-state h3 {
+        font-size: 18px !important;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+    }
+    
+    /* Soil Analysis Section */
+    .soil-analysis {
+        padding: 16px;
+    }
+    
+    .nutrient-bars {
+        margin: 16px 0;
+    }
+    
+    .nutrient-bar {
+        margin-bottom: 16px;
+    }
+    
+    .nutrient-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+    
+    .nutrient-name {
+        font-size: 14px !important;
+    }
+    
+    .nutrient-value {
+        font-size: 13px;
+    }
+    
+    /* Tips Section */
+    .tips-section {
+        padding: 16px;
+    }
+    
+    .tips-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    
+    .tip-card {
+        padding: 14px;
+    }
+    
+    .tip-card .tip-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .tip-card h5 {
+        font-size: 14px !important;
+    }
+    
+    .tip-card p {
+        font-size: 13px;
+    }
+}
+
+/* Small Devices - Landscape Phones (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .info-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Medium Devices - Tablets (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .form-card {
+        padding: 24px 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .info-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .submit-button,
+    .action-btn,
+    .input-field,
+    .select-field {
+        min-height: 44px;
+    }
+    
+    /* Remove hover effects */
+    .action-btn:hover,
+    .submit-button:hover {
+        transform: none;
+        box-shadow: inherit;
+    }
+    
+    .recommendation-card:hover {
+        transform: none;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+    .page-header {
+        padding: 16px;
+    }
+    
+    .form-card {
+        padding: 16px;
+    }
+    
+    .results-container {
+        padding: 16px;
+    }
+}

@@ -390,3 +390,58 @@ body {
     color: #94a3b8;
     font-size: 14px;
 }
+/* ============================================
+   ENHANCED MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Extra Small Devices - Phones (< 576px) */
+@media (max-width: 575px) {
+    .container { padding: 16px; }
+    .back-link { font-size: 13px; margin-bottom: 16px; }
+    .page-header { margin-bottom: 20px; }
+    .page-title { font-size: 20px; }
+    .crop-match { font-size: 14px; flex-wrap: wrap; }
+    .stats-row { flex-direction: column; gap: 12px; }
+    .stat-card { padding: 14px; }
+    .stat-value { font-size: 22px; }
+    .stat-label { font-size: 12px; }
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 8px; margin-bottom: 20px; padding-bottom: 8px; }
+    .tab { padding: 10px 16px; font-size: 14px; white-space: nowrap; min-height: 44px; }
+    .section { margin-bottom: 20px; padding: 16px; }
+    .section-title { font-size: 16px !important; margin-bottom: 14px; }
+    .param-grid { grid-template-columns: 1fr !important; gap: 12px; }
+    .param-item { padding: 14px; }
+    .param-label { font-size: 12px; }
+    .param-value { font-size: 16px; }
+    .param-icon { width: 36px; height: 36px; font-size: 16px; }
+    .requirements-list { gap: 10px; }
+    .requirement-item { padding: 12px; font-size: 14px; }
+    .requirement-item i { font-size: 16px; }
+    .planner-form { flex-direction: column; gap: 12px; }
+    .form-group { width: 100%; }
+    .form-group label { font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { padding: 12px 14px; font-size: 16px !important; min-height: 44px; }
+    .form-group textarea { min-height: 80px; }
+    .add-task-btn, .start-growing-btn, .btn { width: 100%; padding: 14px 20px; font-size: 15px; min-height: 48px; }
+    .timeline-container { padding: 16px; }
+    .timeline-item { padding: 14px; }
+    .timeline-marker { width: 32px; height: 32px; font-size: 14px; }
+    .timeline-content h4 { font-size: 15px !important; }
+    .timeline-content p { font-size: 13px; }
+    .timeline-date { font-size: 11px; }
+    .task-list { gap: 10px; }
+    .task-item { padding: 12px; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .task-info { width: 100%; }
+    .task-type { font-size: 15px; }
+    .task-date { font-size: 12px; }
+    .task-desc { font-size: 13px; }
+    .task-delete { width: 100%; padding: 10px; font-size: 14px; min-height: 40px; }
+    .chart-container { height: 250px !important; padding: 16px; }
+    canvas { max-height: 250px !important; }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .tab, .add-task-btn, .start-growing-btn, .task-delete, .action-btn { min-height: 44px; }
+    .task-item:hover, .param-item:hover, .timeline-item:hover, .tab:hover, .btn:hover { transform: none; box-shadow: inherit; }
+}

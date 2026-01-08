@@ -1,0 +1,785 @@
+{% extends "base.html" %}
+
+{% block title %}Create Listing - Direct Buyer Connect{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer_connect.css') }}">
+<style>
+.map-fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    font-size: 16px;
+    color: #333;
+}
+
+.map-fullscreen-btn:hover {
+    background: #f4f4f4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.map-fullscreen-btn:active {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+#mapContainer.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: white;
+}
+
+#mapContainer.fullscreen #map {
+    height: 100% !important;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🌾</div>
+            <div>
+                <div class="sidebar-title">Smart Farming</div>
+                <div class="sidebar-subtitle">Agricultural Platform</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main Menu</div>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-link">
+                    <i class="fas fa-seedling"></i>
+                    <span>Crop Suggestion</span>
+                </a>
+                <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-link">
+                    <i class="fas fa-flask"></i>
+                    <span>Fertilizer Advice</span>
+                </a>
+                <a href="{{ url_for('market.market_watch') }}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Prices</span>
+                    <span class="badge">Live</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Buyer Connect</div>
+                <a href="{{ url_for('buyer_connect.create_listing') }}" class="nav-link active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Sell My Crop</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.my_listings') }}" class="nav-link">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Listings</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.marketplace') }}" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Buy from Farmers</span>
+                    <span class="badge" style="background: #3b82f6;">New</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">{{ session.get('user_name', 'U')[0] }}</div>
+                <div class="user-details">
+                    <h4>{{ session.get('user_name', 'User') }}</h4>
+                    <span>Farmer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-seedling"></i> List Your Crop for Sale
+            </h1>
+            <p class="page-subtitle">Connect directly with buyers and get fair market prices based on live mandi rates</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <form id="listingForm" method="POST" action="{{ url_for('buyer_connect.create_listing') }}">
+                <!-- Crop Selection -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-leaf"></i> Crop / Commodity *
+                </label>
+                <select name="crop" id="cropSelect" required class="form-select">
+                    <option value="">Select a crop...</option>
+                    {% for crop in crops %}
+                    <option value="{{ crop }}">{{ crop }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Quantity -->
+            <div class="form-grid-2 form-group">
+                <div>
+                    <label class="form-label">
+                        <i class="fas fa-weight"></i> Quantity Available *
+                    </label>
+                    <input type="number" name="quantity" id="quantity" step="0.01" min="0.01" max="100000" required
+                        placeholder="Enter quantity" class="form-input">
+                    <small style="color: var(--text-secondary); margin-top: 4px; display: block;">Must be greater than 0</small>
+                </div>
+                <div>
+                    <label class="form-label">Unit *</label>
+                    <select name="unit" required class="form-select">
+                        <option value="kg">Kg</option>
+                        <option value="quintal">Quintal</option>
+                        <option value="ton">Ton</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Hidden fields for auto-detected location -->
+            <input type="hidden" name="state" id="state" required>
+            <input type="hidden" name="district" id="district" required>
+
+            <!-- Map Location Selector -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-map-marked-alt"></i> Pinpoint Your Exact Location *
+                </label>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);">
+                    <i class="fas fa-info-circle" style="color: #3b82f6;"></i> Click on the map to select your farm/field location. Drag the marker to adjust position.
+                </div>
+                
+                <!-- Map Control Buttons -->
+                <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                    <button type="button" id="useCurrentLocationBtn" class="btn-submit" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-crosshairs"></i> Use My Current Location
+                    </button>
+                    <button type="button" id="searchLocationBtn" class="btn-cancel" style="flex: 1; min-width: 200px;">
+                        <i class="fas fa-search-location"></i> Search Location
+                    </button>
+                </div>
+                
+                <!-- Search Box (hidden by default) -->
+                <div id="searchBox" style="display: none; margin-bottom: 12px;">
+                    <input type="text" id="searchInput" placeholder="Search for your village, town, or landmark..." 
+                        class="form-input" style="margin-bottom: 8px;">
+                    <button type="button" id="doSearchBtn" class="btn-submit" style="width: 100%;">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                
+                <div id="mapContainer" style="position: relative;">
+                    <div id="map" style="height: 500px; border-radius: 8px; border: 2px solid #e2e8f0; margin-bottom: 12px; cursor: crosshair;"></div>
+                    <button id="fullscreenBtn" class="map-fullscreen-btn" title="Toggle Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                <div id="selectedLocation" style="padding: 12px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981; display: none;">
+                    <div style="font-size: 13px; font-weight: 600; color: #047857; margin-bottom: 4px;">
+                        <i class="fas fa-check-circle"></i> Location Selected
+                    </div>
+                    <div id="locationDetails" style="font-size: 13px; color: #064e3b;"></div>
+                </div>
+                <input type="hidden" name="latitude" id="latitude" required>
+                <input type="hidden" name="longitude" id="longitude" required>
+            </div>
+
+            <div id="priceInfoBox" class="price-info-box">
+                <div class="price-header">
+                    <div class="price-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="price-title">
+                        <h3>📊 Live Market Price</h3>
+                        <div class="market-name" id="marketName">Loading...</div>
+                    </div>
+                </div>
+                <div class="price-main">
+                    <div class="price-label">Recommended Price</div>
+                    <div class="price-recommended" id="recommendedPrice">₹0.00/kg</div>
+                </div>
+                <div class="price-range-grid">
+                    <div class="price-box min">
+                        <div class="label">Minimum (−20%)</div>
+                        <div class="value" id="minPrice">₹0.00/kg</div>
+                    </div>
+                    <div class="price-box max">
+                        <div class="label">Maximum (+20%)</div>
+                        <div class="value" id="maxPrice">₹0.00/kg</div>
+                    </div>
+                </div>
+                <div class="price-info">
+                    <i class="fas fa-info-circle"></i>
+                    Set your price within ±20% of live market price for best results
+                </div>
+            </div>
+
+            <!-- Your Price -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-rupee-sign"></i> Your Selling Price (per kg) *
+                </label>
+                <input type="number" name="price" id="farmerPrice" step="0.01" min="0" required
+                    placeholder="Will auto-fill based on live market price" class="form-input"
+                    style="font-weight: 600; color: #10b981;">
+                <div id="priceValidation" style="margin-top: 10px;"></div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-align-left"></i> Description (Optional)
+                </label>
+                <textarea name="description" rows="4" placeholder="Add details about quality, variety, availability, etc."
+                    class="form-textarea"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <a href="{{ url_for('buyer_connect.my_listings') }}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <i class="fas fa-check-circle"></i> Create Listing
+                </button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+<!-- Leaflet CSS and JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+let currentMinPrice = 0;
+let currentMaxPrice = 0;
+let currentRecommendedPrice = 0;
+
+// Map variables
+let map;
+let marker;
+let selectedLat = null;
+let selectedLng = null;
+
+// States and districts data
+const statesDistricts = {{ states_districts|tojson }};
+
+// District coordinates for centering map (major cities as reference)
+const districtCoordinates = {
+    // This will be populated from a data file or you can add manually
+    // For now, we'll use India's center as default
+    'default': [20.5937, 78.9629]  // India center
+};
+
+// Initialize map with optimized settings for smooth navigation
+function initializeMap() {
+    if (map) {
+        map.remove();
+    }
+    
+    // Create map with optimized settings
+    map = L.map('map', {
+        center: [20.5937, 78.9629],
+        zoom: 5,
+        zoomControl: true,
+        scrollWheelZoom: true,  // Smooth scroll zoom
+        doubleClickZoom: true,
+        touchZoom: true,
+        boxZoom: true,
+        keyboard: true,
+        dragging: true,
+        tap: true,
+        zoomAnimation: true,
+        fadeAnimation: true,
+        markerZoomAnimation: true,
+        inertia: true,  // Smooth panning with momentum
+        inertiaDeceleration: 3000,
+        inertiaMaxSpeed: 1500,
+        worldCopyJump: false,
+        maxBoundsViscosity: 1.0
+    });
+    
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+        minZoom: 3
+    }).addTo(map);
+    
+    // Add click event to map
+    map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        
+        // Update or create marker
+        if (marker) {
+            marker.setLatLng(e.latlng);
+        } else {
+            marker = L.marker(e.latlng, {
+                draggable: true,
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+            
+            // Allow marker to be dragged
+            marker.on('dragend', function(e) {
+                const position = marker.getLatLng();
+                updateLocationDetails(position.lat, position.lng);
+            });
+        }
+        
+        updateLocationDetails(lat, lng);
+    });
+    
+    // Try to get user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            map.setView([userLat, userLng], 13);
+            
+            // Add a circle to show user's approximate location
+            L.circle([userLat, userLng], {
+                color: '#3b82f6',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.2,
+                radius: 500
+            }).addTo(map);
+        });
+    }
+}
+
+// Update location details
+function updateLocationDetails(lat, lng) {
+    selectedLat = lat;
+    selectedLng = lng;
+    
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    
+    document.getElementById('selectedLocation').style.display = 'block';
+    document.getElementById('locationDetails').innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Fetching location name...</span>
+        </div>
+    `;
+    
+    // Reverse geocoding to get place name
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        .then(response => response.json())
+        .then(data => {
+            const address = data.address || {};
+            const village = address.village || address.town || address.suburb || address.city || address.municipality || 'Unknown location';
+            const locality = address.locality || address.neighbourhood || '';
+            const displayName = data.display_name || 'Location details not available';
+            
+            // Extract state and district
+            let detectedState = address.state || '';
+            let detectedDistrict = address.state_district || address.county || address.city_district || '';
+            
+            // Clean up state name
+            detectedState = detectedState.replace(/^State of /i, '').trim();
+            
+            // Auto-fill hidden fields
+            document.getElementById('state').value = detectedState;
+            document.getElementById('district').value = detectedDistrict;
+            
+            document.getElementById('locationDetails').innerHTML = `
+                <div style="margin-bottom: 8px;">
+                    <i class="fas fa-map-pin" style="color: #10b981;"></i> 
+                    <strong style="font-size: 15px;">${village}</strong>
+                    ${locality ? `, ${locality}` : ''}
+                </div>
+                <div style="font-size: 12px; color: #065f46; margin-bottom: 6px;">
+                    ${displayName}
+                </div>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px; font-size: 12px; color: #047857;">
+                    <strong>Coordinates:</strong> <span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
+                    <strong>District:</strong> <span style="font-weight: 600; color: #065f46;">${detectedDistrict || 'Detecting...'}</span>
+                    <strong>State:</strong> <span style="font-weight: 600; color: #065f46;">${detectedState || 'Detecting...'}</span>
+                </div>
+            `;
+            
+            // Auto-fetch live market price if crop is selected
+            const crop = document.getElementById('cropSelect').value;
+            if (crop && detectedState && detectedDistrict) {
+                fetchLivePrice();
+            }
+        })
+        .catch(error => {
+            console.error('Geocoding error:', error);
+            document.getElementById('locationDetails').innerHTML = `
+                <strong>Coordinates:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
+                <strong>District:</strong> ${document.getElementById('district').value || 'Not selected'}<br>
+                <strong>State:</strong> ${document.getElementById('state').value || 'Not selected'}<br>
+                <small style="color: #dc2626;">Could not fetch location name. Please ensure internet connection.</small>
+            `;
+        });
+}
+
+// Auto-fetch live price when crop and location are selected
+function fetchLivePrice() {
+    const crop = document.getElementById('cropSelect').value;
+    const district = document.getElementById('district').value;
+    const state = document.getElementById('state').value;
+    
+    if (!crop) {
+        return; // Just need crop now, location comes from map
+    }
+    
+    if (!district || !state) {
+        document.getElementById('priceInfoBox').style.display = 'none';
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('priceInfoBox').style.display = 'block';
+    document.getElementById('marketName').textContent = 'Fetching live price...';
+    
+    fetch('/buyer-connect/api/get-live-price', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ crop, district, state })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            currentRecommendedPrice = data.recommended_price;
+            currentMinPrice = data.min_price;
+            currentMaxPrice = data.max_price;
+            
+            document.getElementById('recommendedPrice').textContent = `₹${currentRecommendedPrice.toFixed(2)}/kg`;
+            document.getElementById('minPrice').textContent = `₹${currentMinPrice.toFixed(2)}/kg`;
+            document.getElementById('maxPrice').textContent = `₹${currentMaxPrice.toFixed(2)}/kg`;
+            document.getElementById('marketName').textContent = `${data.market_name} • ${data.price_date}`;
+            
+            // Auto-fill farmer price with recommended price
+            document.getElementById('farmerPrice').value = currentRecommendedPrice.toFixed(2);
+            validatePrice();
+        } else {
+            document.getElementById('marketName').textContent = 'No live price data available for this crop/location';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching live price:', error);
+        document.getElementById('marketName').textContent = 'Error fetching live price. Please try again.';
+    });
+}
+
+// Validate price is within ±20% range
+function validatePrice() {
+    const farmerPrice = parseFloat(document.getElementById('farmerPrice').value);
+    const validationDiv = document.getElementById('priceValidation');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (isNaN(farmerPrice) || farmerPrice <= 0) {
+        validationDiv.innerHTML = '';
+        return;
+    }
+    
+    if (farmerPrice < currentMinPrice || farmerPrice > currentMaxPrice) {
+        validationDiv.innerHTML = `
+            <div class="validation-message error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Price must be between ₹${currentMinPrice.toFixed(2)}/kg and ₹${currentMaxPrice.toFixed(2)}/kg</span>
+            </div>
+        `;
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+    } else {
+        const diffPercent = ((farmerPrice - currentRecommendedPrice) / currentRecommendedPrice * 100).toFixed(1);
+        const diffText = diffPercent > 0 ? `+${diffPercent}%` : `${diffPercent}%`;
+        
+        validationDiv.innerHTML = `
+            <div class="validation-message success">
+                <i class="fas fa-check-circle"></i>
+                <span>Valid price (${diffText} from market price)</span>
+            </div>
+        `;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+    }
+}
+
+// Event listeners
+document.getElementById('cropSelect').addEventListener('change', function() {
+    // Auto-fetch price if location is already selected
+    const state = document.getElementById('state').value;
+    const district = document.getElementById('district').value;
+    if (state && district) {
+        fetchLivePrice();
+    }
+});
+document.getElementById('farmerPrice').addEventListener('input', validatePrice);
+
+// Form validation before submission
+document.getElementById('listingForm').addEventListener('submit', function(e) {
+    const quantity = parseFloat(document.getElementById('quantity').value);
+    const farmerPrice = parseFloat(document.getElementById('farmerPrice').value);
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+    
+    // Validate location selection
+    if (!latitude || !longitude) {
+        e.preventDefault();
+        alert('📍 Please select your location on the map by clicking on it');
+        document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+    }
+    
+    // Validate quantity
+    if (isNaN(quantity) || quantity <= 0) {
+        e.preventDefault();
+        alert('⚠️ Please enter a valid quantity greater than 0');
+        return false;
+    }
+    
+    if (quantity > 100000) {
+        e.preventDefault();
+        alert('⚠️ Quantity seems unreasonably high. Please check your input.');
+        return false;
+    }
+    
+    // Validate price
+    if (isNaN(farmerPrice) || farmerPrice <= 0) {
+        e.preventDefault();
+        alert('⚠️ Please enter a valid price greater than 0');
+        return false;
+    }
+    
+    if (farmerPrice < currentMinPrice || farmerPrice > currentMaxPrice) {
+        e.preventDefault();
+        alert(`⚠️ Price must be between ₹${currentMinPrice.toFixed(2)}/kg and ₹${currentMaxPrice.toFixed(2)}/kg`);
+        return false;
+    }
+    
+    return true;
+});
+
+// Use Current Location Button
+document.getElementById('useCurrentLocationBtn').addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+    
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                
+                // Center map and zoom in
+                map.setView([userLat, userLng], 16);
+                
+                // Add/update marker
+                if (marker) {
+                    marker.setLatLng([userLat, userLng]);
+                } else {
+                    marker = L.marker([userLat, userLng], {
+                        draggable: true,
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
+                    }).addTo(map);
+                    
+                    marker.on('dragend', function(e) {
+                        const position = marker.getLatLng();
+                        updateLocationDetails(position.lat, position.lng);
+                    });
+                }
+                
+                updateLocationDetails(userLat, userLng);
+                
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Location Set!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Current Location';
+                }, 2000);
+            },
+            function(error) {
+                alert('❌ Could not get your location. Please click on the map manually or check location permissions.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Current Location';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    } else {
+        alert('❌ Geolocation is not supported by your browser');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-crosshairs"></i> Use My Current Location';
+    }
+});
+
+// Search Location Button
+document.getElementById('searchLocationBtn').addEventListener('click', function() {
+    const searchBox = document.getElementById('searchBox');
+    searchBox.style.display = searchBox.style.display === 'none' ? 'block' : 'none';
+});
+
+// Search Location Function
+document.getElementById('doSearchBtn').addEventListener('click', function() {
+    const query = document.getElementById('searchInput').value.trim();
+    
+    if (!query) {
+        alert('⚠️ Please enter a location to search');
+        return;
+    }
+    
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    
+    const fullQuery = `${query}, India`;
+    
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&limit=1`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const lat = parseFloat(data[0].lat);
+                const lng = parseFloat(data[0].lon);
+                
+                map.setView([lat, lng], 16);
+                
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng], {
+                        draggable: true,
+                        icon: L.icon({
+                            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
+                    }).addTo(map);
+                    
+                    marker.on('dragend', function(e) {
+                        const position = marker.getLatLng();
+                        updateLocationDetails(position.lat, position.lng);
+                    });
+                }
+                
+                updateLocationDetails(lat, lng);
+                document.getElementById('searchBox').style.display = 'none';
+                document.getElementById('searchInput').value = '';
+            } else {
+                alert('❌ Location not found. Try searching with different keywords or click on the map.');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-search"></i> Search';
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            alert('❌ Search failed. Please try again or click on the map manually.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-search"></i> Search';
+        });
+});
+
+// Allow Enter key to search
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('doSearchBtn').click();
+    }
+});
+
+// Fullscreen toggle
+document.getElementById('fullscreenBtn').addEventListener('click', function() {
+    const mapContainer = document.getElementById('mapContainer');
+    const icon = this.querySelector('i');
+    
+    if (mapContainer.classList.contains('fullscreen')) {
+        // Exit fullscreen
+        mapContainer.classList.remove('fullscreen');
+        icon.classList.remove('fa-compress');
+        icon.classList.add('fa-expand');
+        this.title = 'Toggle Fullscreen';
+    } else {
+        // Enter fullscreen
+        mapContainer.classList.add('fullscreen');
+        icon.classList.remove('fa-expand');
+        icon.classList.add('fa-compress');
+        this.title = 'Exit Fullscreen';
+    }
+    
+    // Invalidate size to ensure map renders correctly after resize
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
+});
+
+// Exit fullscreen on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const mapContainer = document.getElementById('mapContainer');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        if (fullscreenBtn) {
+            const icon = fullscreenBtn.querySelector('i');
+            
+            if (mapContainer.classList.contains('fullscreen')) {
+                mapContainer.classList.remove('fullscreen');
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                fullscreenBtn.title = 'Toggle Fullscreen';
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        }
+    }
+});
+
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', function() {
+    // Initialize map on page load
+    initializeMap();
+});
+</script>
+{% endblock %}

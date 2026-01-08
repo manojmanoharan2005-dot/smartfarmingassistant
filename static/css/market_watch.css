@@ -292,3 +292,368 @@
     color: var(--text-secondary);
     margin: 4px 0 0 0;
 }
+
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Extra Small Devices - Phones (< 576px) */
+@media (max-width: 575px) {
+    /* Filter Card */
+    .filter-card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .filter-group {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .filter-group label {
+        font-size: 14px !important;
+    }
+    
+    .filter-group select {
+        padding: 12px 14px;
+        font-size: 16px !important;
+        min-height: 44px;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+    
+    /* Summary Cards */
+    .summary-cards {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .summary-card {
+        padding: 16px;
+    }
+    
+    .summary-card .icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+    
+    .summary-card .info h4 {
+        font-size: 20px;
+    }
+    
+    .summary-card .info p {
+        font-size: 12px;
+    }
+    
+    /* Market Prices Table */
+    .market-prices-table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    
+    table {
+        font-size: 13px;
+        min-width: 600px;
+    }
+    
+    table th,
+    table td {
+        padding: 10px 8px;
+        white-space: nowrap;
+    }
+    
+    table th {
+        font-size: 12px;
+    }
+    
+    /* Price Cards (Alternative Mobile View) */
+    .price-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .price-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .price-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .price-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    
+    .price-card-location {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+    
+    .price-card-body {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .price-detail {
+        text-align: center;
+    }
+    
+    .price-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    
+    .price-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    
+    .price-value.high {
+        color: var(--accent-green);
+    }
+    
+    .price-value.low {
+        color: var(--accent-orange);
+    }
+    
+    /* Charts */
+    .chart-container {
+        padding: 16px;
+        height: 250px !important;
+        margin-bottom: 20px;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .chart-title {
+        font-size: 16px !important;
+    }
+    
+    .chart-filters {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .chart-filter-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    
+    canvas {
+        max-height: 250px !important;
+    }
+    
+    /* Trend Indicators */
+    .trend-indicator {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    .trend-icon {
+        font-size: 10px;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        padding: 40px 20px;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px !important;
+    }
+    
+    .empty-state h3 {
+        font-size: 18px !important;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+    }
+    
+    /* Market Info Sections */
+    .market-info-section {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .market-info-title {
+        font-size: 16px !important;
+        margin-bottom: 12px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    
+    .info-item {
+        padding: 12px;
+    }
+    
+    .info-item-label {
+        font-size: 12px;
+    }
+    
+    .info-item-value {
+        font-size: 16px;
+    }
+    
+    /* Price Alert Buttons */
+    .price-alert-btn,
+    .export-btn {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 44px;
+        margin-bottom: 12px;
+    }
+    
+    /* Map Container */
+    .map-container {
+        height: 300px !important;
+        margin: 16px 0;
+    }
+    
+    /* Commodity Selector */
+    .commodity-selector {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 12px;
+    }
+    
+    .commodity-chip {
+        padding: 8px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    
+    /* Pagination */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .pagination-btn {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Small Devices - Landscape Phones (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .price-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filter-row {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 200px;
+    }
+}
+
+/* Medium Devices - Tablets (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .filter-card {
+        padding: 20px;
+    }
+    
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    .chart-container {
+        height: 300px !important;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .filter-btn,
+    .price-alert-btn,
+    .export-btn,
+    .commodity-chip,
+    .pagination-btn {
+        min-height: 44px;
+    }
+    
+    /* Remove hover effects */
+    .filter-btn:hover,
+    .commodity-chip:hover,
+    .price-card:hover {
+        transform: none;
+        box-shadow: inherit;
+    }
+    
+    /* Increase table row tap targets */
+    table tr {
+        min-height: 48px;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+    .filter-card {
+        padding: 12px;
+    }
+    
+    .chart-container {
+        height: 200px !important;
+    }
+    
+    .map-container {
+        height: 250px !important;
+    }
+}

@@ -68,9 +68,9 @@ def get_price_predictions(user_district, user_state):
     
     # Generate predictions for top commodities
     predictions = []
-    top_commodities = ['Tomato', 'Onion', 'Potato', 'Cabbage', 'Banana', 'Mango']
+    top_commodities = ['Tomato', 'Onion', 'Potato', 'Cabbage', 'Carrot', 'Cauliflower', 'Brinjal', 'Capsicum', 'Beans', 'Peas', 'Banana', 'Mango', 'Apple', 'Orange']
     
-    for commodity in top_commodities[:4]:  # Top 4 predictions
+    for commodity in top_commodities[:12]:  # Top 12 predictions
         commodity_data = [item for item in district_data if item['commodity'] == commodity]
         if commodity_data:
             item = commodity_data[0]

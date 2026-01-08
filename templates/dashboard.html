@@ -45,6 +45,23 @@
             </div>
 
             <div class="nav-section">
+                <div class="nav-section-title">Buyer Connect</div>
+                <a href="{{ url_for('buyer_connect.create_listing') }}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Sell My Crop</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.my_listings') }}" class="nav-link">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Listings</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.marketplace') }}" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Buy from Farmers</span>
+                    <span class="badge" style="background: #3b82f6;">New</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
                 <div class="nav-section-title">Tools</div>
                 <a href="#" class="nav-link" onclick="openCalculatorModal(); return false;">
                     <i class="fas fa-calculator"></i>
@@ -58,10 +75,27 @@
                     <i class="fas fa-landmark"></i>
                     <span>Govt. Schemes</span>
                 </a>
-                <a href="#" class="nav-link" onclick="openEquipmentModal(); return false;">
-                    <i class="fas fa-truck-pickup"></i>
-                    <span>Equipment Sharing</span>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Equipment Sharing</div>
+                <a href="{{ url_for('equipment_sharing.create_listing') }}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>List My Equipment</span>
                 </a>
+                <a href="{{ url_for('equipment_sharing.my_listings') }}" class="nav-link">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Equipment</span>
+                </a>
+                <a href="{{ url_for('equipment_sharing.marketplace') }}" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Rent Equipment</span>
+                    <span class="badge" style="background: #10b981;">Live</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Resources</div>
                 <a href="#" class="nav-link" onclick="openFarmersManualModal(); return false;">
                     <i class="fas fa-book"></i>
                     <span>Farmer's Manual</span>
@@ -385,7 +419,7 @@
                                 {% endif %}
                                 <div class="commodity-list">
                                     {% if price_predictions %}
-                                    {% for pred in price_predictions[:5] %}
+                                    {% for pred in price_predictions[:10] %}
                                     <div class="commodity-item">
                                         <div class="commodity-info">
                                             {% set icon_bg_start = '#3b82f6' %}
@@ -406,10 +440,33 @@
                                             {% elif pred.commodity == 'Cabbage' %}
                                             {% set icon_bg_start = '#22c55e' %}{% set icon_bg_end = '#16a34a' %}{% set
                                             icon_symbol = '🥬' %}
+                                            {% elif pred.commodity == 'Cauliflower' %}
+                                            {% set icon_bg_start = '#f5f5f5' %}{% set icon_bg_end = '#e5e5e5' %}{% set
+                                            icon_symbol = '🥦' %}
+                                            {% elif pred.commodity == 'Brinjal' %}
+                                            {% set icon_bg_start = '#8b5cf6' %}{% set icon_bg_end = '#7c3aed' %}{% set
+                                            icon_symbol = '🍆' %}
+                                            {% elif pred.commodity == 'Capsicum' %}
+                                            {% set icon_bg_start = '#22c55e' %}{% set icon_bg_end = '#16a34a' %}{% set
+                                            icon_symbol = '🫑' %}
+                                            {% elif pred.commodity == 'Beans' %}
+                                            {% set icon_bg_start = '#84cc16' %}{% set icon_bg_end = '#65a30d' %}{% set
+                                            icon_symbol = '🫘' %}
+                                            {% elif pred.commodity == 'Peas' %}
+                                            {% set icon_bg_start = '#10b981' %}{% set icon_bg_end = '#059669' %}{% set
+                                            icon_symbol = '🫛' %}
                                             {% elif pred.commodity == 'Banana' %}
-                                            {% set icon_symbol = '🍌' %}
+                                            {% set icon_bg_start = '#fbbf24' %}{% set icon_bg_end = '#f59e0b' %}{% set
+                                            icon_symbol = '🍌' %}
                                             {% elif pred.commodity == 'Mango' %}
-                                            {% set icon_symbol = '🥭' %}
+                                            {% set icon_bg_start = '#fb923c' %}{% set icon_bg_end = '#f97316' %}{% set
+                                            icon_symbol = '🥭' %}
+                                            {% elif pred.commodity == 'Apple' %}
+                                            {% set icon_bg_start = '#ef4444' %}{% set icon_bg_end = '#dc2626' %}{% set
+                                            icon_symbol = '🍎' %}
+                                            {% elif pred.commodity == 'Orange' %}
+                                            {% set icon_bg_start = '#fb923c' %}{% set icon_bg_end = '#f97316' %}{% set
+                                            icon_symbol = '🍊' %}
                                             {% endif %}
                                             <div class="commodity-icon dynamic-bg"
                                                 style="--bg-start: {{ icon_bg_start }}; --bg-end: {{ icon_bg_end }};">
@@ -437,7 +494,7 @@
                                     </div>
                                     {% endfor %}
                                     {% elif market_prices %}
-                                    {% for price in market_prices[:5] %}
+                                    {% for price in market_prices[:10] %}
                                     <div class="commodity-item">
                                         <div class="commodity-info">
                                             <div class="commodity-icon">

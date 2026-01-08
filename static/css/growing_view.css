@@ -273,3 +273,47 @@ body {
     width: 100%;
     margin-top: 20px;
 }
+
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+@media (max-width: 575px) {
+    .container { padding: 16px; }
+    .back-btn { font-size: 13px; margin-bottom: 16px; }
+    .page-header { margin-bottom: 20px; }
+    .crop-title { font-size: 20px !important; }
+    .progress-section { padding: 16px; margin-bottom: 20px; }
+    .progress-label { font-size: 13px; }
+    .progress-percent { font-size: 13px; }
+    .stats-row { flex-direction: column; gap: 12px; }
+    .stat-card { padding: 14px; }
+    .stat-value { font-size: 22px; }
+    .stat-label { font-size: 12px; }
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 8px; padding-bottom: 8px; }
+    .tab { padding: 10px 16px; font-size: 14px; white-space: nowrap; min-height: 44px; }
+    .section { margin-bottom: 20px; padding: 16px; }
+    .section-title { font-size: 16px !important; }
+    .param-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+    .param-item { padding: 12px; }
+    .param-label { font-size: 11px; }
+    .param-value { font-size: 14px; }
+    .timeline-section { padding: 12px; }
+    .timeline-dropdown { font-size: 14px; padding: 12px; min-height: 44px; }
+    .planner-form { flex-direction: column; gap: 12px; }
+    .form-group { width: 100%; }
+    .form-label { font-size: 13px; }
+    .form-input { padding: 12px; font-size: 16px !important; min-height: 44px; }
+    .btn { width: 100%; padding: 12px 20px; font-size: 15px; min-height: 44px; }
+    .monitoring-btn { margin-top: 16px; }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .param-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .tab, .btn { min-height: 44px; }
+    .stat-card:hover, .tab:hover, .btn:hover { transform: none; box-shadow: inherit; }
+}

@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Buyer Marketplace - Direct Buy from Farmers{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer_connect.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🌾</div>
+            <div>
+                <div class="sidebar-title">Smart Farming</div>
+                <div class="sidebar-subtitle">Agricultural Platform</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main Menu</div>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-link">
+                    <i class="fas fa-seedling"></i>
+                    <span>Crop Suggestion</span>
+                </a>
+                <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-link">
+                    <i class="fas fa-flask"></i>
+                    <span>Fertilizer Advice</span>
+                </a>
+                <a href="{{ url_for('market.market_watch') }}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Prices</span>
+                    <span class="badge">Live</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Buyer Connect</div>
+                <a href="{{ url_for('buyer_connect.create_listing') }}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Sell My Crop</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.my_listings') }}" class="nav-link">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Listings</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.marketplace') }}" class="nav-link active">
+                    <i class="fas fa-store"></i>
+                    <span>Buy from Farmers</span>
+                    <span class="badge" style="background: #3b82f6;">New</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">{{ session.get('user_name', 'U')[0] }}</div>
+                <div class="user-details">
+                    <h4>{{ session.get('user_name', 'User') }}</h4>
+                    <span>Farmer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-store"></i> Buyer Marketplace
+            </h1>
+            <p class="page-subtitle">Buy fresh crops directly from farmers at transparent prices</p>
+            </div>
+
+        <!-- Filters -->
+        <div class="form-card" style="margin-top: 24px;">
+            <form method="GET" action="{{ url_for('buyer_connect.marketplace') }}">
+                <div class="filter-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: end;">
+                    <div class="filter-group">
+                        <label class="form-label">Crop</label>
+                        <select name="crop" class="form-select">
+                            <option value="">All Crops</option>
+                            {% for crop in crops %}
+                            <option value="{{ crop }}" {% if crop == crop_filter %}selected{% endif %}>{{ crop }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">State</label>
+                        <select name="state" class="form-select">
+                            <option value="">All States</option>
+                            {% for state in states %}
+                            <option value="{{ state }}" {% if state == state_filter %}selected{% endif %}>{{ state }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="form-label">Sort By</label>
+                        <select name="sort" class="form-select">
+                            <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>Recent First</option>
+                            <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn-submit" style="width: 100%;">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Listings Count -->
+        <div style="margin: 24px 0 16px 0; color: var(--text-secondary); font-size: 15px; font-weight: 600;">
+            <i class="fas fa-box"></i> Showing {{ listings|length }} listing(s)
+        </div>
+
+        <!-- Listings Grid -->
+        {% if listings %}
+        <div class="marketplace-grid">
+            {% for listing in listings %}
+            <div class="listing-card">
+                <!-- Header -->
+                <div class="listing-header">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="crop-emoji">
+                            {% if listing.crop == 'Tomato' %}🍅
+                            {% elif listing.crop == 'Potato' %}🥔
+                            {% elif listing.crop == 'Onion' %}🧅
+                            {% elif listing.crop == 'Banana' %}🍌
+                            {% elif listing.crop == 'Mango' %}🥭
+                            {% elif listing.crop == 'Apple' %}🍎
+                            {% elif listing.crop == 'Orange' %}🍊
+                            {% elif listing.crop == 'Grapes' %}🍇
+                            {% elif listing.crop == 'Wheat' %}🌾
+                            {% elif listing.crop == 'Rice' %}🌾
+                            {% elif listing.crop == 'Maize' %}🌽
+                            {% elif listing.crop == 'Cotton' %}🌼
+                            {% elif listing.crop == 'Sugarcane' %}🌿
+                            {% elif listing.crop == 'Tea' %}🍵
+                            {% elif listing.crop == 'Coffee' %}☕
+                            {% else %}🌾{% endif %}
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 class="crop-name">{{ listing.crop }}</h3>
+                            <div class="location-text">
+                                <i class="fas fa-map-marker-alt"></i> {{ listing.district }}, {{ listing.state }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="listing-content">
+                    <!-- Price -->
+                    <div class="price-info-box" style="margin-bottom: 20px;">
+                        <div class="price-label">PRICE PER KG</div>
+                        <div class="price-main">₹{{ "%.2f"|format(listing.farmer_price) }}</div>
+                        <div class="price-secondary">
+                            Market: ₹{{ "%.2f"|format(listing.live_market_price) }}/kg
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="fas fa-weight"></i> Quantity
+                            </span>
+                            <span class="info-value">{{ listing.quantity }} {{ listing.unit }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="fas fa-user"></i> Farmer
+                            </span>
+                            <span class="info-value">{{ listing.farmer_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">
+                                <i class="fas fa-calendar"></i> Posted
+                            </span>
+                            <span class="info-value">{{ listing.created_at[:10] }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    {% if listing.farmer_id == session.get('user_id') %}
+                    <button disabled class="btn-submit" style="width: 100%; margin-top: 20px; opacity: 0.5; cursor: not-allowed;" title="You cannot buy your own listing">
+                        <i class="fas fa-ban"></i> Your Own Listing
+                    </button>
+                    {% else %}
+                    <button onclick="openPurchaseModal('{{ listing._id }}', '{{ listing.crop }}', '{{ listing.farmer_price }}', '{{ listing.quantity }}', '{{ listing.unit }}', '{{ listing.farmer_name }}', '{{ listing.farmer_phone }}', {{ listing.latitude|default(0) }}, {{ listing.longitude|default(0) }}, '{{ listing.farmer_id }}')" 
+                        class="btn-submit" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size: 64px; margin-bottom: 20px;">📦</div>
+            <h3 style="font-size: 20px; color: var(--text-primary); margin-bottom: 8px;">No Listings Available</h3>
+            <p style="color: var(--text-secondary);">No crops are currently listed for sale with your selected filters.</p>
+        </div>
+    {% endif %}
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+<div id="purchaseModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button onclick="closePurchaseModal()" class="modal-close">×</button>
+        
+        <h2 class="modal-title">
+            <i class="fas fa-shopping-cart" style="color: var(--success);"></i> Confirm Purchase
+        </h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px;">Enter your details to confirm this purchase</p>
+
+        <div id="purchaseDetails" class="purchase-details">
+            <!-- Will be filled by JavaScript -->
+        </div>
+
+        <!-- Farm Location Map -->
+        <div style="margin-bottom: 20px;">
+            <label class="form-label">
+                <i class="fas fa-map-marker-alt"></i> Farm Location
+            </label>
+            <div id="purchaseMap" style="height: 250px; border-radius: 8px; border: 2px solid #e2e8f0;"></div>
+        </div>
+
+        <form id="purchaseForm">
+            <input type="hidden" id="purchase_listing_id" name="listing_id">
+            
+            <div class="form-group">
+                <label class="form-label">Your Name *</label>
+                <input type="text" id="buyer_name" name="buyer_name" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Your Phone Number *</label>
+                <input type="tel" id="buyer_phone" name="buyer_phone" required pattern="[0-9]{10}"
+                    placeholder="10-digit mobile number" class="form-input">
+            </div>
+
+            <div class="validation-message warning" style="margin-bottom: 24px;">
+                <i class="fas fa-info-circle"></i> <strong>Note:</strong> The farmer will contact you directly to arrange payment and delivery.
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="closePurchaseModal()" class="btn-cancel" style="flex: 1;">
+                    Cancel
+                </button>
+                <button type="submit" id="confirmPurchaseBtn" class="btn-submit" style="flex: 1;">
+                    <i class="fas fa-check-circle"></i> Confirm
+                </button>
+            </div>
+        </form>
+
+        <div id="purchaseMessage" class="validation-message" style="display: none; margin-top: 16px;"></div>
+    </div>
+</div>
+
+<style>
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    padding: 32px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--bg-secondary);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--text-secondary);
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    background: #e2e8f0;
+    color: var(--text-primary);
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.purchase-details {
+    background: var(--bg-secondary);
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.validation-message.warning {
+    background: #fffbeb;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13px;
+    color: #92400e;
+}
+</style>
+
+<script>
+let currentListingData = {};
+let purchaseMap = null;
+
+function openPurchaseModal(listingId, crop, price, quantity, unit, farmerName, farmerPhone, lat, lng, farmerId) {
+    currentListingData = { listingId, crop, price, quantity, unit, farmerName, farmerPhone, lat, lng, farmerId };
+    
+    document.getElementById('purchase_listing_id').value = listingId;
+    document.getElementById('purchaseDetails').innerHTML = `
+        <div style="margin-bottom: 12px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">CROP</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text-primary);">${crop}</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">QUANTITY</div>
+                <div style="font-weight: 600; color: var(--text-primary);">${quantity} ${unit}</div>
+            </div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">PRICE</div>
+                <div style="font-weight: 700; color: var(--success); font-size: 18px;">₹${parseFloat(price).toFixed(2)}/kg</div>
+            </div>
+        </div>
+        <div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">FARMER</div>
+            <div style="font-weight: 600; color: var(--text-primary);">${farmerName || 'Farmer'}</div>
+        </div>
+    `;
+    
+    document.getElementById('purchaseModal').style.display = 'flex';
+    document.getElementById('purchaseMessage').style.display = 'none';
+    
+    // Initialize map with farm location
+    setTimeout(() => {
+        if (lat && lng && lat !== 0 && lng !== 0) {
+            if (purchaseMap) {
+                purchaseMap.remove();
+            }
+            
+            purchaseMap = L.map('purchaseMap').setView([lat, lng], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(purchaseMap);
+            
+            // Add marker for farm location
+            L.marker([lat, lng], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(purchaseMap).bindPopup(`<strong>${crop} Farm</strong><br>${farmerName}`).openPopup();
+        } else {
+            document.getElementById('purchaseMap').innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8fafc; color: #64748b;"><i class="fas fa-map-marked-alt"></i>&nbsp; Location not available</div>';
+        }
+    }, 100);
+}
+
+function closePurchaseModal() {
+    document.getElementById('purchaseModal').style.display = 'none';
+    document.getElementById('purchaseForm').reset();
+    document.getElementById('purchaseMessage').style.display = 'none';
+    
+    // Clean up map
+    if (purchaseMap) {
+        purchaseMap.remove();
+        purchaseMap = null;
+    }
+}
+
+document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('confirmPurchaseBtn');
+    const messageDiv = document.getElementById('purchaseMessage');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    messageDiv.style.display = 'none';
+    
+    try {
+        const formData = {
+            listing_id: document.getElementById('purchase_listing_id').value,
+            buyer_name: document.getElementById('buyer_name').value,
+            buyer_phone: document.getElementById('buyer_phone').value
+        };
+        
+        const response = await fetch('/buyer-connect/api/confirm-purchase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            messageDiv.className = 'validation-message success';
+            messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            messageDiv.className = 'validation-message error';
+            messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (data.error || data.message || 'Failed to confirm purchase');
+            messageDiv.style.display = 'block';
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm';
+        }
+    } catch (error) {
+        console.error('Purchase error:', error);
+        messageDiv.className = 'validation-message error';
+        messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> An error occurred. Please try again.';
+        messageDiv.style.display = 'block';
+        
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm';
+    }
+});
+
+// Close modal on outside click
+document.getElementById('purchaseModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePurchaseModal();
+    }
+});
+</script>
+
+<style>
+.listing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+</style>
+{% endblock %}

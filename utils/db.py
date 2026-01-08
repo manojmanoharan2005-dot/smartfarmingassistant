@@ -247,6 +247,9 @@ def find_user_by_id(user_id):
     # If user not found, return None
     return None
 
+# Alias for backward compatibility
+get_user_by_id = find_user_by_id
+
 # Mock functions for development
 def save_crop_recommendation(user_id, crop_data, timeline_data):
     print(f"🌱 Crop recommendation saved for user {user_id}: {crop_data['crop_name']}")
@@ -916,4 +919,841 @@ def get_user_expenses(user_id):
             return []
     except Exception as e:
         print(f"Error fetching expenses: {e}")
+        return []
+
+
+# ============================================
+# BUYER CONNECT - Direct Buyer-Farmer Connect
+# ============================================
+
+LISTINGS_FILE = os.path.join(DATA_DIR, 'crop_listings.json')
+MARKET_PRICES_FILE = os.path.join(DATA_DIR, 'market_prices.json')
+
+# Initialize listings file
+if not os.path.exists(LISTINGS_FILE):
+    with open(LISTINGS_FILE, 'w') as f:
+        json.dump([], f)
+
+
+def get_live_market_price(crop, district, state):
+    """Fetch live market price for a crop from market_prices.json"""
+    try:
+        if not os.path.exists(MARKET_PRICES_FILE):
+            return None
+        
+        with open(MARKET_PRICES_FILE, 'r', encoding='utf-8') as f:
+            market_data = json.load(f)
+        
+        # Search for crop in user's district first
+        matching_items = [
+            item for item in market_data.get('data', [])
+            if item['commodity'].lower() == crop.lower() 
+            and item['district'].lower() == district.lower()
+            and item['state'].lower() == state.lower()
+        ]
+        
+        # If not found in exact district, search in same state
+        if not matching_items:
+            matching_items = [
+                item for item in market_data.get('data', [])
+                if item['commodity'].lower() == crop.lower()
+                and item['state'].lower() == state.lower()
+            ]
+        
+        # If still not found, search nationwide
+        if not matching_items:
+            matching_items = [
+                item for item in market_data.get('data', [])
+                if item['commodity'].lower() == crop.lower()
+            ]
+        
+        if matching_items:
+            item = matching_items[0]
+            modal_price_quintal = item['modal_price']  # Price per quintal
+            price_per_kg = round(modal_price_quintal / 100, 2)  # Convert to per kg
+            
+            # Calculate ±20% range
+            min_price = round(price_per_kg * 0.8, 2)
+            max_price = round(price_per_kg * 1.2, 2)
+            
+            return {
+                'recommended_price': price_per_kg,
+                'min_price': min_price,
+                'max_price': max_price,
+                'market': item.get('market', 'Local Mandi'),
+                'date': item.get('price_date', datetime.now().strftime('%Y-%m-%d'))
+            }
+        
+        return None
+        
+    except Exception as e:
+        print(f"Error fetching live market price: {e}")
+        return None
+
+
+def create_crop_listing(listing_data):
+    """Create a new crop listing for sale"""
+    import uuid
+    try:
+        # Add unique ID
+        listing_data['_id'] = str(uuid.uuid4())
+        
+        # MongoDB Atlas
+        if db:
+            try:
+                result = db.crop_listings.insert_one(listing_data)
+                print(f"[MONGODB] Listing created with ID: {result.inserted_id}")
+                return str(result.inserted_id)
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        with open(LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        listings.append(listing_data)
+        
+        with open(LISTINGS_FILE, 'w') as f:
+            json.dump(listings, f, indent=2)
+        
+        print(f"[FILE] Listing created: {listing_data['_id']}")
+        return listing_data['_id']
+        
+    except Exception as e:
+        print(f"Error creating listing: {e}")
+        return None
+
+
+def get_user_listings(user_id):
+    """Get all listings by a specific farmer"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                listings = list(db.crop_listings.find({'farmer_id': user_id}).sort('created_at', -1))
+                for listing in listings:
+                    listing['_id'] = str(listing['_id'])
+                return listings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        with open(LISTINGS_FILE, 'r') as f:
+            all_listings = json.load(f)
+        
+        user_listings = [l for l in all_listings if l.get('farmer_id') == user_id]
+        user_listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        return user_listings
+        
+    except Exception as e:
+        print(f"Error fetching user listings: {e}")
+        return []
+
+
+def get_available_listings(crop='', district='', state='', sort_by='recent'):
+    """Get all available listings for buyers (status='available')"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                query = {'status': 'available'}
+                if crop:
+                    query['crop'] = crop
+                if district:
+                    query['district'] = district
+                if state:
+                    query['state'] = state
+                
+                sort_order = [('created_at', -1)]  # Default: recent first
+                if sort_by == 'price_low':
+                    sort_order = [('farmer_price', 1)]
+                elif sort_by == 'price_high':
+                    sort_order = [('farmer_price', -1)]
+                
+                listings = list(db.crop_listings.find(query).sort(sort_order))
+                for listing in listings:
+                    listing['_id'] = str(listing['_id'])
+                    # Add farmer details
+                    farmer = get_user_by_id(listing['farmer_id'])
+                    if farmer:
+                        listing['farmer_name'] = farmer.get('name', 'Unknown')
+                        listing['farmer_phone'] = farmer.get('phone', '')
+                return listings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        with open(LISTINGS_FILE, 'r') as f:
+            all_listings = json.load(f)
+        
+        # Filter by status and criteria
+        available = [l for l in all_listings if l.get('status') == 'available']
+        
+        if crop:
+            available = [l for l in available if l.get('crop', '').lower() == crop.lower()]
+        if district:
+            available = [l for l in available if l.get('district', '').lower() == district.lower()]
+        if state:
+            available = [l for l in available if l.get('state', '').lower() == state.lower()]
+        
+        # Sort
+        if sort_by == 'price_low':
+            available.sort(key=lambda x: x.get('farmer_price', 0))
+        elif sort_by == 'price_high':
+            available.sort(key=lambda x: x.get('farmer_price', 0), reverse=True)
+        else:  # recent
+            available.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        
+        # Add farmer details
+        for listing in available:
+            farmer = get_user_by_id(listing['farmer_id'])
+            if farmer:
+                listing['farmer_name'] = farmer.get('name', 'Unknown')
+                listing['farmer_phone'] = farmer.get('phone', '')
+        
+        return available
+        
+    except Exception as e:
+        print(f"Error fetching available listings: {e}")
+        return []
+
+
+def get_listing_by_id(listing_id):
+    """Get a specific listing by ID"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                # Try both ObjectId and string ID
+                try:
+                    listing = db.crop_listings.find_one({'_id': ObjectId(listing_id)})
+                except:
+                    listing = db.crop_listings.find_one({'_id': listing_id})
+                
+                if listing:
+                    listing['_id'] = str(listing['_id'])
+                    # Add farmer details
+                    farmer = get_user_by_id(listing['farmer_id'])
+                    if farmer:
+                        listing['farmer_name'] = farmer.get('name', 'Unknown')
+                        listing['farmer_phone'] = farmer.get('phone', '')
+                    return listing
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        with open(LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        for listing in listings:
+            if listing.get('_id') == listing_id:
+                # Add farmer details
+                farmer = get_user_by_id(listing['farmer_id'])
+                if farmer:
+                    listing['farmer_name'] = farmer.get('name', 'Unknown')
+                    listing['farmer_phone'] = farmer.get('phone', '')
+                return listing
+        
+        return None
+        
+    except Exception as e:
+        print(f"Error fetching listing: {e}")
+        return None
+
+
+def confirm_purchase(listing_id, purchase_data):
+    """Confirm purchase and update listing status atomically"""
+    try:
+        # MongoDB Atlas - ATOMIC UPDATE
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                
+                # Atomic update: only update if status is still 'available'
+                # This prevents double-selling
+                try:
+                    obj_id = ObjectId(listing_id)
+                except:
+                    obj_id = listing_id
+                
+                result = db.crop_listings.find_one_and_update(
+                    {'_id': obj_id, 'status': 'available'},  # Only if still available
+                    {
+                        '$set': {
+                            'status': 'sold',
+                            'buyer_id': purchase_data['buyer_id'],
+                            'buyer_name': purchase_data['buyer_name'],
+                            'buyer_phone': purchase_data['buyer_phone'],
+                            'sold_at': purchase_data['purchased_at']
+                        }
+                    },
+                    return_document=True
+                )
+                
+                if result:
+                    print(f"[MONGODB] Purchase confirmed for listing: {listing_id}")
+                    return True, "Purchase confirmed successfully"
+                else:
+                    return False, "This listing is no longer available"
+                    
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback (with lock to prevent race condition)
+        import fcntl
+        
+        with open(LISTINGS_FILE, 'r+') as f:
+            # Lock file to prevent concurrent access
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            
+            try:
+                listings = json.load(f)
+                
+                # Find listing and check if still available
+                for listing in listings:
+                    if listing.get('_id') == listing_id:
+                        if listing.get('status') != 'available':
+                            return False, "This listing is no longer available"
+                        
+                        # Update status
+                        listing['status'] = 'sold'
+                        listing['buyer_id'] = purchase_data['buyer_id']
+                        listing['buyer_name'] = purchase_data['buyer_name']
+                        listing['buyer_phone'] = purchase_data['buyer_phone']
+                        listing['sold_at'] = purchase_data['purchased_at']
+                        
+                        # Write back
+                        f.seek(0)
+                        json.dump(listings, f, indent=2)
+                        f.truncate()
+                        
+                        print(f"[FILE] Purchase confirmed for listing: {listing_id}")
+                        return True, "Purchase confirmed successfully"
+                
+                return False, "Listing not found"
+                
+            finally:
+                # Release lock
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        
+    except Exception as e:
+        print(f"Error confirming purchase: {e}")
+        return False, str(e)
+
+
+def update_listing_status(listing_id, new_status):
+    """Update listing status (for cancellation, expiry, etc.)"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                try:
+                    obj_id = ObjectId(listing_id)
+                except:
+                    obj_id = listing_id
+                
+                result = db.crop_listings.update_one(
+                    {'_id': obj_id},
+                    {'$set': {'status': new_status, 'updated_at': datetime.utcnow().isoformat()}}
+                )
+                return result.modified_count > 0
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        with open(LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        for listing in listings:
+            if listing.get('_id') == listing_id:
+                listing['status'] = new_status
+                listing['updated_at'] = datetime.utcnow().isoformat()
+                
+                with open(LISTINGS_FILE, 'w') as f:
+                    json.dump(listings, f, indent=2)
+                
+                return True
+        
+        return False
+        
+    except Exception as e:
+        print(f"Error updating listing status: {e}")
+        return False
+
+
+# ============================================
+# EQUIPMENT SHARING MARKETPLACE FUNCTIONS
+# ============================================
+
+EQUIPMENT_LISTINGS_FILE = os.path.join(DATA_DIR, 'equipment_listings.json')
+EQUIPMENT_BASE_PRICES_FILE = os.path.join(DATA_DIR, 'equipment_base_prices.json')
+
+def get_live_equipment_rent(equipment_name, district='', state=''):
+    """
+    Get live market rent for equipment
+    Returns: {recommended_rent, min_rent, max_rent}
+    """
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                query = {'equipment_name': equipment_name}
+                # Try to match by state, fallback to generic
+                if state:
+                    query['location'] = {'$regex': state, '$options': 'i'}
+                
+                base_price = db.equipment_base_prices.find_one(query)
+                
+                if base_price:
+                    avg_rent = base_price['avg_rent_per_day']
+                    return {
+                        'recommended_rent': avg_rent,
+                        'min_rent': round(avg_rent * 0.85, 2),
+                        'max_rent': round(avg_rent * 1.15, 2)
+                    }
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_BASE_PRICES_FILE):
+            return None
+        
+        with open(EQUIPMENT_BASE_PRICES_FILE, 'r') as f:
+            base_prices = json.load(f)
+        
+        # Find matching equipment
+        for price in base_prices:
+            if price['equipment_name'].lower() == equipment_name.lower():
+                # Try to match by state first, fallback to any location
+                if state and state.lower() in price.get('location', '').lower():
+                    avg_rent = price['avg_rent_per_day']
+                    return {
+                        'recommended_rent': avg_rent,
+                        'min_rent': round(avg_rent * 0.85, 2),
+                        'max_rent': round(avg_rent * 1.15, 2)
+                    }
+        
+        # Fallback: return first matching equipment regardless of location
+        for price in base_prices:
+            if price['equipment_name'].lower() == equipment_name.lower():
+                avg_rent = price['avg_rent_per_day']
+                print(f"[DB] Found equipment rent: {equipment_name} = ₹{avg_rent}/day")
+                return {
+                    'recommended_rent': avg_rent,
+                    'min_rent': round(avg_rent * 0.85, 2),
+                    'max_rent': round(avg_rent * 1.15, 2)
+                }
+        
+        print(f"[DB] No rental rate found for equipment: {equipment_name}, state: {state}")
+        print(f"[DB] Available equipment in file: {[p['equipment_name'] for p in base_prices[:5]]}")
+        return None
+        
+    except Exception as e:
+        print(f"Error fetching live equipment rent: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def create_equipment_listing(listing_data):
+    """Create new equipment listing"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                result = db.equipment_listings.insert_one(listing_data)
+                return str(result.inserted_id)
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            with open(EQUIPMENT_LISTINGS_FILE, 'w') as f:
+                json.dump([], f)
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        # Generate unique ID
+        import uuid
+        listing_data['_id'] = str(uuid.uuid4())
+        
+        listings.append(listing_data)
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'w') as f:
+            json.dump(listings, f, indent=2)
+        
+        return listing_data['_id']
+        
+    except Exception as e:
+        print(f"Error creating equipment listing: {e}")
+        return None
+
+
+def get_available_equipment(equipment_name='', district='', state='', sort_by='recent'):
+    """Get all available equipment (status='available')"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                query = {'status': 'available'}
+                if equipment_name:
+                    query['equipment_name'] = equipment_name
+                if district:
+                    query['district'] = district
+                if state:
+                    query['state'] = state
+                
+                sort_order = [('created_at', -1)]  # Default: recent first
+                if sort_by == 'price_low':
+                    sort_order = [('owner_rent', 1)]
+                elif sort_by == 'price_high':
+                    sort_order = [('owner_rent', -1)]
+                
+                listings = list(db.equipment_listings.find(query).sort(sort_order))
+                for listing in listings:
+                    listing['_id'] = str(listing['_id'])
+                return listings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return []
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            all_listings = json.load(f)
+        
+        # Filter by status and criteria
+        available = [l for l in all_listings if l.get('status') == 'available']
+        
+        if equipment_name:
+            available = [l for l in available if l.get('equipment_name', '').lower() == equipment_name.lower()]
+        if district:
+            available = [l for l in available if l.get('district', '').lower() == district.lower()]
+        if state:
+            available = [l for l in available if l.get('state', '').lower() == state.lower()]
+        
+        # Sort
+        if sort_by == 'price_low':
+            available.sort(key=lambda x: x.get('owner_rent', 0))
+        elif sort_by == 'price_high':
+            available.sort(key=lambda x: x.get('owner_rent', 0), reverse=True)
+        else:
+            available.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        
+        return available
+        
+    except Exception as e:
+        print(f"Error fetching available equipment: {e}")
+        return []
+
+
+def get_equipment_listing_by_id(listing_id):
+    """Get equipment listing by ID"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                listing = db.equipment_listings.find_one({'_id': ObjectId(listing_id)})
+                if listing:
+                    listing['_id'] = str(listing['_id'])
+                    return listing
+            except:
+                pass
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return None
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        for listing in listings:
+            if listing.get('_id') == listing_id:
+                return listing
+        
+        return None
+        
+    except Exception as e:
+        print(f"Error fetching equipment listing: {e}")
+        return None
+
+
+def book_equipment_atomic(listing_id, booking_data):
+    """
+    Atomically book equipment (prevents double booking)
+    Returns: (success, message)
+    """
+    try:
+        # MongoDB Atlas - ATOMIC UPDATE
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                
+                # Atomic update: only update if status is 'available'
+                result = db.equipment_listings.update_one(
+                    {
+                        '_id': ObjectId(listing_id),
+                        'status': 'available'  # Critical: only update if still available
+                    },
+                    {
+                        '$set': {
+                            'status': 'booked',
+                            'renter_id': booking_data['renter_id'],
+                            'renter_name': booking_data['renter_name'],
+                            'renter_phone': booking_data['renter_phone'],
+                            'from_date': booking_data['from_date'],
+                            'to_date': booking_data['to_date'],
+                            'booked_at': booking_data['booked_at']
+                        }
+                    }
+                )
+                
+                if result.modified_count > 0:
+                    return (True, 'Equipment booked successfully')
+                else:
+                    return (False, 'Equipment is no longer available')
+                    
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback with simple locking
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return (False, 'Equipment not found')
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        for listing in listings:
+            if listing.get('_id') == listing_id:
+                if listing.get('status') != 'available':
+                    return (False, 'Equipment is no longer available')
+                
+                # Update listing
+                listing['status'] = 'booked'
+                listing['renter_id'] = booking_data['renter_id']
+                listing['renter_name'] = booking_data['renter_name']
+                listing['renter_phone'] = booking_data['renter_phone']
+                listing['from_date'] = booking_data['from_date']
+                listing['to_date'] = booking_data['to_date']
+                listing['booked_at'] = booking_data['booked_at']
+                
+                with open(EQUIPMENT_LISTINGS_FILE, 'w') as f:
+                    json.dump(listings, f, indent=2)
+                
+                return (True, 'Equipment booked successfully')
+        
+        return (False, 'Equipment not found')
+        
+    except Exception as e:
+        print(f"Error booking equipment: {e}")
+        return (False, 'An error occurred')
+
+
+def complete_equipment_rental(listing_id):
+    """Mark equipment rental as completed"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                
+                result = db.equipment_listings.update_one(
+                    {'_id': ObjectId(listing_id)},
+                    {
+                        '$set': {
+                            'status': 'completed',
+                            'completed_at': datetime.utcnow().isoformat()
+                        }
+                    }
+                )
+                
+                if result.modified_count > 0:
+                    return (True, 'Rental completed successfully')
+                else:
+                    return (False, 'Equipment not found')
+                    
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return (False, 'Equipment not found')
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            listings = json.load(f)
+        
+        for listing in listings:
+            if listing.get('_id') == listing_id:
+                listing['status'] = 'completed'
+                listing['completed_at'] = datetime.utcnow().isoformat()
+                
+                with open(EQUIPMENT_LISTINGS_FILE, 'w') as f:
+                    json.dump(listings, f, indent=2)
+                
+                return (True, 'Rental completed successfully')
+        
+        return (False, 'Equipment not found')
+        
+    except Exception as e:
+        print(f"Error completing rental: {e}")
+        return (False, 'An error occurred')
+
+
+def get_user_equipment_listings(user_id):
+    """Get all equipment listings by a user"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                listings = list(db.equipment_listings.find({'owner_id': user_id}).sort('created_at', -1))
+                for listing in listings:
+                    listing['_id'] = str(listing['_id'])
+                return listings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return []
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            all_listings = json.load(f)
+        
+        user_listings = [l for l in all_listings if l.get('owner_id') == user_id]
+        user_listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+        
+        return user_listings
+        
+    except Exception as e:
+        print(f"Error fetching user equipment listings: {e}")
+        return []
+
+
+def confirm_equipment_rental(listing_id, rental_data):
+    """Confirm equipment rental and update listing status atomically"""
+    try:
+        # MongoDB Atlas - ATOMIC UPDATE
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                
+                # Atomic update: only update if status is still 'available'
+                # This prevents double-booking
+                try:
+                    obj_id = ObjectId(listing_id)
+                except:
+                    obj_id = listing_id
+                
+                result = db.equipment_listings.find_one_and_update(
+                    {'_id': obj_id, 'status': 'available'},  # Only if still available
+                    {
+                        '$set': {
+                            'status': 'booked',
+                            'renter_id': rental_data['renter_id'],
+                            'renter_name': rental_data['renter_name'],
+                            'renter_phone': rental_data['renter_phone'],
+                            'rental_from': rental_data['rental_from'],
+                            'rental_to': rental_data['rental_to'],
+                            'rental_days': rental_data['rental_days'],
+                            'total_rent': rental_data['total_rent'],
+                            'booked_at': rental_data['booked_at']
+                        }
+                    },
+                    return_document=True
+                )
+                
+                if result:
+                    print(f"[MONGODB] Rental confirmed for listing: {listing_id}")
+                    return True, "Rental confirmed successfully"
+                else:
+                    return False, "This equipment is no longer available"
+                    
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback (with lock to prevent race condition)
+        import fcntl
+        
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return False, "Listing not found"
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r+') as f:
+            # Lock file to prevent concurrent access (Unix/Linux only, will fail gracefully on Windows)
+            try:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            except:
+                pass  # Windows doesn't support fcntl
+            
+            try:
+                listings = json.load(f)
+                
+                # Find listing and check if still available
+                for listing in listings:
+                    if listing.get('_id') == listing_id:
+                        if listing.get('status') != 'available':
+                            return False, "This equipment is no longer available"
+                        
+                        # Update status
+                        listing['status'] = 'booked'
+                        listing['renter_id'] = rental_data['renter_id']
+                        listing['renter_name'] = rental_data['renter_name']
+                        listing['renter_phone'] = rental_data['renter_phone']
+                        listing['rental_from'] = rental_data['rental_from']
+                        listing['rental_to'] = rental_data['rental_to']
+                        listing['rental_days'] = rental_data['rental_days']
+                        listing['total_rent'] = rental_data['total_rent']
+                        listing['booked_at'] = rental_data['booked_at']
+                        
+                        # Write back
+                        f.seek(0)
+                        f.truncate()
+                        json.dump(listings, f, indent=4)
+                        
+                        return True, "Rental confirmed successfully"
+                
+                return False, "Listing not found"
+                
+            finally:
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                except:
+                    pass
+        
+    except Exception as e:
+        print(f"Error confirming rental: {e}")
+        return False, f"Error: {str(e)}"
+
+
+def get_user_bookings(user_id):
+    """Get all equipment bookings made by a user"""
+    try:
+        # MongoDB Atlas
+        if db:
+            try:
+                bookings = list(db.equipment_listings.find({'renter_id': user_id}).sort('booked_at', -1))
+                for booking in bookings:
+                    booking['_id'] = str(booking['_id'])
+                return bookings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            return []
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r') as f:
+            all_listings = json.load(f)
+        
+        user_bookings = [l for l in all_listings if l.get('renter_id') == user_id]
+        user_bookings.sort(key=lambda x: x.get('booked_at', ''), reverse=True)
+        
+        return user_bookings
+        
+    except Exception as e:
+        print(f"Error fetching user bookings: {e}")
         return []

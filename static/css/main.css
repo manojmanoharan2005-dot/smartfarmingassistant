@@ -1429,14 +1429,17 @@ img {
 @media (max-width: 480px) {
     .hero-title {
         font-size: 1.85rem;
+        line-height: 1.2;
     }
 
     .hero-buttons {
         flex-direction: column;
+        gap: 12px;
     }
 
     .hero-buttons .btn {
         width: 100%;
+        padding: 14px 24px;
     }
 
     .section-title {
@@ -1445,10 +1448,77 @@ img {
 
     .features-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 16px;
     }
 
     .stats-showcase {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    /* Toast notifications on mobile */
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+    
+    .toast {
+        min-width: 100%;
+        max-width: 100%;
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+    
+    /* Forms */
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-control {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 12px 16px;
+    }
+    
+    /* Cards */
+    .card {
+        margin: 0 12px;
+    }
+    
+    /* Section padding */
+    section {
+        padding: 40px 16px !important;
+    }
+    
+    /* Container */
+    .container {
+        padding: 0 16px;
+    }
+}
+
+/* Extra small devices (320px - 375px) */
+@media (max-width: 375px) {
+    .hero-title {
+        font-size: 1.6rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+    }
+    
+    .feature-card {
+        padding: 20px 16px;
     }
 }
 

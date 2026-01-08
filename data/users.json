@@ -1,1 +1,16 @@
-{}
+{
+  "manojmanoharan0007@gmail.com": {
+    "name": "manoj kumar",
+    "email": "manojmanoharan0007@gmail.com",
+    "password": "b'$2b$12$Rr/5gPPapnTfvRrwo2YR1Oh96GpHzROprHCJyqZ3yYTRTX4brGfj.'",
+    "phone": "6382801974",
+    "state": "Tamil Nadu",
+    "district": "Tiruppur",
+    "created_at": "2026-01-08 10:43:59.468690",
+    "saved_crops": [],
+    "saved_fertilizers": [],
+    "disease_history": [],
+    "_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "last_notification_read_at": "2026-01-08T16:18:59.849844"
+  }
+}

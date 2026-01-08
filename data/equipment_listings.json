@@ -1,0 +1,23 @@
+[
+  {
+    "owner_id": "aa224240-b3ae-4051-bbfc-1f84797b2439",
+    "owner_name": "Unknown",
+    "owner_phone": "",
+    "equipment_name": "Tractor",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.015354,
+    "longitude": 77.132606,
+    "description": "yes we can do it",
+    "owner_rent": 1500.0,
+    "recommended_rent": 1500,
+    "min_rent": 1275.0,
+    "max_rent": 1725.0,
+    "live_market_rent": 1500,
+    "available_from": "2026-01-08",
+    "available_to": "2026-01-09",
+    "status": "available",
+    "created_at": "2026-01-08T14:10:58.447940",
+    "_id": "eaf089f6-1436-40f6-9135-9d8c71f9b5d5"
+  }
+]

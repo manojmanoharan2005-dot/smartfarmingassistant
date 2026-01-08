@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}My Listings - Direct Buyer Connect{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/buyer_connect.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🌾</div>
+            <div>
+                <div class="sidebar-title">Smart Farming</div>
+                <div class="sidebar-subtitle">Agricultural Platform</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main Menu</div>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-link">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('crop.crop_suggestion') }}" class="nav-link">
+                    <i class="fas fa-seedling"></i>
+                    <span>Crop Suggestion</span>
+                </a>
+                <a href="{{ url_for('fertilizer.fertilizer_recommend') }}" class="nav-link">
+                    <i class="fas fa-flask"></i>
+                    <span>Fertilizer Advice</span>
+                </a>
+                <a href="{{ url_for('market.market_watch') }}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Prices</span>
+                    <span class="badge">Live</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Buyer Connect</div>
+                <a href="{{ url_for('buyer_connect.create_listing') }}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Sell My Crop</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.my_listings') }}" class="nav-link active">
+                    <i class="fas fa-list-alt"></i>
+                    <span>My Listings</span>
+                </a>
+                <a href="{{ url_for('buyer_connect.marketplace') }}" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    <span>Buy from Farmers</span>
+                    <span class="badge" style="background: #3b82f6;">New</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">{{ session.get('user_name', 'U')[0] }}</div>
+                <div class="user-details">
+                    <h4>{{ session.get('user_name', 'User') }}</h4>
+                    <span>Farmer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>
+                    <i class="fas fa-list-alt"></i> My Listings
+                </h1>
+                <p class="page-subtitle">Manage your crop listings and track sales</p>
+            </div>
+            <a href="{{ url_for('buyer_connect.create_listing') }}" class="btn-submit">
+                <i class="fas fa-plus-circle"></i> Create New Listing
+            </a>
+        </div>
+
+        <!-- Listings -->
+        {% if listings %}
+        <div class="listings-grid" style="display: grid; gap: 24px; margin-top: 32px;">
+            {% for listing in listings %}
+            <div class="listing-card" style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border-left: 4px solid {% if listing.status == 'available' %}var(--accent-green){% elif listing.status == 'sold' %}var(--accent-red){% else %}var(--text-muted){% endif %};">
+                <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 24px; padding: 28px; align-items: center;">
+                    <!-- Crop Icon -->
+                    <div style="width: 90px; height: 90px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);">
+                        {% if listing.crop == 'Tomato' %}🍅
+                        {% elif listing.crop == 'Potato' %}🥔
+                        {% elif listing.crop == 'Onion' %}🧅
+                        {% elif listing.crop == 'Cabbage' %}🥬
+                        {% elif listing.crop == 'Carrot' %}🥕
+                        {% elif listing.crop == 'Cauliflower' %}🥦
+                        {% elif listing.crop == 'Brinjal' %}🍆
+                        {% elif listing.crop == 'Capsicum' %}🫑
+                        {% elif listing.crop == 'Beans' %}🫘
+                        {% elif listing.crop == 'Peas' %}🫛
+                        {% elif listing.crop == 'Banana' %}🍌
+                        {% elif listing.crop == 'Mango' %}🥭
+                        {% elif listing.crop == 'Apple' %}🍎
+                        {% elif listing.crop == 'Orange' %}🍊
+                        {% else %}🌾{% endif %}
+                    </div>
+
+                    <!-- Details -->
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <h3 style="font-size: 26px; font-weight: 700; color: var(--text-primary); margin: 0;">{{ listing.crop }}</h3>
+                            {% if listing.status == 'available' %}
+                            <span class="status-badge" style="background: #dcfce7; color: #166534; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fas fa-check-circle"></i> AVAILABLE
+                            </span>
+                            {% elif listing.status == 'sold' %}
+                            <span class="status-badge" style="background: #fee2e2; color: #991b1b; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fas fa-check-double"></i> SOLD
+                            </span>
+                            {% elif listing.status == 'cancelled' %}
+                            <span class="status-badge" style="background: #f1f5f9; color: #64748b; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fas fa-times-circle"></i> CANCELLED
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Quantity</div>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 16px;">{{ listing.quantity }} {{ listing.unit }}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Price</div>
+                                <div style="font-weight: 800; color: var(--accent-green); font-size: 22px;">₹{{ "%.2f"|format(listing.farmer_price) }}/kg</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Market Price</div>
+                                <div style="font-weight: 600; color: var(--text-secondary); font-size: 16px;">₹{{ "%.2f"|format(listing.live_market_price) }}/kg</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Location</div>
+                                <div style="font-weight: 600; color: var(--text-primary); font-size: 15px;">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--accent-red);"></i> {{ listing.district }}, {{ listing.state }}
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Posted On</div>
+                                <div style="font-weight: 600; color: var(--text-primary); font-size: 15px;">
+                                    <i class="fas fa-calendar-alt" style="color: var(--accent-blue);"></i> {{ listing.created_at[:10] }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if listing.status == 'sold' and listing.buyer_name %}
+                        <div style="margin-top: 16px; padding: 14px 18px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: var(--radius-md); border-left: 4px solid #f59e0b; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);">
+                            <div style="font-size: 14px; color: #92400e; font-weight: 600;">
+                                <i class="fas fa-user-check"></i> <strong>Sold to:</strong> {{ listing.buyer_name }} • 📞 {{ listing.buyer_phone }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if listing.description %}
+                        <div style="margin-top: 14px; padding: 12px 16px; background: var(--bg-secondary); border-radius: var(--radius-md); font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                            <i class="fas fa-align-left" style="color: var(--accent-blue);"></i> {{ listing.description }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% if listing.status == 'available' %}
+                        <button onclick="cancelListing('{{ listing._id }}')" class="btn-delete"
+                            style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
+                            <i class="fas fa-trash-alt"></i> Cancel
+                        </button>
+                        {% elif listing.status == 'cancelled' %}
+                        <button disabled
+                            style="padding: 12px 24px; background: #f1f5f9; color: #94a3b8; border: 2px solid #e2e8f0; border-radius: var(--radius-md); font-weight: 600; cursor: not-allowed; white-space: nowrap;">
+                            <i class="fas fa-ban"></i> Cancelled
+                        </button>
+                        {% elif listing.status == 'sold' %}
+                        <button disabled
+                            style="padding: 12px 24px; background: #dcfce7; color: #166534; border: 2px solid #86efac; border-radius: var(--radius-md); font-weight: 600; cursor: not-allowed; white-space: nowrap;">
+                            <i class="fas fa-check-double"></i> Sold
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h3>No Listings Yet</h3>
+            <p style="margin-bottom: 24px;">You haven't created any crop listings yet. Start selling your crops directly to buyers!</p>
+            <a href="{{ url_for('buyer_connect.create_listing') }}" class="btn-submit">
+                <i class="fas fa-plus-circle"></i> Create Your First Listing
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function cancelListing(listingId) {
+    if (!confirm('⚠️ Are you sure you want to cancel this listing? This action cannot be undone.')) {
+        return;
+    }
+    
+    const button = event.target.closest('button');
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+    }
+    
+    fetch('/buyer-connect/api/cancel-listing/' + listingId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('✅ ' + (data.message || 'Listing cancelled successfully!'));
+            window.location.reload();
+        } else {
+            alert('❌ Error: ' + (data.error || 'Failed to cancel listing'));
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Failed to cancel listing. Please try again.');
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
+        }
+    });
+}
+</script>
+
+<style>
+.btn-delete:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+    background: linear-gradient(135deg, #fca5a5, #f87171) !important;
+}
+
+.listing-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+</style>
+{% endblock %}

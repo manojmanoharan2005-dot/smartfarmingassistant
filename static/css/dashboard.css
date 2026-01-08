@@ -100,8 +100,10 @@ body {
     background: var(--sidebar-bg);
     padding: 0;
     z-index: 1000;
-    overflow-y: auto;
     border-right: 1px solid #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .sidebar-header {
@@ -155,6 +157,27 @@ body {
 
 .sidebar-nav {
     padding: var(--space-lg) 12px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 180px);
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
 }
 
 .sidebar-nav ul {
@@ -256,13 +279,11 @@ body {
 
 /* User Profile in Sidebar */
 .sidebar-user {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    margin-top: auto;
     padding: var(--space-lg);
     border-top: 1px solid #F1F5F9;
     background: #FAFAFA;
+    flex-shrink: 0;
 }
 
 .user-info {
@@ -558,7 +579,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--text-primary);
+    color: #ffffff;
     letter-spacing: -0.01em;
 }
 
@@ -587,7 +608,7 @@ body {
    LIVE COMMODITY FEED
    ============================================ */
 .commodity-list {
-    max-height: 380px;
+    max-height: 480px;
     overflow-y: auto;
 }
 
@@ -1544,37 +1565,37 @@ body {
    ============================================ */
 .empty-state {
     text-align: center;
-    padding: 40px 20px;
+    padding: 24px 16px;
 }
 
 .empty-state-icon {
-    font-size: 48px;
+    font-size: 36px;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .empty-state h4 {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text-primary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .empty-state p {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .empty-state-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
+    gap: 6px;
+    padding: 10px 20px;
     background: var(--accent-green);
     color: white;
     border: none;
     border-radius: 25px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
@@ -2298,4 +2319,282 @@ body {
 .delete-btn-small:hover {
     background: #ef4444;
     color: white;
+}
+
+/* ============================================
+   ENHANCED MOBILE RESPONSIVENESS
+   ============================================ */
+
+/* Small devices - Phones (up to 576px) */
+@media (max-width: 576px) {
+    /* Global adjustments */
+    .page-header h1 {
+        font-size: 22px !important;
+    }
+    
+    .page-subtitle {
+        font-size: 13px !important;
+    }
+    
+    /* Forms */
+    .form-grid-2,
+    .form-grid-3,
+    .form-grid-4 {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+    
+    .form-card {
+        padding: 16px !important;
+        margin: 12px !important;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+    
+    .btn-submit,
+    .btn-cancel,
+    .btn-primary,
+    .btn-secondary {
+        width: 100% !important;
+        padding: 14px 20px !important;
+        font-size: 15px !important;
+    }
+    
+    /* Cards and grids */
+    .dashboard-grid,
+    .listings-grid,
+    .marketplace-grid,
+    .equipment-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+        padding: 0 12px;
+    }
+    
+    .card,
+    .listing-card,
+    .equipment-card {
+        margin: 0 !important;
+    }
+    
+    /* Tables - make scrollable */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 10px auto;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        padding: 16px !important;
+    }
+    
+    .modal-body {
+        padding: 16px !important;
+    }
+    
+    /* Sidebar adjustments for very small screens */
+    .sidebar {
+        width: 260px !important;
+    }
+    
+    .mobile-sidebar-toggle {
+        top: 12px;
+        left: 12px;
+        width: 42px;
+        height: 42px;
+    }
+    
+    /* Stats */
+    .stats-container,
+    .metrics-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Charts - make them responsive */
+    canvas {
+        max-height: 250px !important;
+    }
+    
+    /* Filters */
+    .filter-row,
+    .filters-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    
+    /* Spacing */
+    .main-content {
+        padding-top: 70px !important;
+    }
+    
+    .dashboard-content {
+        padding: 16px 12px !important;
+    }
+    
+    /* Hero sections */
+    .hero-header {
+        padding: 24px 16px !important;
+    }
+    
+    /* Maps */
+    #map,
+    .map-container {
+        height: 300px !important;
+        min-height: 300px;
+    }
+    
+    /* Action buttons in cards */
+    .form-actions,
+    .card-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .form-actions a,
+    .form-actions button {
+        width: 100%;
+    }
+    
+    /* Info grids */
+    .info-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Badge and labels */
+    .badge {
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+    }
+    
+    /* Hamburger menu improvements */
+    .sidebar.active {
+        z-index: 1001 !important;
+    }
+    
+    /* Hide desktop-only elements */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Show mobile-only elements */
+    .mobile-only {
+        display: block !important;
+    }
+}
+
+/* Medium devices - Tablets (577px to 992px) */
+@media (min-width: 577px) and (max-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .form-grid-3,
+    .form-grid-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .marketplace-grid,
+    .listings-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    #map,
+    .map-container {
+        height: 350px !important;
+    }
+    
+    .modal-content {
+        width: 90%;
+        max-width: 600px;
+    }
+    
+    .sidebar {
+        width: 240px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    .nav-link,
+    button,
+    .btn,
+    a {
+        min-height: 44px; /* Apple's recommended touch target */
+    }
+    
+    /* Remove hover effects */
+    .nav-link:hover,
+    .btn:hover,
+    .card:hover {
+        transform: none !important;
+    }
+    
+    /* Better spacing for touch */
+    .nav-link {
+        padding: 14px 16px !important;
+    }
+}
+
+/* Landscape mode on phones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar {
+        padding-top: 10px;
+    }
+    
+    .sidebar-header {
+        padding: 10px;
+    }
+    
+    .hero-header {
+        padding: 16px !important;
+    }
+    
+    .main-content {
+        padding-top: 50px !important;
+    }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .sidebar,
+    .card,
+    .form-card {
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .mobile-sidebar-toggle,
+    .sidebar-overlay,
+    .btn,
+    button {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .card {
+        break-inside: avoid;
+    }
 }
