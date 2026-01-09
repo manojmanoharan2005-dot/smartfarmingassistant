@@ -1201,11 +1201,20 @@ def confirm_purchase(listing_id, purchase_data):
                 print(f"[MONGODB ERROR] {e}")
         
         # File-based fallback (with lock to prevent race condition)
-        import fcntl
+        try:
+            import fcntl
+            use_fcntl = True
+        except ImportError:
+            # Windows doesn't support fcntl
+            use_fcntl = False
         
         with open(LISTINGS_FILE, 'r+') as f:
-            # Lock file to prevent concurrent access
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            # Lock file to prevent concurrent access (Unix/Linux only)
+            if use_fcntl:
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                except:
+                    pass
             
             try:
                 listings = json.load(f)
@@ -1235,7 +1244,11 @@ def confirm_purchase(listing_id, purchase_data):
                 
             finally:
                 # Release lock
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                if use_fcntl:
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except:
+                        pass
         
     except Exception as e:
         print(f"Error confirming purchase: {e}")
@@ -1677,17 +1690,23 @@ def confirm_equipment_rental(listing_id, rental_data):
                 print(f"[MONGODB ERROR] {e}")
         
         # File-based fallback (with lock to prevent race condition)
-        import fcntl
+        try:
+            import fcntl
+            use_fcntl = True
+        except ImportError:
+            # Windows doesn't support fcntl
+            use_fcntl = False
         
         if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
             return False, "Listing not found"
         
         with open(EQUIPMENT_LISTINGS_FILE, 'r+') as f:
-            # Lock file to prevent concurrent access (Unix/Linux only, will fail gracefully on Windows)
-            try:
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-            except:
-                pass  # Windows doesn't support fcntl
+            # Lock file to prevent concurrent access (Unix/Linux only)
+            if use_fcntl:
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                except:
+                    pass
             
             try:
                 listings = json.load(f)
@@ -1719,10 +1738,11 @@ def confirm_equipment_rental(listing_id, rental_data):
                 return False, "Listing not found"
                 
             finally:
-                try:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
-                except:
-                    pass
+                if use_fcntl:
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except:
+                        pass
         
     except Exception as e:
         print(f"Error confirming rental: {e}")

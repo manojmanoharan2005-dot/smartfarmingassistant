@@ -41,5 +41,27 @@
     "created_at": "2026-01-08T10:09:59.025858",
     "expires_at": "2026-02-07T10:09:59.025871",
     "_id": "d0b9dd9d-e017-4a2c-b01f-4f98d04cc91a"
+  },
+  {
+    "farmer_id": "a3cad6d8-20da-4983-8390-f464a0512437",
+    "farmer_name": "Unknown",
+    "farmer_phone": "",
+    "crop": "Cotton",
+    "quantity": 20.0,
+    "unit": "kg",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.040461,
+    "longitude": 77.074832,
+    "description": "",
+    "farmer_price": 98.16,
+    "recommended_price": 81.8,
+    "min_price": 65.44,
+    "max_price": 98.16,
+    "live_market_price": 81.8,
+    "status": "available",
+    "created_at": "2026-01-09T03:26:48.366153",
+    "expires_at": "2026-02-08T03:26:48.366165",
+    "_id": "d00b97d2-750e-4131-becd-e42f03b4fd2d"
   }
 ]

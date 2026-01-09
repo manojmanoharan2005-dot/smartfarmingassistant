@@ -34,12 +34,62 @@ def create_listing():
         # Load user info for location
         user = find_user_by_id(user_id)
         
-        # Get available crops from dataset
-        crops = [
-            'Tomato', 'Onion', 'Potato', 'Cabbage', 'Carrot', 'Cauliflower',
-            'Brinjal', 'Capsicum', 'Beans', 'Peas', 'Banana', 'Mango',
-            'Apple', 'Orange', 'Rice', 'Wheat', 'Maize'
+        # Get available crops from dataset - Complete commodity list matching market prices
+        vegetables = [
+            "Tomato", "Onion", "Potato", "Brinjal", "Cabbage", "Cauliflower",
+            "Carrot", "Beetroot", "Green Chilli", "Capsicum (Green)", "Capsicum (Red)",
+            "Capsicum (Yellow)", "Beans", "Cluster Beans", "Lady Finger", "Drumstick",
+            "Bottle Gourd", "Ridge Gourd", "Snake Gourd", "Bitter Gourd", "Pumpkin",
+            "Ash Gourd", "Radish", "Turnip", "Sweet Corn", "Peas", "Garlic",
+            "Ginger", "Coriander Leaves", "Spinach"
         ]
+        
+        fruits = [
+            "Apple", "Banana", "Orange", "Mosambi", "Grapes", "Pomegranate",
+            "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Mango", "Guava",
+            "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
+            "Plum", "Peach"
+        ]
+        
+        cereals = [
+            "Paddy (Rice – Common)", "Paddy (Basmati)", "Wheat", "Maize (Corn)", "Barley",
+            "Jowar (Sorghum)", "Bajra (Pearl Millet)", "Ragi (Finger Millet)"
+        ]
+        
+        pulses = [
+            "Red Gram (Tur/Arhar)", "Green Gram (Moong)", "Black Gram (Urad)", "Bengal Gram (Chana)",
+            "Lentil (Masur)", "Horse Gram", "Field Pea"
+        ]
+        
+        oilseeds = [
+            "Groundnut", "Mustard Seed", "Soybean", "Sunflower Seed", "Sesame (Gingelly)",
+            "Castor Seed", "Linseed"
+        ]
+        
+        spices = [
+            "Dry Chilli", "Turmeric", "Coriander Seed", "Cumin Seed (Jeera)", "Pepper (Black)",
+            "Cardamom", "Clove"
+        ]
+        
+        commercial = [
+            "Sugarcane", "Cotton", "Jute", "Copra (Dry Coconut)", "Tobacco", "Tea Leaves", "Coffee Beans"
+        ]
+        
+        dry_fruits = [
+            "Coconut", "Cashew Nut", "Groundnut Kernel", "Almond", "Walnut", "Raisins"
+        ]
+        
+        # Combine all crops with categories
+        crops = {
+            'Vegetables': vegetables,
+            'Fruits': fruits,
+            'Cereals': cereals,
+            'Pulses': pulses,
+            'Oilseeds': oilseeds,
+            'Spices': spices,
+            'Commercial Crops': commercial,
+            'Dry Fruits': dry_fruits
+        }
         
         # Load states and districts
         import os

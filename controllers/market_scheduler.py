@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 import os
 import random
+import hashlib
 
 scheduler_bp = Blueprint('scheduler', __name__)
 
@@ -262,12 +263,16 @@ def generate_fallback_prices():
     market_data = []
     date_today = datetime.now().strftime('%Y-%m-%d')
     
+    # Use date-based seed for deterministic random values (same date = same prices everywhere)
+    date_seed = int(hashlib.md5(date_today.encode()).hexdigest()[:8], 16)
+    random.seed(date_seed)
+    
     # Generate data for ALL states and ALL districts from states_districts.json
     for state, districts in states_districts.items():
         for district in districts:
             # Generate ALL 40 commodities for this district
             for commodity, (min_base, max_base, varieties) in base_prices.items():
-                # Add regional price variation (±20%)
+                # Add regional price variation (±20%) - now deterministic based on date
                 regional_factor = random.uniform(0.8, 1.2)
                 min_price = int(min_base * regional_factor * random.uniform(0.9, 1.0))
                 max_price = int(max_base * regional_factor * random.uniform(1.0, 1.1))
@@ -291,6 +296,9 @@ def generate_fallback_prices():
                     "arrival": f"{random.randint(50, 1000)} quintals",
                     "unit": "Quintal"
                 })
+    
+    # Reset random seed to avoid affecting other random operations
+    random.seed()
     
     print(f"[SUCCESS] Generated {len(market_data)} records covering 50 commodities for {len(states_districts)} states and all districts")
     return market_data

@@ -134,8 +134,12 @@
                 </label>
                 <select name="crop" id="cropSelect" required class="form-select">
                     <option value="">Select a crop...</option>
-                    {% for crop in crops %}
-                    <option value="{{ crop }}">{{ crop }}</option>
+                    {% for category, crop_list in crops.items() %}
+                    <optgroup label="🌾 {{ category }} ({{ crop_list|length }})">
+                        {% for crop in crop_list %}
+                        <option value="{{ crop }}">{{ crop }}</option>
+                        {% endfor %}
+                    </optgroup>
                     {% endfor %}
                 </select>
             </div>
@@ -288,7 +292,8 @@ let selectedLat = null;
 let selectedLng = null;
 
 // States and districts data
-const statesDistricts = {{ states_districts|tojson }};
+// eslint-disable-next-line
+const statesDistricts = {{ states_districts|tojson|safe }};
 
 // District coordinates for centering map (major cities as reference)
 const districtCoordinates = {
