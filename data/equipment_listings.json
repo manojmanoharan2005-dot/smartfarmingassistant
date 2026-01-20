@@ -19,5 +19,26 @@
     "status": "available",
     "created_at": "2026-01-08T14:10:58.447940",
     "_id": "eaf089f6-1436-40f6-9135-9d8c71f9b5d5"
+  },
+  {
+    "owner_id": "e948a9c5-9dee-489e-9c69-411d97680cb9",
+    "owner_name": "Unknown",
+    "owner_phone": "",
+    "equipment_name": "Tractor",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.040799,
+    "longitude": 77.074291,
+    "description": "mmmmmmmmmmmmmmmmmmmmmmmmm",
+    "owner_rent": 1500.0,
+    "recommended_rent": 1500,
+    "min_rent": 1275.0,
+    "max_rent": 1725.0,
+    "live_market_rent": 1500,
+    "available_from": "2026-01-20",
+    "available_to": "2026-01-27",
+    "status": "available",
+    "created_at": "2026-01-20T06:38:56.413025",
+    "_id": "d9cdc13c-7142-4e48-ae03-5a8e832f1fe2"
   }
 ]

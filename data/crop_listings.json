@@ -59,9 +59,35 @@
     "min_price": 65.44,
     "max_price": 98.16,
     "live_market_price": 81.8,
-    "status": "available",
+    "status": "sold",
     "created_at": "2026-01-09T03:26:48.366153",
     "expires_at": "2026-02-08T03:26:48.366165",
-    "_id": "d00b97d2-750e-4131-becd-e42f03b4fd2d"
+    "_id": "d00b97d2-750e-4131-becd-e42f03b4fd2d",
+    "buyer_id": "e948a9c5-9dee-489e-9c69-411d97680cb9",
+    "buyer_name": "manokaran",
+    "buyer_phone": "6382801974",
+    "sold_at": "2026-01-20T06:37:21.440293"
+  },
+  {
+    "farmer_id": "e948a9c5-9dee-489e-9c69-411d97680cb9",
+    "farmer_name": "Unknown",
+    "farmer_phone": "",
+    "crop": "Copra (Dry Coconut)",
+    "quantity": 200.0,
+    "unit": "kg",
+    "district": "Dindigul",
+    "state": "Tamil Nadu",
+    "latitude": 10.678773,
+    "longitude": 77.678756,
+    "description": "",
+    "farmer_price": 98.3,
+    "recommended_price": 98.3,
+    "min_price": 78.64,
+    "max_price": 117.96,
+    "live_market_price": 98.3,
+    "status": "available",
+    "created_at": "2026-01-20T06:36:56.709384",
+    "expires_at": "2026-02-19T06:36:56.709409",
+    "_id": "844b5da4-2e68-4d9a-bce6-ebdb4fc561f0"
   }
 ]

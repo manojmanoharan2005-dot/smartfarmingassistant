@@ -993,21 +993,28 @@ def get_live_market_price(crop, district, state):
 
 def create_crop_listing(listing_data):
     """Create a new crop listing for sale"""
-    import uuid
     try:
-        # Add unique ID
-        listing_data['_id'] = str(uuid.uuid4())
-        
         # MongoDB Atlas
         if db:
             try:
+                # Don't set _id manually - let MongoDB generate ObjectId
+                # Remove _id if it exists in listing_data
+                if '_id' in listing_data:
+                    del listing_data['_id']
+                
                 result = db.crop_listings.insert_one(listing_data)
-                print(f"[MONGODB] Listing created with ID: {result.inserted_id}")
+                print(f"[MONGODB] ✅ Listing created successfully with ID: {str(result.inserted_id)}")
                 return str(result.inserted_id)
             except Exception as e:
-                print(f"[MONGODB ERROR] {e}")
+                print(f"[MONGODB ERROR] ❌ Failed to create listing: {e}")
+                import traceback
+                traceback.print_exc()
+                return None
         
         # File-based fallback
+        import uuid
+        listing_data['_id'] = str(uuid.uuid4())
+        
         with open(LISTINGS_FILE, 'r') as f:
             listings = json.load(f)
         
@@ -1020,7 +1027,9 @@ def create_crop_listing(listing_data):
         return listing_data['_id']
         
     except Exception as e:
-        print(f"Error creating listing: {e}")
+        print(f"❌ Error creating listing: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 

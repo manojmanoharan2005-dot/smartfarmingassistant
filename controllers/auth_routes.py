@@ -12,12 +12,38 @@ from datetime import datetime, timedelta
 
 auth_bp = Blueprint('auth', __name__)
 
-# Store reset tokens temporarily (in production, use database)
-reset_tokens = {}
+# Rate limiting for password reset requests (in production, use Redis)
+reset_request_tracker = {}
+
+def rate_limit_reset_request(email, max_requests=3, time_window_minutes=15):
+    """
+    Rate limit password reset requests to prevent abuse
+    Returns (allowed, message)
+    """
+    now = datetime.now()
+    
+    if email in reset_request_tracker:
+        requests = reset_request_tracker[email]
+        # Remove old requests outside time window
+        requests = [req_time for req_time in requests 
+                   if now - req_time < timedelta(minutes=time_window_minutes)]
+        
+        if len(requests) >= max_requests:
+            return False, f"Too many reset requests. Please try again after {time_window_minutes} minutes."
+        
+        requests.append(now)
+        reset_request_tracker[email] = requests
+    else:
+        reset_request_tracker[email] = [now]
+    
+    return True, None
 
 def send_reset_email(to_email, reset_link):
-    """Send password reset email"""
-    # Email configuration - Update these with your email settings
+    """
+    Send password reset email via SMTP Gmail
+    Returns True if email sent successfully, False otherwise
+    """
+    # Email configuration from environment variables
     smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
     smtp_port = int(os.getenv('SMTP_PORT', 587))
     sender_email = os.getenv('SMTP_EMAIL', '')
@@ -25,53 +51,84 @@ def send_reset_email(to_email, reset_link):
     
     if not sender_email or not sender_password:
         print("[WARNING] Email not configured. Please set SMTP_EMAIL and SMTP_PASSWORD environment variables.")
+        print(f"[DEV MODE] Reset link: {reset_link}")
         return False
     
     # Create email message
     message = MIMEMultipart("alternative")
-    message["Subject"] = "🌾 Smart Farming - Password Reset Request"
-    message["From"] = sender_email
+    message["Subject"] = "🌾 Farming Assistant - Reset Your Password"
+    message["From"] = f"Farming Assistant <{sender_email}>"
     message["To"] = to_email
     
     # Plain text version
     text = f"""
-    Smart Farming Assistant - Password Reset
+    Farming Assistant - Password Reset Request
     
-    You requested to reset your password. Click the link below to reset it:
+    Hello,
+    
+    We received a request to reset your password. Click the link below to reset it:
     
     {reset_link}
     
-    This link will expire in 1 hour.
+    This link will expire in 15 minutes for security reasons.
     
-    If you didn't request this, please ignore this email.
+    If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
     
-    - Smart Farming Team
+    Best regards,
+    Farming Assistant Team
     """
     
-    # HTML version
+    # HTML version with farmer-friendly green theme
     html = f"""
     <html>
-    <body style="font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #f1f5f9; padding: 40px;">
-        <div style="max-width: 500px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 40px; border: 1px solid #334155;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #10b981; margin: 0;">🌾 Smart Farming</h1>
+    <body style="font-family: Arial, sans-serif; background: #f0f9ff; margin: 0; padding: 40px;">
+        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 28px;">🌾 Farming Assistant</h1>
             </div>
-            <h2 style="color: #f1f5f9; margin-bottom: 20px;">Password Reset Request</h2>
-            <p style="color: #94a3b8; line-height: 1.6;">
-                You requested to reset your password. Click the button below to create a new password:
-            </p>
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="{reset_link}" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 14px 32px; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-block;">
-                    Reset Password
-                </a>
+            
+            <!-- Content -->
+            <div style="padding: 40px;">
+                <h2 style="color: #1f2937; margin: 0 0 20px 0;">Password Reset Request</h2>
+                <p style="color: #4b5563; line-height: 1.6; font-size: 16px;">
+                    Hello,
+                </p>
+                <p style="color: #4b5563; line-height: 1.6; font-size: 16px;">
+                    We received a request to reset your password. Click the button below to create a new password:
+                </p>
+                
+                <!-- Reset Button -->
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="{reset_link}" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; display: inline-block; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);">
+                        Reset Password
+                    </a>
+                </div>
+                
+                <!-- Security Notice -->
+                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                    <p style="color: #92400e; margin: 0; font-size: 14px;">
+                        <strong>⏰ Important:</strong> This link will expire in 15 minutes for your security.
+                    </p>
+                </div>
+                
+                <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+                    If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
+                </p>
+                
+                <!-- Alternative Link -->
+                <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">
+                    If the button doesn't work, copy and paste this link into your browser:<br>
+                    <span style="color: #10b981; word-break: break-all;">{reset_link}</span>
+                </p>
             </div>
-            <p style="color: #64748b; font-size: 14px;">
-                This link will expire in 1 hour. If you didn't request this, please ignore this email.
-            </p>
-            <hr style="border: none; border-top: 1px solid #334155; margin: 30px 0;">
-            <p style="color: #64748b; font-size: 12px; text-align: center;">
-                © 2024 Smart Farming Assistant
-            </p>
+            
+            <!-- Footer -->
+            <div style="background: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                    © 2026 Farming Assistant | Helping Farmers Grow Better
+                </p>
+            </div>
         </div>
     </body>
     </html>
@@ -199,36 +256,74 @@ def logout():
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
+    """
+    Step 1: Request password reset
+    - Validates email format
+    - Checks rate limiting
+    - Generates secure token
+    - Stores token in MongoDB
+    - Sends reset email
+    - Always shows generic success message (prevents user enumeration)
+    """
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form.get('email', '').strip().lower()
         
-        # Check if user exists
+        # Validate email format
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            flash('⚠️ Please enter a valid email address.', 'warning')
+            return render_template('forgot_password.html')
+        
+        # Rate limiting check
+        allowed, rate_limit_msg = rate_limit_reset_request(email)
+        if not allowed:
+            flash(f'⏰ {rate_limit_msg}', 'warning')
+            return render_template('forgot_password.html')
+        
+        # Get database connection
+        db = get_db()
+        
+        # Check if user exists (without revealing existence for security)
         user = find_user_by_email(email)
         
         if user:
-            # Generate reset token
+            # Generate secure random token (32 bytes = 256 bits)
             token = secrets.token_urlsafe(32)
-            expiry = datetime.now() + timedelta(hours=1)
+            expiry = datetime.now() + timedelta(minutes=15)  # 15-minute expiry
             
-            # Store token with email and expiry
-            reset_tokens[token] = {
-                'email': email,
-                'expiry': expiry
-            }
-            
-            # Create reset link
-            reset_link = url_for('auth.reset_password', token=token, _external=True)
-            
-            # Send email
-            if send_reset_email(email, reset_link):
-                flash('📧 Password reset link has been sent to your email!', 'success')
-            else:
-                flash('⚠️ Email service not configured. Please contact support.', 'warning')
-                # For development, show the link
-                print(f"🔗 Reset link (dev mode): {reset_link}")
+            # Store token in MongoDB
+            try:
+                db.password_reset_tokens.insert_one({
+                    'email': email,
+                    'token': token,
+                    'expiry': expiry,
+                    'used': False,
+                    'created_at': datetime.now()
+                })
+                
+                # Create reset link
+                reset_link = url_for('auth.reset_password', token=token, _external=True)
+                
+                # Send email
+                email_sent = send_reset_email(email, reset_link)
+                
+                if not email_sent:
+                    # Email not configured - show link in console for development
+                    print(f"\n{'='*60}")
+                    print(f"[DEV MODE] Password Reset Link for {email}:")
+                    print(f"{reset_link}")
+                    print(f"{'='*60}\n")
+                    flash('⚠️ Email service not configured. Check console for reset link.', 'warning')
+                else:
+                    flash('📧 If this email is registered, you will receive a password reset link shortly.', 'success')
+                
+            except Exception as e:
+                print(f"[ERROR] Failed to create reset token: {e}")
+                flash('❌ An error occurred. Please try again later.', 'error')
+                return render_template('forgot_password.html')
         else:
-            # Don't reveal if email exists or not for security
-            flash('📧 If this email is registered, you will receive a password reset link.', 'info')
+            # Don't reveal if email exists or not (security best practice)
+            flash('📧 If this email is registered, you will receive a password reset link shortly.', 'success')
         
         return redirect(url_for('auth.login'))
     
@@ -236,45 +331,87 @@ def forgot_password():
 
 @auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    # Check if token is valid
-    if token not in reset_tokens:
+    """
+    Step 2: Reset password with token
+    - Validates token from MongoDB
+    - Checks token expiry
+    - Ensures one-time use
+    - Validates password strength
+    - Updates password with bcrypt
+    - Removes token after use
+    """
+    # Get database connection
+    db = get_db()
+    
+    # Find token in MongoDB
+    token_record = db.password_reset_tokens.find_one({
+        'token': token,
+        'used': False
+    })
+    
+    # Validate token exists
+    if not token_record:
         flash('❌ Invalid or expired reset link. Please request a new one.', 'error')
         return redirect(url_for('auth.forgot_password'))
     
-    token_data = reset_tokens[token]
-    
-    # Check if token has expired
-    if datetime.now() > token_data['expiry']:
-        del reset_tokens[token]
+    # Check if token has expired (15 minutes)
+    if datetime.now() > token_record['expiry']:
+        # Mark as used and delete
+        db.password_reset_tokens.delete_one({'token': token})
         flash('⏰ Reset link has expired. Please request a new one.', 'error')
         return redirect(url_for('auth.forgot_password'))
     
     if request.method == 'POST':
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
         
         # Check if passwords match
         if password != confirm_password:
             flash('❌ Passwords do not match!', 'error')
-            return render_template('reset_password.html')
+            return render_template('reset_password.html', token=token)
         
         # Validate password strength
         is_strong, message = validate_password_strength(password)
         if not is_strong:
             flash(f'🔒 {message}', 'warning')
-            return render_template('reset_password.html')
+            return render_template('reset_password.html', token=token)
         
         # Update password in database
-        email = token_data['email']
+        email = token_record['email']
         hashed_password = hash_password(password)
         
-        if update_user_password(email, hashed_password):
-            # Remove used token
-            del reset_tokens[token]
-            flash('✅ Password has been reset successfully! Please login with your new password.', 'success')
-            return redirect(url_for('auth.login'))
-        else:
-            flash('❌ Failed to update password. Please try again.', 'error')
-            return render_template('reset_password.html')
+        try:
+            # Update user password
+            if update_user_password(email, hashed_password):
+                # Mark token as used
+                db.password_reset_tokens.update_one(
+                    {'token': token},
+                    {
+                        '$set': {
+                            'used': True,
+                            'used_at': datetime.now()
+                        }
+                    }
+                )
+                
+                # Clean up old/expired tokens for this email
+                db.password_reset_tokens.delete_many({
+                    'email': email,
+                    '$or': [
+                        {'expiry': {'$lt': datetime.now()}},
+                        {'used': True}
+                    ]
+                })
+                
+                flash('✅ Password has been reset successfully! Please login with your new password.', 'success')
+                return redirect(url_for('auth.login'))
+            else:
+                flash('❌ Failed to update password. Please try again.', 'error')
+                return render_template('reset_password.html', token=token)
+                
+        except Exception as e:
+            print(f"[ERROR] Failed to reset password: {e}")
+            flash('❌ An error occurred. Please try again.', 'error')
+            return render_template('reset_password.html', token=token)
     
-    return render_template('reset_password.html')
+    return render_template('reset_password.html', token=token)

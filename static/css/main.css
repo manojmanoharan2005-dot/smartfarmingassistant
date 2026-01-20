@@ -12,7 +12,7 @@
     --secondary: #3b82f6;
     --secondary-dark: #2563eb;
     --accent: #F97316;
-    
+
     /* Backgrounds - Light Theme */
     --bg-primary: #F8FAFC;
     --bg-secondary: #F1F5F9;
@@ -21,26 +21,26 @@
     --bg-darker: #0F172A;
     --bg-card: #FFFFFF;
     --bg-card-hover: #F8FAFC;
-    
+
     /* Text Colors */
     --text-primary: #0F172A;
     --text-secondary: #64748B;
     --text-muted: #94A3B8;
     --text-white: #FFFFFF;
-    
+
     /* Border and Shadow */
     --border-color: #E2E8F0;
     --success: #22C55E;
     --warning: #F59E0B;
     --danger: #EF4444;
     --info: #3b82f6;
-    
+
     /* Gradients - Light Theme */
     --gradient-primary: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
     --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     --gradient-bg: linear-gradient(135deg, #F8FAFC 0%, #E0E7FF 50%, #F8FAFC 100%);
     --gradient-hero: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-    
+
     /* Shadows - Soft UI */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
@@ -48,7 +48,7 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     --shadow-glow: 0 0 30px rgba(34, 197, 94, 0.15);
-    
+
     --transition: all 0.3s ease;
 }
 
@@ -903,8 +903,10 @@ img {
 
 .form-group label {
     color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .form-control {
@@ -1500,7 +1502,7 @@ img {
         grid-template-columns: 1fr;
         gap: 16px;
     }
-    
+
     /* Toast notifications on mobile */
     .toast-container {
         top: 10px;
@@ -1508,34 +1510,35 @@ img {
         left: 10px;
         width: auto;
     }
-    
+
     .toast {
         min-width: 100%;
         max-width: 100%;
         font-size: 14px;
         padding: 12px 16px;
     }
-    
+
     /* Forms */
     .form-group {
         margin-bottom: 16px;
     }
-    
+
     .form-control {
-        font-size: 16px !important; /* Prevents zoom on iOS */
+        font-size: 16px !important;
+        /* Prevents zoom on iOS */
         padding: 12px 16px;
     }
-    
+
     /* Cards */
     .card {
         margin: 0 12px;
     }
-    
+
     /* Section padding */
     section {
         padding: 40px 16px !important;
     }
-    
+
     /* Container */
     .container {
         padding: 0 16px;
@@ -1547,20 +1550,20 @@ img {
     .hero-title {
         font-size: 1.6rem;
     }
-    
+
     .hero-subtitle {
         font-size: 1rem;
     }
-    
+
     .btn {
         padding: 12px 20px;
         font-size: 14px;
     }
-    
+
     .section-title {
         font-size: 1.4rem;
     }
-    
+
     .feature-card {
         padding: 20px 16px;
     }
@@ -1656,15 +1659,28 @@ img {
 /* ===== Select Dropdown ===== */
 select.form-control {
     appearance: none;
+    background-color: var(--bg-white);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 16px center;
     padding-right: 40px;
     cursor: pointer;
+    color: var(--text-primary);
 }
 
 select.form-control option {
-    background: var(--bg-dark);
-    color: var(--text-primary);
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
     padding: 10px;
+}
+
+select.form-control option:hover,
+select.form-control option:checked {
+    background-color: #86EFAC !important;
+}
+
+select.form-control option:hover,
+select.form-control option:checked {
+    background: var(--primary-light);
+    color: var(--text-primary);
 }
