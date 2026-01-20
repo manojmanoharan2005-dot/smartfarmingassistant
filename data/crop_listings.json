@@ -89,5 +89,27 @@
     "created_at": "2026-01-20T06:36:56.709384",
     "expires_at": "2026-02-19T06:36:56.709409",
     "_id": "844b5da4-2e68-4d9a-bce6-ebdb4fc561f0"
+  },
+  {
+    "farmer_id": "41040df2-29e9-45ac-979a-b9d866618590",
+    "farmer_name": "Unknown",
+    "farmer_phone": "",
+    "crop": "Onion",
+    "quantity": 200.0,
+    "unit": "kg",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.040884,
+    "longitude": 77.074326,
+    "description": "",
+    "farmer_price": 26.92,
+    "recommended_price": 26.92,
+    "min_price": 21.54,
+    "max_price": 32.3,
+    "status": "cancelled",
+    "created_at": "2026-01-20T07:26:25.224805",
+    "expires_at": "2026-02-19T07:26:25.224820",
+    "_id": "1ddf872d-a25d-4f62-810e-a1555e27417b",
+    "updated_at": "2026-01-20T07:29:52.635824"
   }
 ]

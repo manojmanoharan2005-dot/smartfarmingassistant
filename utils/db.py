@@ -993,41 +993,55 @@ def get_live_market_price(crop, district, state):
 
 def create_crop_listing(listing_data):
     """Create a new crop listing for sale"""
+    global db
     try:
-        # MongoDB Atlas
-        if db:
+        print(f"\n[DEBUG] Database status: db is {type(db)} (None: {db is None})", flush=True)
+        
+        # MongoDB Atlas Path
+        if db is not None:
             try:
-                # Don't set _id manually - let MongoDB generate ObjectId
-                # Remove _id if it exists in listing_data
+                print("[DEBUG] Attempting MongoDB insertion...", flush=True)
+                # Ensure we don't have a string _id if MongoDB expects ObjectId
                 if '_id' in listing_data:
                     del listing_data['_id']
                 
                 result = db.crop_listings.insert_one(listing_data)
-                print(f"[MONGODB] ✅ Listing created successfully with ID: {str(result.inserted_id)}")
-                return str(result.inserted_id)
-            except Exception as e:
-                print(f"[MONGODB ERROR] ❌ Failed to create listing: {e}")
-                import traceback
-                traceback.print_exc()
-                return None
+                if result.inserted_id:
+                    print(f"[SUCCESS] Listing saved to MongoDB with ID: {result.inserted_id}", flush=True)
+                    return str(result.inserted_id)
+                else:
+                    print("[ERROR] MongoDB insert_one returned no inserted_id", flush=True)
+            except Exception as mongo_err:
+                print(f"[MONGO ERROR] {str(mongo_err)}", flush=True)
+                # If MongoDB fails, we continue to the file-based fallback
+                print("[INFO] Falling back to file-based storage...", flush=True)
         
-        # File-based fallback
+        # File-based Fallback Path
+        print(f"[DEBUG] Attempting file-based storage to: {LISTINGS_FILE}", flush=True)
         import uuid
-        listing_data['_id'] = str(uuid.uuid4())
-        
-        with open(LISTINGS_FILE, 'r') as f:
-            listings = json.load(f)
+        if '_id' not in listing_data:
+            listing_data['_id'] = str(uuid.uuid4())
+            
+        listings = []
+        if os.path.exists(LISTINGS_FILE):
+            try:
+                with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
+                    listings = json.load(f)
+                print(f"[DEBUG] Loaded {len(listings)} existing listings from file", flush=True)
+            except Exception as read_err:
+                print(f"[FILE READ ERROR] {str(read_err)}", flush=True)
+                listings = []
         
         listings.append(listing_data)
         
-        with open(LISTINGS_FILE, 'w') as f:
-            json.dump(listings, f, indent=2)
+        with open(LISTINGS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(listings, f, indent=2, default=str)
         
-        print(f"[FILE] Listing created: {listing_data['_id']}")
+        print(f"[SUCCESS] Listing saved to file with ID: {listing_data['_id']}", flush=True)
         return listing_data['_id']
         
     except Exception as e:
-        print(f"❌ Error creating listing: {e}")
+        print(f"[CRITICAL ERROR in create_crop_listing] {str(e)}", flush=True)
         import traceback
         traceback.print_exc()
         return None
