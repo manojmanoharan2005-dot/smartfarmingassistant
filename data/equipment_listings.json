@@ -40,5 +40,26 @@
     "status": "available",
     "created_at": "2026-01-20T06:38:56.413025",
     "_id": "d9cdc13c-7142-4e48-ae03-5a8e832f1fe2"
+  },
+  {
+    "owner_id": "41040df2-29e9-45ac-979a-b9d866618590",
+    "owner_name": "Unknown",
+    "owner_phone": "",
+    "equipment_name": "Cultivator",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.040788,
+    "longitude": 77.074307,
+    "description": "mmmmmmmmmmmmmmmmmmmmmmmm",
+    "owner_rent": 500.0,
+    "recommended_rent": 500,
+    "min_rent": 425.0,
+    "max_rent": 575.0,
+    "live_market_rent": 500,
+    "available_from": "2026-01-20",
+    "available_to": "2026-01-21",
+    "status": "available",
+    "created_at": "2026-01-20T07:31:05.403913",
+    "_id": "06daa952-1eed-4b4d-b993-112fec370c7f"
   }
 ]

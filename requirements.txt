@@ -27,5 +27,8 @@ python-dotenv==1.0.0
 # HTTP Requests (for SMS gateways)
 requests>=2.31.0
 
+# PDF Generation
+xhtml2pdf>=0.2.11
+
 # Production Server
 gunicorn==21.2.0

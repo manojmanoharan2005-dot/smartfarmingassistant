@@ -1049,95 +1049,112 @@ def create_crop_listing(listing_data):
 
 def get_user_listings(user_id):
     """Get all listings by a specific farmer"""
+    global db
+    user_id_str = str(user_id)
+    print(f"\n[DEBUG] Fetching listings for User ID: {user_id} (String: {user_id_str})", flush=True)
+    
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
-                listings = list(db.crop_listings.find({'farmer_id': user_id}).sort('created_at', -1))
+                # Try both original and string version of ID for robustness
+                query = {'$or': [{'farmer_id': user_id}, {'farmer_id': user_id_str}]}
+                listings = list(db.crop_listings.find(query).sort('created_at', -1))
+                print(f"[DEBUG] MongoDB found {len(listings)} listings", flush=True)
                 for listing in listings:
                     listing['_id'] = str(listing['_id'])
                 return listings
             except Exception as e:
-                print(f"[MONGODB ERROR] {e}")
+                print(f"[MONGODB ERROR] {str(e)}", flush=True)
         
         # File-based fallback
-        with open(LISTINGS_FILE, 'r') as f:
-            all_listings = json.load(f)
+        print(f"[DEBUG] Checking file fallback: {LISTINGS_FILE}", flush=True)
+        if os.path.exists(LISTINGS_FILE):
+            with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
+                all_listings = json.load(f)
+            
+            # Flexible matching for file fallback too
+            user_listings = [l for l in all_listings if str(l.get('farmer_id')) == user_id_str]
+            user_listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+            print(f"[DEBUG] File found {len(user_listings)} listings", flush=True)
+            return user_listings
         
-        user_listings = [l for l in all_listings if l.get('farmer_id') == user_id]
-        user_listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-        return user_listings
+        print("[DEBUG] No listings file found", flush=True)
+        return []
         
     except Exception as e:
-        print(f"Error fetching user listings: {e}")
+        print(f"[ERROR in get_user_listings] {str(e)}", flush=True)
         return []
 
 
 def get_available_listings(crop='', district='', state='', sort_by='recent'):
     """Get all available listings for buyers (status='available')"""
+    global db
+    print(f"\n[DEBUG] Fetching available listings for {crop} in {district}, {state}", flush=True)
+    
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 query = {'status': 'available'}
-                if crop:
-                    query['crop'] = crop
-                if district:
-                    query['district'] = district
-                if state:
-                    query['state'] = state
+                if crop: query['crop'] = crop
+                if district: query['district'] = district
+                if state: query['state'] = state
                 
                 sort_order = [('created_at', -1)]  # Default: recent first
-                if sort_by == 'price_low':
-                    sort_order = [('farmer_price', 1)]
-                elif sort_by == 'price_high':
-                    sort_order = [('farmer_price', -1)]
+                if sort_by == 'price_low': sort_order = [('farmer_price', 1)]
+                elif sort_by == 'price_high': sort_order = [('farmer_price', -1)]
                 
                 listings = list(db.crop_listings.find(query).sort(sort_order))
+                print(f"[DEBUG] MongoDB found {len(listings)} available listings", flush=True)
+                
                 for listing in listings:
                     listing['_id'] = str(listing['_id'])
-                    # Add farmer details
-                    farmer = get_user_by_id(listing['farmer_id'])
+                    # Robust farmer detail fetching
+                    f_id = listing.get('farmer_id')
+                    if f_id:
+                        farmer = find_user_by_id(f_id)
+                        if farmer:
+                            listing['farmer_name'] = farmer.get('name', 'Unknown')
+                            listing['farmer_phone'] = farmer.get('phone', '')
+                return listings
+            except Exception as e:
+                print(f"[MONGODB ERROR] {str(e)}", flush=True)
+        
+        # File-based fallback
+        if os.path.exists(LISTINGS_FILE):
+            with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
+                all_listings = json.load(f)
+            
+            # Filter by status and criteria
+            available = [l for l in all_listings if l.get('status') == 'available']
+            print(f"[DEBUG] File found total {len(available)} available listings before filtering", flush=True)
+            
+            if crop: available = [l for l in available if l.get('crop', '').lower() == crop.lower()]
+            if district: available = [l for l in available if l.get('district', '').lower() == district.lower()]
+            if state: available = [l for l in available if l.get('state', '').lower() == state.lower()]
+            
+            # Sort
+            if sort_by == 'price_low': available.sort(key=lambda x: x.get('farmer_price', 0))
+            elif sort_by == 'price_high': available.sort(key=lambda x: x.get('farmer_price', 0), reverse=True)
+            else: available.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+            
+            # Add farmer details
+            for listing in available:
+                f_id = listing.get('farmer_id')
+                if f_id:
+                    farmer = find_user_by_id(f_id)
                     if farmer:
                         listing['farmer_name'] = farmer.get('name', 'Unknown')
                         listing['farmer_phone'] = farmer.get('phone', '')
-                return listings
-            except Exception as e:
-                print(f"[MONGODB ERROR] {e}")
+            
+            print(f"[DEBUG] File-based retrieval complete, returning {len(available)} listings", flush=True)
+            return available
         
-        # File-based fallback
-        with open(LISTINGS_FILE, 'r') as f:
-            all_listings = json.load(f)
-        
-        # Filter by status and criteria
-        available = [l for l in all_listings if l.get('status') == 'available']
-        
-        if crop:
-            available = [l for l in available if l.get('crop', '').lower() == crop.lower()]
-        if district:
-            available = [l for l in available if l.get('district', '').lower() == district.lower()]
-        if state:
-            available = [l for l in available if l.get('state', '').lower() == state.lower()]
-        
-        # Sort
-        if sort_by == 'price_low':
-            available.sort(key=lambda x: x.get('farmer_price', 0))
-        elif sort_by == 'price_high':
-            available.sort(key=lambda x: x.get('farmer_price', 0), reverse=True)
-        else:  # recent
-            available.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-        
-        # Add farmer details
-        for listing in available:
-            farmer = get_user_by_id(listing['farmer_id'])
-            if farmer:
-                listing['farmer_name'] = farmer.get('name', 'Unknown')
-                listing['farmer_phone'] = farmer.get('phone', '')
-        
-        return available
+        return []
         
     except Exception as e:
-        print(f"Error fetching available listings: {e}")
+        print(f"[ERROR in get_available_listings] {str(e)}", flush=True)
         return []
 
 

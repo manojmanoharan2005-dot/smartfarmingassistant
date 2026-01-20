@@ -454,6 +454,8 @@ def download_market_prices_pdf():
     """Download today's market prices as PDF"""
     try:
         from flask import make_response, render_template
+        from xhtml2pdf import pisa
+        from io import BytesIO
         
         user_id = session.get('user_id')
         user = find_user_by_id(user_id)
@@ -482,9 +484,18 @@ def download_market_prices_pdf():
                              user=user or {'name': session.get('user_name', 'Farmer'), 'district': user_district or 'All Districts'},
                              date=datetime.now().strftime('%B %d, %Y'))
         
-        response = make_response(html)
-        response.headers['Content-Type'] = 'text/html'
-        response.headers['Content-Disposition'] = f'attachment; filename=market_prices_{datetime.now().strftime("%Y%m%d")}.html'
+        # Convert HTML to PDF
+        pdf_file = BytesIO()
+        pisa_status = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=pdf_file)
+        
+        if pisa_status.err:
+            return jsonify({'success': False, 'message': 'Error generating PDF'}), 500
+        
+        pdf_file.seek(0)
+        
+        response = make_response(pdf_file.read())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=market_prices_{datetime.now().strftime("%Y%m%d")}.pdf'
         
         return response
         
@@ -498,6 +509,8 @@ def download_weather_pdf():
     """Download weather forecast as PDF"""
     try:
         from flask import make_response, render_template
+        from xhtml2pdf import pisa
+        from io import BytesIO
         
         user_id = session.get('user_id')
         user = find_user_by_id(user_id)
@@ -528,9 +541,18 @@ def download_weather_pdf():
                              user=user or {'name': session.get('user_name', 'Farmer'), 'district': user_district, 'state': user_state},
                              date=datetime.now().strftime('%B %d, %Y'))
         
-        response = make_response(html)
-        response.headers['Content-Type'] = 'text/html'
-        response.headers['Content-Disposition'] = f'attachment; filename=weather_forecast_{datetime.now().strftime("%Y%m%d")}.html'
+        # Convert HTML to PDF
+        pdf_file = BytesIO()
+        pisa_status = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=pdf_file)
+        
+        if pisa_status.err:
+            return jsonify({'success': False, 'message': 'Error generating PDF'}), 500
+        
+        pdf_file.seek(0)
+        
+        response = make_response(pdf_file.read())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=weather_forecast_{datetime.now().strftime("%Y%m%d")}.pdf'
         
         return response
         
@@ -544,6 +566,8 @@ def download_expense_pdf():
     """Download expense calculator report as PDF"""
     try:
         from flask import make_response, render_template
+        from xhtml2pdf import pisa
+        from io import BytesIO
         
         user_id = session.get('user_id')
         user = find_user_by_id(user_id)
@@ -578,9 +602,18 @@ def download_expense_pdf():
                              user=user or {'name': session.get('user_name', 'Farmer')},
                              date=datetime.now().strftime('%B %d, %Y'))
         
-        response = make_response(html)
-        response.headers['Content-Type'] = 'text/html'
-        response.headers['Content-Disposition'] = f'attachment; filename=expense_calculator_{datetime.now().strftime("%Y%m%d")}.html'
+        # Convert HTML to PDF
+        pdf_file = BytesIO()
+        pisa_status = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=pdf_file)
+        
+        if pisa_status.err:
+            return jsonify({'success': False, 'message': 'Error generating PDF'}), 500
+        
+        pdf_file.seek(0)
+        
+        response = make_response(pdf_file.read())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=expense_calculator_{datetime.now().strftime("%Y%m%d")}.pdf'
         
         return response
         
@@ -594,6 +627,8 @@ def download_crop_progress_pdf():
     """Download crop progress report as PDF"""
     try:
         from flask import make_response, render_template
+        from xhtml2pdf import pisa
+        from io import BytesIO
         
         user_id = session.get('user_id')
         user = find_user_by_id(user_id)
@@ -638,9 +673,18 @@ def download_crop_progress_pdf():
                              user=user or {'name': session.get('user_name', 'Farmer')},
                              date=datetime.now().strftime('%B %d, %Y'))
         
-        response = make_response(html)
-        response.headers['Content-Type'] = 'text/html'
-        response.headers['Content-Disposition'] = f'attachment; filename=crop_progress_{datetime.now().strftime("%Y%m%d")}.html'
+        # Convert HTML to PDF
+        pdf_file = BytesIO()
+        pisa_status = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=pdf_file)
+        
+        if pisa_status.err:
+            return jsonify({'success': False, 'message': 'Error generating PDF'}), 500
+        
+        pdf_file.seek(0)
+        
+        response = make_response(pdf_file.read())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=crop_progress_{datetime.now().strftime("%Y%m%d")}.pdf'
         
         return response
         
