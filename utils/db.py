@@ -152,34 +152,84 @@ def get_db():
 
 # User model functions
 def create_user(name, email, password, phone, state, district):
-    users = db.users
+    """Create a new user and save to file-based storage"""
+    import uuid
+    
+    # Generate unique ID
+    user_id = str(uuid.uuid4())
+    
     user_data = {
+        '_id': user_id,
         'name': name,
         'email': email,
         'password': password,
         'phone': phone,
         'state': state,
         'district': district,
-        'created_at': datetime.utcnow(),
+        'created_at': datetime.utcnow().isoformat(),
         'saved_crops': [],
         'saved_fertilizers': [],
         'disease_history': []
     }
-    result = users.insert_one(user_data)
-    print(f"👤 User created: {name} ({email})")
-    return result
+    
+    # Try MongoDB first
+    if db and hasattr(db, 'users'):
+        try:
+            result = db.users.insert_one(user_data.copy())
+            print(f"👤 User created in MongoDB: {name} ({email})")
+        except Exception as e:
+            print(f"[MONGODB ERROR] {e}")
+    
+    # Always save to file-based storage (primary for now)
+    try:
+        # Load existing users
+        users_dict = {}
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                users_dict = json.load(f)
+        
+        # Add new user with email as key
+        users_dict[email] = user_data
+        
+        # Save back to file
+        with open(USERS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(users_dict, f, indent=2, ensure_ascii=False, default=str)
+        
+        print(f"👤 User created in file storage: {name} ({email}) - ID: {user_id}")
+        
+        # Return mock result with inserted_id
+        return type('Result', (), {'inserted_id': user_id})()
+    except Exception as e:
+        print(f"[ERROR] Failed to create user: {e}")
+        raise
 
 def find_user_by_email(email):
+    """Find user by email - searches both MongoDB and file storage"""
+    # Try MongoDB first
     if hasattr(db, 'users'):
-        users = db.users
-        user = users.find_one({'email': email})
-    else:
-        # Handle mock database
-        user = db.users.find_one({'email': email}) if db else None
+        try:
+            users = db.users
+            user = users.find_one({'email': email})
+            if user:
+                print(f"🔍 User found in MongoDB: {email}")
+                return user
+        except:
+            pass
     
-    if user:
-        print(f"🔍 User found: {email}")
-    return user
+    # File-based storage (primary method)
+    try:
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                users_dict = json.load(f)
+            
+            # Direct lookup by email key
+            if email in users_dict:
+                print(f"🔍 User found in file storage: {email}")
+                return users_dict[email]
+    except Exception as e:
+        print(f"[ERROR] find_user_by_email: {e}")
+    
+    return None
 
 def find_user_by_phone(phone):
     """Find user by phone number"""
@@ -240,7 +290,20 @@ def find_user_by_id(user_id):
                 user_copy = user.copy()
                 user_copy.pop('password', None)
                 return user_copy
-                
+        
+        # File-based fallback - search through users.json
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                users_dict = json.load(f)
+            
+            # Search through all users for matching _id
+            for email, user_data in users_dict.items():
+                if user_data.get('_id') == str(user_id):
+                    # Remove password from result
+                    user_copy = user_data.copy()
+                    user_copy.pop('password', None)
+                    return user_copy
+                    
     except Exception as e:
         print(f"Error fetching user by ID: {e}")
     
@@ -1173,11 +1236,12 @@ def get_listing_by_id(listing_id):
                 
                 if listing:
                     listing['_id'] = str(listing['_id'])
-                    # Add farmer details
-                    farmer = get_user_by_id(listing['farmer_id'])
-                    if farmer:
-                        listing['farmer_name'] = farmer.get('name', 'Unknown')
-                        listing['farmer_phone'] = farmer.get('phone', '')
+                    # Add farmer details if missing or "Unknown"
+                    if not listing.get('farmer_name') or listing.get('farmer_name') == 'Unknown':
+                        farmer = find_user_by_id(listing.get('farmer_id'))
+                        if farmer:
+                            listing['farmer_name'] = farmer.get('name', 'Unknown')
+                            listing['farmer_phone'] = farmer.get('phone', '')
                     return listing
             except Exception as e:
                 print(f"[MONGODB ERROR] {e}")
@@ -1188,11 +1252,12 @@ def get_listing_by_id(listing_id):
         
         for listing in listings:
             if listing.get('_id') == listing_id:
-                # Add farmer details
-                farmer = get_user_by_id(listing['farmer_id'])
-                if farmer:
-                    listing['farmer_name'] = farmer.get('name', 'Unknown')
-                    listing['farmer_phone'] = farmer.get('phone', '')
+                # Add farmer details if missing or "Unknown"
+                if not listing.get('farmer_name') or listing.get('farmer_name') == 'Unknown':
+                    farmer = find_user_by_id(listing.get('farmer_id'))
+                    if farmer:
+                        listing['farmer_name'] = farmer.get('name', 'Unknown')
+                        listing['farmer_phone'] = farmer.get('phone', '')
                 return listing
         
         return None
@@ -1497,6 +1562,14 @@ def get_available_equipment(equipment_name='', district='', state='', sort_by='r
         else:
             available.sort(key=lambda x: x.get('created_at', ''), reverse=True)
         
+        # Enrich listings with owner details if missing
+        for listing in available:
+            if not listing.get('owner_name') or listing.get('owner_name') == 'Unknown':
+                owner = find_user_by_id(listing.get('owner_id'))
+                if owner:
+                    listing['owner_name'] = owner.get('name', 'Unknown')
+                    listing['owner_phone'] = owner.get('phone', '')
+        
         return available
         
     except Exception as e:
@@ -1514,6 +1587,12 @@ def get_equipment_listing_by_id(listing_id):
                 listing = db.equipment_listings.find_one({'_id': ObjectId(listing_id)})
                 if listing:
                     listing['_id'] = str(listing['_id'])
+                    # Add owner details if missing or "Unknown"
+                    if not listing.get('owner_name') or listing.get('owner_name') == 'Unknown':
+                        owner = find_user_by_id(listing.get('owner_id'))
+                        if owner:
+                            listing['owner_name'] = owner.get('name', 'Unknown')
+                            listing['owner_phone'] = owner.get('phone', '')
                     return listing
             except:
                 pass
@@ -1527,6 +1606,12 @@ def get_equipment_listing_by_id(listing_id):
         
         for listing in listings:
             if listing.get('_id') == listing_id:
+                # Add owner details if missing or "Unknown"
+                if not listing.get('owner_name') or listing.get('owner_name') == 'Unknown':
+                    owner = find_user_by_id(listing.get('owner_id'))
+                    if owner:
+                        listing['owner_name'] = owner.get('name', 'Unknown')
+                        listing['owner_phone'] = owner.get('phone', '')
                 return listing
         
         return None

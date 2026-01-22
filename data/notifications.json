@@ -1,2 +1,108 @@
 [
+  {
+    "id": "1769066176.793393",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "listing_created",
+    "title": "\u2705 Listing Created",
+    "message": "Your Tomato listing (200 kg) has been created successfully and is now live in the marketplace!",
+    "priority": "medium",
+    "created_at": "2026-01-22T12:46:16.793427",
+    "read": false,
+    "data": {
+      "crop": "Tomato"
+    }
+  },
+  {
+    "id": "1769066176.809745",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "purchase_confirmed",
+    "title": "\ud83d\uded2 Purchase Confirmed",
+    "message": "Your purchase of Onion (100 kg) has been confirmed! The farmer will contact you.",
+    "priority": "high",
+    "created_at": "2026-01-22T12:46:16.809752",
+    "read": false,
+    "data": {}
+  },
+  {
+    "id": "1769066176.827157",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "equipment_listed",
+    "title": "\u2705 Equipment Listed",
+    "message": "Your Tractor is now available for rent at \u20b91500/day.",
+    "priority": "medium",
+    "created_at": "2026-01-22T12:46:16.827165",
+    "read": false,
+    "data": {}
+  },
+  {
+    "id": "1769066547.053333",
+    "user_id": "0914ef50-43bf-4ba4-82de-d86c653bbef4",
+    "type": "purchase_confirmed",
+    "title": "\ud83d\uded2 Purchase Confirmed",
+    "message": "Your purchase of Potato (200.0 kg) has been confirmed! The farmer will contact you at 6382801974.",
+    "priority": "high",
+    "created_at": "2026-01-22T12:52:27.053405",
+    "read": true,
+    "data": {
+      "listing_id": "de3a8e61-2bee-4149-96ae-2025d4abbe6e",
+      "crop": "Potato"
+    }
+  },
+  {
+    "id": "1769066547.079645",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "crop_sold",
+    "title": "\ud83d\udcb0 Crop Sold",
+    "message": "Great news! Your Potato listing has been sold to manokaran. Contact: 6382801974",
+    "priority": "high",
+    "created_at": "2026-01-22T12:52:27.079659",
+    "read": false,
+    "data": {
+      "listing_id": "de3a8e61-2bee-4149-96ae-2025d4abbe6e",
+      "buyer_name": "manokaran",
+      "buyer_phone": "6382801974"
+    }
+  },
+  {
+    "id": "1769066599.695938",
+    "user_id": "0914ef50-43bf-4ba4-82de-d86c653bbef4",
+    "type": "listing_cancelled",
+    "title": "\ud83d\udeab Listing Cancelled",
+    "message": "Your Cabbage listing has been cancelled and removed from the marketplace.",
+    "priority": "low",
+    "created_at": "2026-01-22T12:53:19.695950",
+    "read": false,
+    "data": {
+      "listing_id": "4cbb8f49-cc3d-4762-ac80-b96c980ebc1a"
+    }
+  },
+  {
+    "id": "1769066830.862681",
+    "user_id": "0914ef50-43bf-4ba4-82de-d86c653bbef4",
+    "type": "purchase_confirmed",
+    "title": "\ud83d\uded2 Purchase Confirmed",
+    "message": "Your purchase of Green Chilli (100.0 kg) has been confirmed! The farmer will contact you at 9025073522.",
+    "priority": "high",
+    "created_at": "2026-01-22T12:57:10.862700",
+    "read": false,
+    "data": {
+      "listing_id": "dbe73498-3c34-4fb7-a6f9-9cc12fb20d90",
+      "crop": "Green Chilli"
+    }
+  },
+  {
+    "id": "1769066830.903186",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "crop_sold",
+    "title": "\ud83d\udcb0 Crop Sold",
+    "message": "Great news! Your Green Chilli listing has been sold to manokaran. Contact: 9025073522",
+    "priority": "high",
+    "created_at": "2026-01-22T12:57:10.903204",
+    "read": false,
+    "data": {
+      "listing_id": "dbe73498-3c34-4fb7-a6f9-9cc12fb20d90",
+      "buyer_name": "manokaran",
+      "buyer_phone": "9025073522"
+    }
+  }
 ]

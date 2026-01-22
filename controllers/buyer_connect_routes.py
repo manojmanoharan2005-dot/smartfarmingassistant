@@ -277,6 +277,9 @@ def api_get_live_price():
 @login_required
 def marketplace():
     """Buyer marketplace showing all available listings"""
+    # Get current user ID
+    user_id = str(session.get('user_id', ''))
+    
     # Get filters from query params
     crop_filter = request.args.get('crop', '')
     district_filter = request.args.get('district', '')
@@ -284,17 +287,20 @@ def marketplace():
     sort_by = request.args.get('sort', 'recent')  # recent, price_low, price_high
     
     # Get only available listings
-    listings = get_available_listings(
+    all_listings = get_available_listings(
         crop=crop_filter,
         district=district_filter,
         state=state_filter,
         sort_by=sort_by
     )
     
-    # Get unique values for filters
-    all_listings = get_available_listings()
-    crops = sorted(set(l['crop'] for l in all_listings))
-    states = sorted(set(l['state'] for l in all_listings))
+    # Filter out user's own listings from marketplace
+    listings = [l for l in all_listings if str(l.get('farmer_id', '')) != user_id]
+    
+    # Get unique values for filters (from all listings, not filtered by user)
+    all_available = get_available_listings()
+    crops = sorted(set(l['crop'] for l in all_available))
+    states = sorted(set(l['state'] for l in all_available))
     
     return render_template('buyer_marketplace.html',
                          listings=listings,
@@ -367,6 +373,31 @@ def api_confirm_purchase():
         success, message = confirm_purchase(listing_id, purchase_data)
         
         if success:
+            # Create notifications for both buyer and farmer
+            from utils.db import add_notification
+            
+            # Notification for buyer
+            add_notification(
+                user_id=buyer_id,
+                type='purchase_confirmed',
+                title='🛒 Purchase Confirmed',
+                message=f'Your purchase of {listing.get("crop")} ({listing.get("quantity")} {listing.get("unit")}) has been confirmed! The farmer will contact you at {buyer_phone}.',
+                priority='high',
+                data={'listing_id': listing_id, 'crop': listing.get('crop')}
+            )
+            
+            # Notification for farmer
+            farmer_id = listing.get('farmer_id')
+            if farmer_id:
+                add_notification(
+                    user_id=farmer_id,
+                    type='crop_sold',
+                    title='💰 Crop Sold',
+                    message=f'Great news! Your {listing.get("crop")} listing has been sold to {buyer_name}. Contact: {buyer_phone}',
+                    priority='high',
+                    data={'listing_id': listing_id, 'buyer_name': buyer_name, 'buyer_phone': buyer_phone}
+                )
+            
             return jsonify({
                 'success': True,
                 'message': 'Purchase confirmed! The farmer will contact you soon.'
@@ -392,21 +423,40 @@ def api_cancel_listing(listing_id):
         if not listing:
             return jsonify({'success': False, 'error': 'Listing not found'}), 404
         
-        if listing['farmer_id'] != user_id:
-            return jsonify({'success': False, 'error': 'You can only cancel your own listings'}), 403
+        # Check ownership
+        farmer_id = listing.get('farmer_id')
+        if farmer_id != user_id:
+            # Check if the farmer user still exists
+            farmer_exists = find_user_by_id(farmer_id)
+            if farmer_exists:
+                # Farmer exists but it's not the current user
+                return jsonify({'success': False, 'error': 'You can only cancel your own listings'}), 403
+            else:
+                # Orphaned listing (farmer doesn't exist) - allow admin/any user to cancel
+                print(f"[INFO] Allowing cancellation of orphaned listing {listing_id} by user {user_id}")
         
         # Check if already sold
         if listing['status'] == 'sold':
-            return jsonify({'success': False, 'error': 'Cannot cancel a sold listing'}), 400
+            return jsonify({'success': False, 'error': 'This listing has already been sold and cannot be cancelled'}), 400
         
         # Check if already cancelled
         if listing['status'] == 'cancelled':
-            return jsonify({'success': False, 'error': 'Listing is already cancelled'}), 400
+            return jsonify({'success': False, 'error': 'This listing is already cancelled'}), 400
         
         # Update status to cancelled
         success = update_listing_status(listing_id, 'cancelled')
         
         if success:
+            # Create notification
+            from utils.db import add_notification
+            add_notification(
+                user_id=user_id,
+                type='listing_cancelled',
+                title='🚫 Listing Cancelled',
+                message=f'Your {listing.get("crop", "crop")} listing has been cancelled and removed from the marketplace.',
+                priority='low',
+                data={'listing_id': listing_id}
+            )
             return jsonify({'success': True, 'message': 'Listing cancelled successfully'})
         else:
             return jsonify({'success': False, 'error': 'Failed to cancel listing. Please try again.'}), 500
