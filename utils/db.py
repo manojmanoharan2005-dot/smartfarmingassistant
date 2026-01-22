@@ -908,20 +908,56 @@ def save_equipment(equipment_data):
         return None
 
 def update_equipment_status(equipment_id, status):
-    """Update equipment status (available, rented, etc.)"""
+    """Update equipment listing status (available, booked, completed, cancelled)"""
     try:
-        equipment = get_all_equipment()
-        for item in equipment:
-            if item.get('_id') == equipment_id:
-                item['status'] = status
-                item['updated_at'] = datetime.utcnow().isoformat()
+        # MongoDB Atlas
+        if db:
+            try:
+                from bson.objectid import ObjectId
+                try:
+                    obj_id = ObjectId(equipment_id)
+                except:
+                    obj_id = equipment_id
+                
+                result = db.equipment_listings.update_one(
+                    {'_id': obj_id},
+                    {'$set': {'status': status, 'updated_at': datetime.utcnow().isoformat()}}
+                )
+                if result.modified_count > 0:
+                    print(f"[MONGODB] Equipment status updated: {equipment_id} -> {status}")
+                    return True
+            except Exception as e:
+                print(f"[MONGODB ERROR] {e}")
+        
+        # File-based fallback - use equipment_listings.json
+        if not os.path.exists(EQUIPMENT_LISTINGS_FILE):
+            print(f"[ERROR] Equipment listings file not found: {EQUIPMENT_LISTINGS_FILE}")
+            return False
+        
+        with open(EQUIPMENT_LISTINGS_FILE, 'r', encoding='utf-8') as f:
+            listings = json.load(f)
+        
+        updated = False
+        for listing in listings:
+            if listing.get('_id') == equipment_id:
+                listing['status'] = status
+                listing['updated_at'] = datetime.utcnow().isoformat()
+                updated = True
                 break
         
-        with open(EQUIPMENT_FILE, 'w') as f:
-            json.dump(equipment, f, indent=2)
-        return True
+        if updated:
+            with open(EQUIPMENT_LISTINGS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(listings, f, indent=2, ensure_ascii=False)
+            print(f"[FILE] Equipment status updated: {equipment_id} -> {status}")
+            return True
+        else:
+            print(f"[ERROR] Equipment listing not found: {equipment_id}")
+            return False
+        
     except Exception as e:
-        print(f"Error updating equipment status: {e}")
+        print(f"[ERROR] Error updating equipment status: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def save_expense(expense_data):
@@ -1376,28 +1412,41 @@ def update_listing_status(listing_id, new_status):
                     {'_id': obj_id},
                     {'$set': {'status': new_status, 'updated_at': datetime.utcnow().isoformat()}}
                 )
-                return result.modified_count > 0
+                if result.modified_count > 0:
+                    print(f"[MONGODB] Listing status updated: {listing_id} -> {new_status}")
+                    return True
             except Exception as e:
                 print(f"[MONGODB ERROR] {e}")
         
         # File-based fallback
-        with open(LISTINGS_FILE, 'r') as f:
+        if not os.path.exists(LISTINGS_FILE):
+            print(f"[ERROR] Listings file not found: {LISTINGS_FILE}")
+            return False
+        
+        with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
             listings = json.load(f)
         
+        updated = False
         for listing in listings:
             if listing.get('_id') == listing_id:
                 listing['status'] = new_status
                 listing['updated_at'] = datetime.utcnow().isoformat()
-                
-                with open(LISTINGS_FILE, 'w') as f:
-                    json.dump(listings, f, indent=2)
-                
-                return True
+                updated = True
+                break
         
-        return False
+        if updated:
+            with open(LISTINGS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(listings, f, indent=2, ensure_ascii=False)
+            print(f"[FILE] Listing status updated: {listing_id} -> {new_status}")
+            return True
+        else:
+            print(f"[ERROR] Listing not found: {listing_id}")
+            return False
         
     except Exception as e:
-        print(f"Error updating listing status: {e}")
+        print(f"[ERROR] Error updating listing status: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
