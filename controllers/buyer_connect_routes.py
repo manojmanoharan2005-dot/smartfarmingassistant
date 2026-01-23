@@ -410,10 +410,13 @@ def api_confirm_purchase():
         return jsonify({'success': False, 'error': 'An error occurred. Please try again.'}), 500
 
 
+@buyer_connect_bp.route('/api/cancel-listing/', defaults={'listing_id': None}, methods=['POST'])
 @buyer_connect_bp.route('/api/cancel-listing/<listing_id>', methods=['POST'])
 @login_required
 def api_cancel_listing(listing_id):
+    print(f"\n[API] Cancel Listing Request received. ID: {listing_id}", flush=True)
     if not listing_id:
+        print("[APIError] Listing ID missing in URL", flush=True)
         return jsonify({'success': False, 'error': 'Listing ID is missing'}), 400
     """Cancel/delete a listing (farmer only)"""
     try:

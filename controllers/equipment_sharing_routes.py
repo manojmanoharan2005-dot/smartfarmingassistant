@@ -400,9 +400,9 @@ def api_confirm_rental():
 @equipment_sharing_bp.route('/api/cancel-listing/<listing_id>', methods=['POST'])
 @login_required
 def api_cancel_listing(listing_id):
+    """Cancel/delete an equipment listing (owner only)"""
     if not listing_id:
         return jsonify({'success': False, 'error': 'Listing ID is required'}), 400
-    """Cancel/delete an equipment listing (owner only)"""
     try:
         user_id = session.get('user_id')
         

@@ -278,30 +278,35 @@
             })
             .then(data => {
                 console.log('Cancel data:', data);
-                if (data.success) {
-                    if (window.showToast) {
-                        showToast('Listing cancelled successfully!', 'success');
-                    } else {
-                        alert('✅ Listing cancelled successfully!');
-                    }
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    throw new Error(data.message || 'Failed to cancel listing');
-                }
-            })
-            .catch(error => {
-                console.error('Cancel error:', error);
-                const msg = error.message || 'Failed to cancel listing';
                 if (window.showToast) {
-                    showToast(msg, 'error');
+                    showToast('Listing cancelled successfully!', 'success');
                 } else {
-                    alert('❌ ' + msg);
+                    alert('✅ Listing cancelled successfully!');
                 }
-                if (button) {
-                    button.disabled = false;
-                    button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
-                }
-            });
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                throw new Error(data.message || 'Failed to cancel listing');
+            }
+        })
+        .catch (error => {
+        console.error('Cancel error:', error);
+        console.error('Failed URL:', url);
+
+        let msg = error.message || 'Failed to cancel listing';
+        if (msg.includes('Server error: 404')) {
+            msg = 'Server Error 404: Endpoint not found. URL: ' + url;
+        }
+
+        if (window.showToast) {
+            showToast(msg, 'error');
+        } else {
+            alert('❌ ' + msg);
+        }
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
+        }
+    });
     }
 </script>
 

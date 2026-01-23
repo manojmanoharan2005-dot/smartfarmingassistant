@@ -264,7 +264,10 @@
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
         }
 
-        fetch('/equipment-sharing/api/cancel-listing/' + listingId, {
+        const apiBase = "{{ url_for('equipment_sharing.api_cancel_listing', listing_id='0') }}";
+        const url = apiBase.replace('0', listingId);
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
