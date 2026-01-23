@@ -255,7 +255,12 @@
 
         console.log('Cancelling crop listing:', listingId);
 
-        fetch('/buyer-connect/api/cancel-listing/' + listingId, {
+        // Use a placeholder to generate the correct base path even via reverse proxy
+        const apiBase = "{{ url_for('buyer_connect.api_cancel_listing', listing_id='0') }}";
+        // Replace '0' with the actual ID. splitting ensures we handle the tail correctly
+        const url = apiBase.replace('0', listingId);
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
