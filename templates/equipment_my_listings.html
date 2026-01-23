@@ -208,12 +208,12 @@
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% if listing.status == 'available' %}
-                        <button onclick="cancelListing('{{ listing._id }}', this)" class="btn-delete"
+                        <button onclick="cancelListing('{{ listing[\'_id\'] }}', this)" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
                         </button>
                         {% elif listing.status == 'booked' %}
-                        <button onclick="completeListing('{{ listing._id }}', this)" class="btn-submit"
+                        <button onclick="completeListing('{{ listing[\'_id\'] }}', this)" class="btn-submit"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: 2px solid #60a5fa; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);">
                             <i class="fas fa-check"></i> Complete
                         </button>
@@ -249,6 +249,12 @@
 
 <script>
     function cancelListing(listingId, button) {
+        if (!listingId) {
+            alert('Error: Invalid Listing ID');
+            console.error('Missing listing ID');
+            return;
+        }
+
         if (!confirm('⚠️ Are you sure you want to cancel this listing? This action cannot be undone.')) {
             return;
         }
@@ -257,8 +263,6 @@
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
         }
-
-        console.log('Cancelling equipment listing:', listingId);
 
         fetch('/equipment-sharing/api/cancel-listing/' + listingId, {
             method: 'POST',
@@ -295,7 +299,7 @@
                 if (window.showToast) {
                     showToast('Error: ' + errorMsg, 'error');
                 } else {
-                    alert('❌ Error: ' + errorMsg);
+                    alert('Error: ' + errorMsg);
                 }
                 if (button) {
                     button.disabled = false;
@@ -305,6 +309,12 @@
     }
 
     function completeListing(listingId, button) {
+        if (!listingId) {
+            alert('Error: Invalid Listing ID');
+            console.error('Missing listing ID');
+            return;
+        }
+
         if (!confirm('✅ Mark this rental as completed?')) {
             return;
         }
@@ -313,8 +323,6 @@
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Completing...';
         }
-
-        console.log('Completing rental listing:', listingId);
 
         fetch('/equipment-sharing/api/complete-rental/' + listingId, {
             method: 'POST',
@@ -351,7 +359,7 @@
                 if (window.showToast) {
                     showToast('Error: ' + errorMsg, 'error');
                 } else {
-                    alert('❌ Error: ' + errorMsg);
+                    alert('Error: ' + errorMsg);
                 }
                 if (button) {
                     button.disabled = false;

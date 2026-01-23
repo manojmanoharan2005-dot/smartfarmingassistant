@@ -396,9 +396,12 @@ def api_confirm_rental():
         return jsonify({'success': False, 'error': 'An error occurred. Please try again.'}), 500
 
 
+@equipment_sharing_bp.route('/api/cancel-listing/', defaults={'listing_id': None}, methods=['POST'])
 @equipment_sharing_bp.route('/api/cancel-listing/<listing_id>', methods=['POST'])
 @login_required
 def api_cancel_listing(listing_id):
+    if not listing_id:
+        return jsonify({'success': False, 'error': 'Listing ID is required'}), 400
     """Cancel/delete an equipment listing (owner only)"""
     try:
         user_id = session.get('user_id')
@@ -456,9 +459,12 @@ def api_cancel_listing(listing_id):
         return jsonify({'success': False, 'error': 'An error occurred. Please try again.'}), 500
 
 
+@equipment_sharing_bp.route('/api/complete-rental/', defaults={'listing_id': None}, methods=['POST'])
 @equipment_sharing_bp.route('/api/complete-rental/<listing_id>', methods=['POST'])
 @login_required
 def api_complete_rental(listing_id):
+    if not listing_id:
+         return jsonify({'success': False, 'error': 'Listing ID is required'}), 400
     """Mark equipment rental as completed (owner only)"""
     try:
         user_id = session.get('user_id')
