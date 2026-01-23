@@ -32,11 +32,14 @@ def init_db(app):
     # Create data directory if it doesn't exist
     os.makedirs(DATA_DIR, exist_ok=True)
     
+    OTPS_FILE = os.path.join(DATA_DIR, 'otps.json')
+    TOKENS_FILE = os.path.join(DATA_DIR, 'reset_tokens.json')
+    
     # Initialize JSON files if they don't exist
-    for file_path in [USERS_FILE, CROPS_FILE, FERTILIZERS_FILE, DISEASES_FILE, GROWING_FILE, EQUIPMENT_FILE, NOTIFICATIONS_FILE]:
+    for file_path in [USERS_FILE, CROPS_FILE, FERTILIZERS_FILE, DISEASES_FILE, GROWING_FILE, EQUIPMENT_FILE, NOTIFICATIONS_FILE, OTPS_FILE, TOKENS_FILE]:
         if not os.path.exists(file_path):
-            with open(file_path, 'w') as f:
-                if file_path in [EQUIPMENT_FILE, NOTIFICATIONS_FILE]:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                if file_path in [EQUIPMENT_FILE, NOTIFICATIONS_FILE, OTPS_FILE, TOKENS_FILE]:
                     json.dump([], f)
                 else:
                     json.dump({}, f)
@@ -82,67 +85,290 @@ def init_db(app):
         db = MockDatabase()
 
 class MockDatabase:
-    """Enhanced Mock database for development when MongoDB is not available"""
+    """Enhanced Mock database that persists to JSON files when MongoDB is not available"""
     def __init__(self):
-        self.users_data = {}
-        self.crops_data = []
-        self.fertilizers_data = []
-        self.diseases_data = []
-        print("[INFO] Mock database initialized with enhanced features")
+        print("[INFO] Mock database initializing with persistent file storage")
     
     @property
     def users(self):
-        return MockCollection('users', self.users_data, is_dict=True)
+        return MockCollection('users', USERS_FILE, is_dict=True)
     
     @property 
     def crops(self):
-        return MockCollection('crops', self.crops_data)
+        return MockCollection('crops', CROPS_FILE)
+    
+    @property
+    def crop_listings(self):
+        return MockCollection('crop_listings', LISTINGS_FILE)
         
     @property
     def fertilizers(self):
-        return MockCollection('fertilizers', self.fertilizers_data)
+        return MockCollection('fertilizers', FERTILIZERS_FILE)
         
     @property
     def diseases(self):
-        return MockCollection('diseases', self.diseases_data)
+        return MockCollection('diseases', DISEASES_FILE)
+
+    @property
+    def equipment_listings(self):
+        return MockCollection('equipment_listings', EQUIPMENT_LISTINGS_FILE)
+
+    @property
+    def notifications(self):
+        return MockCollection('notifications', NOTIFICATIONS_FILE)
+
+    @property
+    def expenses(self):
+        return MockCollection('expenses', EXPENSES_FILE)
+
+    @property
+    def otps(self):
+        OTPS_FILE = os.path.join(DATA_DIR, 'otps.json')
+        return MockCollection('otps', OTPS_FILE)
+
+    @property
+    def password_reset_tokens(self):
+        TOKENS_FILE = os.path.join(DATA_DIR, 'reset_tokens.json')
+        return MockCollection('password_reset_tokens', TOKENS_FILE)
 
 class MockCollection:
-    def __init__(self, name, data_store, is_dict=False):
+    def __init__(self, name, file_path, is_dict=False):
         self.name = name
-        self.data_store = data_store
+        self.file_path = file_path
         self.is_dict = is_dict
+        self._ensure_file()
         
+    def _ensure_file(self):
+        if not os.path.exists(self.file_path):
+            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                json.dump({} if self.is_dict else [], f)
+
+    def _load(self):
+        try:
+            if os.path.exists(self.file_path):
+                with open(self.file_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"[MOCK DB ERROR] Failed to load {self.name}: {e}")
+        return {} if self.is_dict else []
+
+    def _save(self, data):
+        try:
+            # Create a separate process or lock if possible? For now, simple write.
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, default=str, ensure_ascii=False)
+        except Exception as e:
+            print(f"[MOCK DB ERROR] Failed to save {self.name}: {e}")
+
     def find_one(self, query):
-        if self.is_dict and 'email' in query:
-            return self.data_store.get(query['email'])
-        elif '_id' in query:
-            for item in self.data_store:
-                if item.get('_id') == query['_id']:
-                    return item
+        data = self._load()
+        if self.is_dict:
+            if 'email' in query:
+                return data.get(query['email'])
+            elif 'mobile_number' in query:
+                for user in data.values():
+                    if user.get('mobile_number') == query['mobile_number']:
+                        return user
+        
+        items = data.values() if self.is_dict else data
+        for item in items:
+            match = True
+            for key, val in query.items():
+                if key == '_id':
+                    if str(item.get('_id')) != str(val):
+                        match = False
+                        break
+                elif item.get(key) != val:
+                    match = False
+                    break
+            if match:
+                return item
         return None
     
     def insert_one(self, data):
+        all_data = self._load()
         import uuid
-        mock_id = str(uuid.uuid4())
-        data['_id'] = mock_id
+        if '_id' not in data:
+            data['_id'] = str(uuid.uuid4())
         
-        if self.is_dict and 'email' in data:
-            self.data_store[data['email']] = data
+        if self.is_dict:
+            key = data.get('email', data['_id'])
+            all_data[key] = data
         else:
-            self.data_store.append(data)
+            all_data.append(data)
             
-        return type('MockResult', (), {'inserted_id': mock_id})()
+        self._save(all_data)
+        return type('MockResult', (), {'inserted_id': data['_id']})()
+
+    def insert_many(self, data_list):
+        all_data = self._load()
+        import uuid
+        ids = []
+        for data in data_list:
+            if '_id' not in data:
+                data['_id'] = str(uuid.uuid4())
+            ids.append(data['_id'])
+            if self.is_dict:
+                key = data.get('email', data['_id'])
+                all_data[key] = data
+            else:
+                all_data.append(data)
+        
+        self._save(all_data)
+        return type('MockResult', (), {'inserted_ids': ids})()
     
-    def find(self, query):
-        if 'user_id' in query:
-            return [item for item in self.data_store if item.get('user_id') == query['user_id']]
-        return list(self.data_store) if not self.is_dict else list(self.data_store.values())
+    def find(self, query=None, sort=None):
+        data = self._load()
+        items = list(data.values()) if self.is_dict else list(data)
+        
+        if query:
+            filtered = []
+            for item in items:
+                match = True
+                for key, val in query.items():
+                    if key == '$or':
+                        or_match = False
+                        for cond in val:
+                            if all(item.get(k) == v for k, v in cond.items()):
+                                or_match = True
+                                break
+                        if not or_match:
+                            match = False
+                            break
+                    elif key == '_id':
+                        if str(item.get('_id')) != str(val):
+                            match = False
+                            break
+                    elif item.get(key) != val:
+                        match = False
+                        break
+                if match:
+                    filtered.append(item)
+            items = filtered
+
+        class SortableList(list):
+            def sort(self, key_name, direction=-1):
+                # Handle direction (1 for ASC, -1 for DESC)
+                super().sort(key=lambda x: x.get(key_name, ''), reverse=(direction == -1))
+                return self
+        
+        result_list = SortableList(items)
+        if sort:
+            # Handle list of tuples like [('created_at', -1)]
+            for field, direction in sort:
+                result_list.sort(field, direction)
+        
+        return result_list
+    
+    def update_one(self, query, update):
+        all_data = self._load()
+        items = all_data.values() if self.is_dict else all_data
+        
+        found = False
+        for item in items:
+            match = True
+            for key, val in query.items():
+                if key == '_id':
+                    if str(item.get('_id')) != str(val):
+                        match = False
+                        break
+                elif item.get(key) != val:
+                    match = False
+                    break
+            
+            if match:
+                if '$set' in update:
+                    item.update(update['$set'])
+                if '$inc' in update:
+                    for k, v in update['$inc'].items():
+                        item[k] = item.get(k, 0) + v
+                found = True
+                break
+        
+        if found:
+            self._save(all_data)
+            return type('MockResult', (), {'modified_count': 1})()
+        
+        return type('MockResult', (), {'modified_count': 0})()
+
+    def update_many(self, query, update):
+        all_data = self._load()
+        items = all_data.values() if self.is_dict else all_data
+        modified_count = 0
+        
+        for item in items:
+            match = True
+            for key, val in query.items():
+                if item.get(key) != val:
+                    match = False
+                    break
+            
+            if match:
+                if '$set' in update:
+                    item.update(update['$set'])
+                modified_count += 1
+        
+        if modified_count > 0:
+            self._save(all_data)
+        return type('MockResult', (), {'modified_count': modified_count})()
     
     def delete_one(self, query):
-        if '_id' in query:
-            self.data_store = [item for item in self.data_store if item.get('_id') != query['_id']]
-            return type('MockResult', (), {'deleted_count': 1})()
+        all_data = self._load()
+        if self.is_dict:
+            if 'email' in query and query['email'] in all_data:
+                del all_data[query['email']]
+                self._save(all_data)
+                return type('MockResult', (), {'deleted_count': 1})()
+        else:
+            new_data = []
+            deleted = False
+            for item in all_data:
+                match = True
+                for key, val in query.items():
+                    if str(item.get(key)) != str(val):
+                        match = False
+                        break
+                if match and not deleted:
+                    deleted = True
+                else:
+                    new_data.append(item)
+            
+            if deleted:
+                self._save(new_data)
+                return type('MockResult', (), {'deleted_count': 1})()
+        
         return type('MockResult', (), {'deleted_count': 0})()
+
+    def delete_many(self, query):
+        all_data = self._load()
+        if self.is_dict:
+            return type('MockResult', (), {'deleted_count': 0})()
+            
+        new_data = []
+        deleted_count = 0
+        for item in all_data:
+            match = True
+            for key, val in query.items():
+                if isinstance(val, dict) and '$lt' in val:
+                    item_val = item.get(key)
+                    if isinstance(item_val, str):
+                        try:
+                            item_val = datetime.fromisoformat(item_val)
+                        except: pass
+                    if item_val >= val['$lt']:
+                        match = False
+                elif item.get(key) != val:
+                    match = False
+                
+            if match:
+                deleted_count += 1
+            else:
+                new_data.append(item)
+        
+        if deleted_count > 0:
+            self._save(new_data)
+        return type('MockResult', (), {'deleted_count': deleted_count})()
     
     def create_index(self, field, unique=False):
         print(f"Mock index created for {field} (unique: {unique})")

@@ -201,7 +201,7 @@
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% if listing.status == 'available' %}
-                        <button onclick="cancelListing('{{ listing._id }}', event)" class="btn-delete"
+                        <button onclick="cancelListing('{{ listing._id }}', this)" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
                         </button>
@@ -236,16 +236,18 @@
 </div>
 
 <script>
-    function cancelListing(listingId, event) {
+    function cancelListing(listingId, button) {
         if (!confirm('⚠️ Are you sure you want to cancel this listing? This action cannot be undone.')) {
             return;
         }
 
-        const button = event.target.closest('button');
+        // The second parameter 'button' is passed as 'this' from the HTML onclick
         if (button) {
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
         }
+
+        console.log('Cancelling crop listing:', listingId);
 
         fetch('/buyer-connect/api/cancel-listing/' + listingId, {
             method: 'POST',
@@ -255,26 +257,35 @@
             }
         })
             .then(response => {
+                console.log('Response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    return response.json().then(err => { throw err; }).catch(() => {
+                        throw new Error('Server error: ' + response.status);
+                    });
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Cancel data:', data);
                 if (data.success) {
-                    alert('✅ ' + (data.message || 'Listing cancelled successfully!'));
-                    window.location.reload();
-                } else {
-                    alert('❌ Error: ' + (data.error || 'Failed to cancel listing'));
-                    if (button) {
-                        button.disabled = false;
-                        button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
+                    if (window.showToast) {
+                        showToast('Listing cancelled successfully!', 'success');
+                    } else {
+                        alert('✅ Listing cancelled successfully!');
                     }
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    throw new Error(data.message || 'Failed to cancel listing');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('❌ Failed to cancel listing. Please try again.');
+                console.error('Cancel error:', error);
+                const msg = error.message || 'Failed to cancel listing';
+                if (window.showToast) {
+                    showToast(msg, 'error');
+                } else {
+                    alert('❌ ' + msg);
+                }
                 if (button) {
                     button.disabled = false;
                     button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';

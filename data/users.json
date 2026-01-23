@@ -12,5 +12,18 @@
     "saved_fertilizers": [],
     "disease_history": [],
     "last_notification_read_at": "2026-01-23T11:20:15.339850"
+  },
+  "deva@gmail.com": {
+    "_id": "25089549-592d-45a4-9f33-31465550fce8",
+    "name": "deva",
+    "email": "deva@gmail.com",
+    "password": "b'$2b$12$/uOhS5.1ZG0uZRuCNtg9q.a/wXWNbcBVxCUe.I4LFQnXf2sTk.dU2'",
+    "phone": "9751122334",
+    "state": "Tamil Nadu",
+    "district": "Karur",
+    "created_at": "2026-01-23T06:25:18.618176",
+    "saved_crops": [],
+    "saved_fertilizers": [],
+    "disease_history": []
   }
 }
