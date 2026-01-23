@@ -61,5 +61,27 @@
     "status": "available",
     "created_at": "2026-01-20T07:31:05.403913",
     "_id": "06daa952-1eed-4b4d-b993-112fec370c7f"
+  },
+  {
+    "owner_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "owner_name": "Unknown",
+    "owner_phone": "",
+    "equipment_name": "Tractor",
+    "district": "Tiruppur",
+    "state": "Tamil Nadu",
+    "latitude": 10.993794,
+    "longitude": 77.282638,
+    "description": "fill fuel tank",
+    "owner_rent": 1500.0,
+    "recommended_rent": 1500,
+    "min_rent": 1275.0,
+    "max_rent": 1725.0,
+    "live_market_rent": 1500,
+    "available_from": "2026-01-23",
+    "available_to": "2026-02-07",
+    "status": "cancelled",
+    "created_at": "2026-01-23T05:49:51.444119",
+    "_id": "c0aea9fe-d47e-4bd7-b2d8-8ca1eb84fbb4",
+    "updated_at": "2026-01-23T05:49:55.840245"
   }
 ]

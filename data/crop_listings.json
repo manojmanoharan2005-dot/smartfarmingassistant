@@ -235,9 +235,36 @@
     "min_price": 16.04,
     "max_price": 24.06,
     "live_market_price": 20.05,
-    "status": "available",
+    "status": "sold",
     "created_at": "2026-01-22T07:27:49.497064",
     "expires_at": "2026-02-21T07:27:49.497114",
-    "_id": "5b1737b0-f853-476b-bd66-c2a6b988219b"
+    "_id": "5b1737b0-f853-476b-bd66-c2a6b988219b",
+    "buyer_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "buyer_name": "manoj",
+    "buyer_phone": "8925153050",
+    "sold_at": "2026-01-23T05:48:26.611946"
+  },
+  {
+    "farmer_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "farmer_name": "Unknown",
+    "farmer_phone": "",
+    "crop": "Brinjal",
+    "quantity": 200.0,
+    "unit": "kg",
+    "district": "Tiruppur",
+    "state": "Tamil Nadu",
+    "latitude": 10.843767,
+    "longitude": 77.492071,
+    "description": "",
+    "farmer_price": 20.32,
+    "recommended_price": 20.32,
+    "min_price": 16.26,
+    "max_price": 24.38,
+    "live_market_price": 20.32,
+    "status": "cancelled",
+    "created_at": "2026-01-23T05:47:45.217862",
+    "expires_at": "2026-02-22T05:47:45.217886",
+    "_id": "0feae2c2-9828-4e0c-99f1-e9308831dad3",
+    "updated_at": "2026-01-23T05:47:49.024785"
   }
 ]

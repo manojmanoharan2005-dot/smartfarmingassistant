@@ -104,5 +104,74 @@
       "buyer_name": "manokaran",
       "buyer_phone": "9025073522"
     }
+  },
+  {
+    "id": "1769147269.034427",
+    "user_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "type": "listing_cancelled",
+    "title": "\ud83d\udeab Listing Cancelled",
+    "message": "Your Brinjal listing has been cancelled and removed from the marketplace.",
+    "priority": "low",
+    "created_at": "2026-01-23T11:17:49.034465",
+    "read": true,
+    "data": {
+      "listing_id": "0feae2c2-9828-4e0c-99f1-e9308831dad3"
+    }
+  },
+  {
+    "id": "1769147306.633883",
+    "user_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "type": "purchase_confirmed",
+    "title": "\ud83d\uded2 Purchase Confirmed",
+    "message": "Your purchase of Brinjal (20.0 kg) has been confirmed! The farmer will contact you at 8925153050.",
+    "priority": "high",
+    "created_at": "2026-01-23T11:18:26.633948",
+    "read": true,
+    "data": {
+      "listing_id": "5b1737b0-f853-476b-bd66-c2a6b988219b",
+      "crop": "Brinjal"
+    }
+  },
+  {
+    "id": "1769147306.669441",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "crop_sold",
+    "title": "\ud83d\udcb0 Crop Sold",
+    "message": "Great news! Your Brinjal listing has been sold to manoj. Contact: 8925153050",
+    "priority": "high",
+    "created_at": "2026-01-23T11:18:26.669452",
+    "read": false,
+    "data": {
+      "listing_id": "5b1737b0-f853-476b-bd66-c2a6b988219b",
+      "buyer_name": "manoj",
+      "buyer_phone": "8925153050"
+    }
+  },
+  {
+    "id": "1769147391.499342",
+    "user_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "type": "equipment_listed",
+    "title": "\u2705 Equipment Listed",
+    "message": "Your Tractor is now available for rent at \u20b91500.0/day from 2026-01-23 to 2026-02-07.",
+    "priority": "medium",
+    "created_at": "2026-01-23T11:19:51.499352",
+    "read": true,
+    "data": {
+      "listing_id": "c0aea9fe-d47e-4bd7-b2d8-8ca1eb84fbb4",
+      "equipment": "Tractor"
+    }
+  },
+  {
+    "id": "1769147395.883179",
+    "user_id": "13a18633-ab01-47b0-a571-fe490a9ee2dd",
+    "type": "equipment_cancelled",
+    "title": "\ud83d\udeab Equipment Delisted",
+    "message": "Your Tractor listing has been cancelled and removed from the marketplace.",
+    "priority": "low",
+    "created_at": "2026-01-23T11:19:55.883193",
+    "read": true,
+    "data": {
+      "listing_id": "c0aea9fe-d47e-4bd7-b2d8-8ca1eb84fbb4"
+    }
   }
 ]
