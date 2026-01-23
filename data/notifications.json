@@ -7,7 +7,7 @@
     "message": "Your Tomato listing (200 kg) has been created successfully and is now live in the marketplace!",
     "priority": "medium",
     "created_at": "2026-01-22T12:46:16.793427",
-    "read": false,
+    "read": true,
     "data": {
       "crop": "Tomato"
     }
@@ -20,7 +20,7 @@
     "message": "Your purchase of Onion (100 kg) has been confirmed! The farmer will contact you.",
     "priority": "high",
     "created_at": "2026-01-22T12:46:16.809752",
-    "read": false,
+    "read": true,
     "data": {}
   },
   {
@@ -31,7 +31,7 @@
     "message": "Your Tractor is now available for rent at \u20b91500/day.",
     "priority": "medium",
     "created_at": "2026-01-22T12:46:16.827165",
-    "read": false,
+    "read": true,
     "data": {}
   },
   {
@@ -56,7 +56,7 @@
     "message": "Great news! Your Potato listing has been sold to manokaran. Contact: 6382801974",
     "priority": "high",
     "created_at": "2026-01-22T12:52:27.079659",
-    "read": false,
+    "read": true,
     "data": {
       "listing_id": "de3a8e61-2bee-4149-96ae-2025d4abbe6e",
       "buyer_name": "manokaran",
@@ -98,7 +98,7 @@
     "message": "Great news! Your Green Chilli listing has been sold to manokaran. Contact: 9025073522",
     "priority": "high",
     "created_at": "2026-01-22T12:57:10.903204",
-    "read": false,
+    "read": true,
     "data": {
       "listing_id": "dbe73498-3c34-4fb7-a6f9-9cc12fb20d90",
       "buyer_name": "manokaran",
@@ -140,7 +140,7 @@
     "message": "Great news! Your Brinjal listing has been sold to manoj. Contact: 8925153050",
     "priority": "high",
     "created_at": "2026-01-23T11:18:26.669452",
-    "read": false,
+    "read": true,
     "data": {
       "listing_id": "5b1737b0-f853-476b-bd66-c2a6b988219b",
       "buyer_name": "manoj",
@@ -172,6 +172,33 @@
     "read": true,
     "data": {
       "listing_id": "c0aea9fe-d47e-4bd7-b2d8-8ca1eb84fbb4"
+    }
+  },
+  {
+    "id": "1769147765.334182",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "equipment_listed",
+    "title": "\u2705 Equipment Listed",
+    "message": "Your Seed Drill is now available for rent at \u20b9600.0/day from 2026-01-24 to 2026-01-26.",
+    "priority": "medium",
+    "created_at": "2026-01-23T11:26:05.334193",
+    "read": true,
+    "data": {
+      "listing_id": "27f588c1-a443-4960-a453-9f998bec9bde",
+      "equipment": "Seed Drill"
+    }
+  },
+  {
+    "id": "1769147768.728282",
+    "user_id": "cb57cdef-86cf-4079-9d30-372067f41777",
+    "type": "equipment_cancelled",
+    "title": "\ud83d\udeab Equipment Delisted",
+    "message": "Your Seed Drill listing has been cancelled and removed from the marketplace.",
+    "priority": "low",
+    "created_at": "2026-01-23T11:26:08.728308",
+    "read": true,
+    "data": {
+      "listing_id": "27f588c1-a443-4960-a453-9f998bec9bde"
     }
   }
 ]
