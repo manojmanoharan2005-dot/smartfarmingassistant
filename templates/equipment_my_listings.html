@@ -179,12 +179,12 @@
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% if listing.status == 'available' %}
-                        <button onclick="cancelListing('{{ listing._id }}')" class="btn-delete"
+                        <button onclick="cancelListing('{{ listing._id }}', event)" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
                         </button>
                         {% elif listing.status == 'booked' %}
-                        <button onclick="completeListing('{{ listing._id }}')" class="btn-submit"
+                        <button onclick="completeListing('{{ listing._id }}', event)" class="btn-submit"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: 2px solid #60a5fa; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);">
                             <i class="fas fa-check"></i> Complete
                         </button>
@@ -218,7 +218,7 @@
 </div>
 
 <script>
-function cancelListing(listingId) {
+function cancelListing(listingId, event) {
     if (!confirm('⚠️ Are you sure you want to cancel this listing? This action cannot be undone.')) {
         return;
     }
@@ -264,7 +264,7 @@ function cancelListing(listingId) {
     });
 }
 
-function completeListing(listingId) {
+function completeListing(listingId, event) {
     if (!confirm('✅ Mark this rental as completed?')) {
         return;
     }
@@ -275,7 +275,7 @@ function completeListing(listingId) {
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Completing...';
     }
     
-    fetch('/equipment-sharing/api/complete-listing/' + listingId, {
+    fetch('/equipment-sharing/api/complete-rental/' + listingId, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
