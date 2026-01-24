@@ -388,7 +388,7 @@ def create_user(name, email, password, phone, state, district):
         '_id': user_id,
         'name': name,
         'email': email,
-        'password': password,
+        'password': password.decode('utf-8') if isinstance(password, bytes) else password,
         'phone': phone,
         'state': state,
         'district': district,

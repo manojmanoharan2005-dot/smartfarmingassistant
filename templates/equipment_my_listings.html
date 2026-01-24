@@ -89,8 +89,8 @@
         {% if listings %}
         <div class="listings-grid" style="display: grid; gap: 24px; margin-top: 32px;">
             {% for listing in listings %}
-            <div class="listing-card"
-                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border-left: 4px solid {% if listing.status == 'available' %}var(--accent-green){% elif listing.status == 'booked' %}#f59e0b{% elif listing.status == 'completed' %}var(--accent-blue){% else %}var(--text-muted){% endif %};">
+            <div class="listing-card status-{{ listing.status }}"
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden;">
                 <div
                     style="display: grid; grid-template-columns: auto 1fr auto; gap: 24px; padding: 28px; align-items: center;">
                     <!-- Equipment Icon -->
@@ -208,12 +208,12 @@
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% if listing.status == 'available' %}
-                        <button onclick="cancelListing('{{ listing['_id'] }}', this)" class="btn-delete"
+                        <button onclick="cancelListing(this)" data-id="{{ listing._id }}" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
                         </button>
                         {% elif listing.status == 'booked' %}
-                        <button onclick="completeListing('{{ listing['_id'] }}', this)" class="btn-submit"
+                        <button onclick="completeListing(this)" data-id="{{ listing._id }}" class="btn-submit"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: 2px solid #60a5fa; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);">
                             <i class="fas fa-check"></i> Complete
                         </button>
@@ -248,7 +248,8 @@
 </div>
 
 <script>
-    function cancelListing(listingId, button) {
+    function cancelListing(button) {
+        const listingId = button.dataset.id;
         if (!listingId) {
             alert('Error: Invalid Listing ID');
             console.error('Missing listing ID');
@@ -311,7 +312,8 @@
             });
     }
 
-    function completeListing(listingId, button) {
+    function completeListing(button) {
+        const listingId = button.dataset.id;
         if (!listingId) {
             alert('Error: Invalid Listing ID');
             console.error('Missing listing ID');
@@ -387,6 +389,26 @@
     .listing-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .listing-card {
+        border-left: 4px solid var(--text-muted);
+    }
+
+    .listing-card.status-available {
+        border-left-color: var(--accent-green);
+    }
+
+    .listing-card.status-booked {
+        border-left-color: #f59e0b;
+    }
+
+    .listing-card.status-completed {
+        border-left-color: var(--accent-blue);
+    }
+
+    .listing-card.status-cancelled {
+        border-left-color: var(--text-muted);
     }
 </style>
 {% endblock %}

@@ -206,8 +206,11 @@
                         <i class="fas fa-ban"></i> Your Own Listing
                     </button>
                     {% else %}
-                    <button
-                        onclick="openPurchaseModal('{{ listing._id }}', '{{ listing.crop }}', '{{ listing.farmer_price }}', '{{ listing.quantity }}', '{{ listing.unit }}', '{{ listing.farmer_name }}', '{{ listing.farmer_phone }}', {{ listing.latitude|default(0) }}, {{ listing.longitude|default(0) }}, '{{ listing.farmer_id }}')"
+                    <button onclick="openPurchaseModal(this)" data-id="{{ listing._id }}" data-crop="{{ listing.crop }}"
+                        data-price="{{ listing.farmer_price }}" data-quantity="{{ listing.quantity }}"
+                        data-unit="{{ listing.unit }}" data-farmer-name="{{ listing.farmer_name }}"
+                        data-farmer-phone="{{ listing.farmer_phone }}" data-lat="{{ listing.latitude|default(0) }}"
+                        data-lng="{{ listing.longitude|default(0) }}" data-farmer-id="{{ listing.farmer_id }}"
                         class="btn-submit" style="width: 100%; margin-top: 20px;">
                         <i class="fas fa-shopping-cart"></i> Buy Now
                     </button>
@@ -355,7 +358,19 @@
     let currentListingData = {};
     let purchaseMap = null;
 
-    function openPurchaseModal(listingId, crop, price, quantity, unit, farmerName, farmerPhone, lat, lng, farmerId) {
+    function openPurchaseModal(btn) {
+        const dataset = btn.dataset;
+        const listingId = dataset.id;
+        const crop = dataset.crop;
+        const price = dataset.price;
+        const quantity = dataset.quantity;
+        const unit = dataset.unit;
+        const farmerName = dataset.farmerName;
+        const farmerPhone = dataset.farmerPhone;
+        const lat = parseFloat(dataset.lat);
+        const lng = parseFloat(dataset.lng);
+        const farmerId = dataset.farmerId;
+
         currentListingData = { listingId, crop, price, quantity, unit, farmerName, farmerPhone, lat, lng, farmerId };
 
         document.getElementById('purchase_listing_id').value = listingId;

@@ -17,6 +17,7 @@ from controllers.report_routes import report_bp
 from controllers.forgot_password_routes import forgot_password_bp
 from controllers.buyer_connect_routes import buyer_connect_bp
 from controllers.equipment_sharing_routes import equipment_sharing_bp
+from controllers.resources_routes import resources_bp
 from controllers.market_scheduler import init_scheduler
 from utils.db import init_db
 
@@ -51,6 +52,7 @@ app.register_blueprint(report_bp)
 app.register_blueprint(forgot_password_bp)
 app.register_blueprint(buyer_connect_bp)
 app.register_blueprint(equipment_sharing_bp)
+app.register_blueprint(resources_bp)
 # app.register_blueprint(community_bp)
 
 # Global context processor for date and user info

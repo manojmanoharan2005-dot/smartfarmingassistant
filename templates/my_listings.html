@@ -89,8 +89,8 @@
         {% if listings %}
         <div class="listings-grid" style="display: grid; gap: 24px; margin-top: 32px;">
             {% for listing in listings %}
-            <div class="listing-card"
-                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border-left: 4px solid {% if listing.status == 'available' %}var(--accent-green){% elif listing.status == 'sold' %}var(--accent-red){% else %}var(--text-muted){% endif %};">
+            <div class="listing-card status-{{ listing.status }}"
+                style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden;">
                 <div
                     style="display: grid; grid-template-columns: auto 1fr auto; gap: 24px; padding: 28px; align-items: center;">
                     <!-- Crop Icon -->
@@ -201,7 +201,7 @@
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         {% if listing.status == 'available' %}
-                        <button onclick="cancelListing('{{ listing['_id'] }}', this)" class="btn-delete"
+                        <button onclick="cancelListing(this)" data-id="{{ listing._id }}" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
                         </button>
@@ -236,7 +236,8 @@
 </div>
 
 <script>
-    function cancelListing(listingId, button) {
+    function cancelListing(button) {
+        const listingId = button.dataset.id;
         if (!listingId) {
             alert('Error: Invalid Listing ID');
             console.error('Missing listing ID');
@@ -278,35 +279,36 @@
             })
             .then(data => {
                 console.log('Cancel data:', data);
-                if (window.showToast) {
-                    showToast('Listing cancelled successfully!', 'success');
+                if (data.success) {
+                    if (window.showToast) {
+                        showToast('Listing cancelled successfully!', 'success');
+                    } else {
+                        alert('✅ Listing cancelled successfully!');
+                    }
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('✅ Listing cancelled successfully!');
+                    throw new Error(data.message || 'Failed to cancel listing');
                 }
-                setTimeout(() => location.reload(), 1000);
-            } else {
-                throw new Error(data.message || 'Failed to cancel listing');
-            }
-        })
-        .catch (error => {
-        console.error('Cancel error:', error);
-        console.error('Failed URL:', url);
+            })
+            .catch(error => {
+                console.error('Cancel error:', error);
+                console.error('Failed URL:', url);
 
-        let msg = error.message || 'Failed to cancel listing';
-        if (msg.includes('Server error: 404')) {
-            msg = 'Server Error 404: Endpoint not found. URL: ' + url;
-        }
+                let msg = error.message || 'Failed to cancel listing';
+                if (msg.includes('Server error: 404')) {
+                    msg = 'Server Error 404: Endpoint not found. URL: ' + url;
+                }
 
-        if (window.showToast) {
-            showToast(msg, 'error');
-        } else {
-            alert('❌ ' + msg);
-        }
-        if (button) {
-            button.disabled = false;
-            button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
-        }
-    });
+                if (window.showToast) {
+                    showToast(msg, 'error');
+                } else {
+                    alert('❌ ' + msg);
+                }
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-trash-alt"></i> Cancel';
+                }
+            });
     }
 </script>
 
@@ -320,6 +322,22 @@
     .listing-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .listing-card {
+        border-left: 4px solid var(--text-muted);
+    }
+
+    .listing-card.status-available {
+        border-left-color: var(--accent-green);
+    }
+
+    .listing-card.status-sold {
+        border-left-color: var(--accent-red);
+    }
+
+    .listing-card.status-cancelled {
+        border-left-color: var(--text-muted);
     }
 </style>
 {% endblock %}

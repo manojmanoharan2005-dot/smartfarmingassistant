@@ -8,6 +8,11 @@ def hash_password(password):
 
 def check_password(password, hashed):
     """Check if password matches hashed password"""
+    if isinstance(hashed, str):
+        # Handle string representation of bytes (e.g. "b'$2b$...'")
+        if hashed.startswith("b'") and hashed.endswith("'"):
+            hashed = hashed[2:-1]
+        hashed = hashed.encode('utf-8')
     return bcrypt.checkpw(password.encode('utf-8'), hashed)
 
 def login_required(f):
