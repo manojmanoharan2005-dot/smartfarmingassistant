@@ -42,6 +42,10 @@
                     <span>Market Prices</span>
                     <span class="badge">Live</span>
                 </a>
+                <a href="{{ url_for('resources.regional_calendar') }}" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Regional Calendar</span>
+                </a>
             </div>
 
             <div class="nav-section">
@@ -75,6 +79,10 @@
                     <i class="fas fa-landmark"></i>
                     <span>Govt. Schemes</span>
                 </a>
+                <a href="#" class="nav-link" onclick="openFarmersManualModal(); return false;">
+                    <i class="fas fa-book"></i>
+                    <span>Farmer's Manual</span>
+                </a>
             </div>
 
             <div class="nav-section">
@@ -91,18 +99,6 @@
                     <i class="fas fa-store"></i>
                     <span>Rent Equipment</span>
                     <span class="badge" style="background: #10b981;">Live</span>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Resources</div>
-                <a href="#" class="nav-link" onclick="openFarmersManualModal(); return false;">
-                    <i class="fas fa-book"></i>
-                    <span>Farmer's Manual</span>
-                </a>
-                <a href="{{ url_for('resources.regional_calendar') }}" class="nav-link">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Regional Calendar</span>
                 </a>
             </div>
         </nav>
