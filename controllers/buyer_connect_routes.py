@@ -91,11 +91,17 @@ def create_listing():
             'Dry Fruits': dry_fruits
         }
         
-        # Load states and districts
-        import os
-        states_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'states_districts.json')
-        with open(states_file, 'r') as f:
-            states_districts = json.load(f)
+        try:
+            states_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'states_districts.json')
+            if os.path.exists(states_file):
+                with open(states_file, 'r', encoding='utf-8') as f:
+                    states_districts = json.load(f)
+            else:
+                print(f"[WARNING] States file not found at {states_file}")
+                states_districts = {}
+        except Exception as e:
+            print(f"[ERROR] Failed to load states: {e}")
+            states_districts = {}
         
         return render_template('create_listing.html', 
                              user=user, 

@@ -12,39 +12,49 @@ class SMSGateway:
     @staticmethod
     def send_otp_fast2sms(mobile_number: str, otp: str) -> Tuple[bool, str]:
         """
-        Send OTP via Fast2SMS
+        Send OTP via Fast2SMS using 'otp' route (DLT-free)
         Returns (success, message)
         """
         api_key = os.environ.get('FAST2SMS_API_KEY')
         
-        if not api_key:
-            return False, "SMS API key not configured"
+        if not api_key or 'your_' in api_key:
+            return False, "Fast2SMS API key not configured"
         
         # Fast2SMS API endpoint
         url = "https://www.fast2sms.com/dev/bulkV2"
         
-        # Message template
-        message = f"Your Smart Farming Assistant password reset OTP is: {otp}. Valid for 5 minutes. Do not share this OTP."
-        
+        # Use 'otp' route which bypasses DLT template scrubbing
+        # It sends a default message: "Your OTP is {otp}"
         payload = {
             'authorization': api_key,
-            'route': 'v3',
-            'sender_id': 'SMRTFM',  # Your sender ID
-            'message': message,
-            'language': 'english',
+            'route': 'otp',
+            'variables_values': otp,
             'flash': 0,
             'numbers': mobile_number
         }
         
+        headers = {
+            'cache-control': "no-cache"
+        }
+        
         try:
-            response = requests.post(url, data=payload, timeout=10)
+            print(f"[Fast2SMS] Sending OTP to {mobile_number}...")
+            response = requests.post(url, data=payload, headers=headers, timeout=10)
             response_data = response.json()
             
+            # Log response for debugging
+            print(f"[Fast2SMS] Response: {response_data}")
+            
             if response.status_code == 200 and response_data.get('return'):
-                return True, "OTP sent successfully"
+                return True, "OTP sent successfully via SMS"
             else:
                 error_msg = response_data.get('message', 'Failed to send OTP')
-                return False, error_msg
+                print(f"[Fast2SMS Error] {error_msg}")
+                return False, f"SMS Provider Error: {error_msg}"
+                
+        except requests.exceptions.RequestException as e:
+            print(f"[Fast2SMS Exceptions] {str(e)}")
+            return False, f"SMS Connection Error: {str(e)}"
                 
         except requests.exceptions.RequestException as e:
             return False, f"SMS service error: {str(e)}"

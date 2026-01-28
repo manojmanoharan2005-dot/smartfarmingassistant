@@ -280,6 +280,9 @@ class MockCollection:
             if match:
                 if '$set' in update:
                     item.update(update['$set'])
+                if '$unset' in update:
+                    for k in update['$unset']:
+                        item.pop(k, None)
                 if '$inc' in update:
                     for k, v in update['$inc'].items():
                         item[k] = item.get(k, 0) + v

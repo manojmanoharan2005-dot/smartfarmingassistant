@@ -96,21 +96,44 @@
                     <!-- Crop Icon -->
                     <div
                         style="width: 90px; height: 90px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);">
-                        {% if listing.crop == 'Tomato' %}🍅
-                        {% elif listing.crop == 'Potato' %}🥔
-                        {% elif listing.crop == 'Onion' %}🧅
-                        {% elif listing.crop == 'Cabbage' %}🥬
-                        {% elif listing.crop == 'Carrot' %}🥕
-                        {% elif listing.crop == 'Cauliflower' %}🥦
-                        {% elif listing.crop == 'Brinjal' %}🍆
-                        {% elif listing.crop == 'Capsicum' %}🫑
-                        {% elif listing.crop == 'Beans' %}🫘
-                        {% elif listing.crop == 'Peas' %}🫛
-                        {% elif listing.crop == 'Banana' %}🍌
-                        {% elif listing.crop == 'Mango' %}🥭
-                        {% elif listing.crop == 'Apple' %}🍎
-                        {% elif listing.crop == 'Orange' %}🍊
-                        {% else %}🌾{% endif %}
+                        {% set listing_icon_map = {
+                        'Tomato': '🍅', 'Onion': '🧅', 'Potato': '🥔', 'Brinjal': '🍆',
+                        'Cabbage': '🥬', 'Cauliflower': '🥦', 'Carrot': '🥕', 'Beetroot': '🍠',
+                        'Green Chilli': '🌶️', 'Capsicum': '🫑', 'Beans': '🫘', 'Lady Finger': '🖐️',
+                        'Drumstick': '🥢', 'Bottle Gourd': '🥒', 'Pumpkin': '🎃', 'Radish': '🥗',
+                        'Sweet Corn': '🌽', 'Peas': '🫛', 'Garlic': '🧄', 'Ginger': '🫚',
+                        'Spinach': '🥬', 'Mushroom': '🍄', 'Cucumber': '🥒', 'Lemon': '🍋',
+                        'Bitter Gourd': '🥒', 'Ridge Gourd': '🥒', 'Snake Gourd': '🐍', 'Ash Gourd': '⚪',
+                        'Turnip': '🥔', 'Colocasia': '🥔', 'Jack Fruit': '🍈', 'Pointed Gourd': '🥒',
+                        'Apple': '🍎', 'Banana': '🍌', 'Orange': '🍊', 'Mosambi': '🍋',
+                        'Grapes': '🍇', 'Pomegranate': '🪀', 'Papaya': '🍈', 'Pineapple': '🍍',
+                        'Watermelon': '🍉', 'Muskmelon': '🍈', 'Mango': '🥭', 'Guava': '🍐',
+                        'Custard Apple': '🍏', 'Sapota': '🥔', 'Strawberry': '🍓',
+                        'Kiwi': '🥝', 'Pear': '🍐', 'Plum': '🫐', 'Peach': '🍑',
+                        'Litchi': '🍒', 'Cherry': '🍒', 'Apricot': '🍑', 'Ber': '🍒', 'Amla': '🍏',
+                        'Paddy': '🍚', 'Rice': '🍚', 'Wheat': '🌾', 'Maize': '🌽',
+                        'Barley': '🌾', 'Bajra': '🌾', 'Jowar': '🌾', 'Ragi': '🌾',
+                        'Sorghum': '🌾', 'Millet': '🌾', 'Oats': '🥣',
+                        'Bengal Gram': '🟤', 'Gram': '🟤', 'Black Gram': '⚫',
+                        'Green Gram': '🟢', 'Moong': '🟢', 'Red Gram': '🟡', 'Arhar': '🟡',
+                        'Tur': '🟡', 'Lentil': '🔴', 'Masur': '🔴', 'Horse Gram': '🟤',
+                        'Cowpea': '🫘', 'Lobia': '🫘', 'Chickpea': '🧆', 'Rajmah': '🫘',
+                        'Groundnut': '🥜', 'Mustard': '🌼', 'Soyabean': '🫘', 'Sunflower': '🌻',
+                        'Sesamum': '🥯', 'Sesame': '🥯', 'Castor': '🌿', 'Linseed': '🌸',
+                        'Niger': '🌿', 'Safflower': '🌺', 'Coconut': '🥥', 'Copra': '🥥', 'Palm': '🌴',
+                        'Chilly': '🌶️', 'Turmeric': '🟡', 'Coriander': '🌿', 'Cumin': '🧂', 'Jeera': '🧂',
+                        'Black Pepper': '⚫', 'Cardamom': '🌿', 'Tamarind': '🟤', 'Arecanut': '🌰', 'Betelnut': '🌰',
+                        'Ajwan': '🌿',
+                        'Cotton': '☁️', 'Sugarcane': '🎋', 'Tea': '🍵', 'Coffee': '☕',
+                        'Jute': '🧶', 'Rubber': '🌳', 'Tobacco': '🍂', 'Mesta': '🧶',
+                        'Cashewnut': '🥜', 'Almond': '🌰', 'Raisin': '🍇', 'Walnut': '🌰',
+                        'Milk': '🥛', 'Egg': '🥚', 'Poultry': '🐔', 'Chicken': '🐔',
+                        'Fish': '🐟', 'Mutton': '🥩', 'Goat': '🐐', 'Sheep': '🐑'
+                        } %}
+                        {% set icon =
+                        listing_icon_map.get(listing.crop.split('(')[0].split('Raw')[0].split('Seed')[0].strip(), '🌾')
+                        %}
+                        {{ icon }}
                     </div>
 
                     <!-- Details -->

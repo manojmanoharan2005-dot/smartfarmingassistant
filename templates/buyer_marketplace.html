@@ -139,22 +139,44 @@
                 <div class="listing-header">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div class="crop-emoji">
-                            {% if listing.crop == 'Tomato' %}🍅
-                            {% elif listing.crop == 'Potato' %}🥔
-                            {% elif listing.crop == 'Onion' %}🧅
-                            {% elif listing.crop == 'Banana' %}🍌
-                            {% elif listing.crop == 'Mango' %}🥭
-                            {% elif listing.crop == 'Apple' %}🍎
-                            {% elif listing.crop == 'Orange' %}🍊
-                            {% elif listing.crop == 'Grapes' %}🍇
-                            {% elif listing.crop == 'Wheat' %}🌾
-                            {% elif listing.crop == 'Rice' %}🌾
-                            {% elif listing.crop == 'Maize' %}🌽
-                            {% elif listing.crop == 'Cotton' %}🌼
-                            {% elif listing.crop == 'Sugarcane' %}🌿
-                            {% elif listing.crop == 'Tea' %}🍵
-                            {% elif listing.crop == 'Coffee' %}☕
-                            {% else %}🌾{% endif %}
+                            {% set listing_icon_map = {
+                            'Tomato': '🍅', 'Onion': '🧅', 'Potato': '🥔', 'Brinjal': '🍆',
+                            'Cabbage': '🥬', 'Cauliflower': '🥦', 'Carrot': '🥕', 'Beetroot': '🍠',
+                            'Green Chilli': '🌶️', 'Capsicum': '🫑', 'Beans': '🫘', 'Lady Finger': '🖐️',
+                            'Drumstick': '🥢', 'Bottle Gourd': '🥒', 'Pumpkin': '🎃', 'Radish': '🥗',
+                            'Sweet Corn': '🌽', 'Peas': '🫛', 'Garlic': '🧄', 'Ginger': '🫚',
+                            'Spinach': '🥬', 'Mushroom': '🍄', 'Cucumber': '🥒', 'Lemon': '🍋',
+                            'Bitter Gourd': '🥒', 'Ridge Gourd': '🥒', 'Snake Gourd': '🐍', 'Ash Gourd': '⚪',
+                            'Turnip': '🥔', 'Colocasia': '🥔', 'Jack Fruit': '🍈', 'Pointed Gourd': '🥒',
+                            'Apple': '🍎', 'Banana': '🍌', 'Orange': '🍊', 'Mosambi': '🍋',
+                            'Grapes': '🍇', 'Pomegranate': '🪀', 'Papaya': '🍈', 'Pineapple': '🍍',
+                            'Watermelon': '🍉', 'Muskmelon': '🍈', 'Mango': '🥭', 'Guava': '🍐',
+                            'Custard Apple': '🍏', 'Sapota': '🥔', 'Strawberry': '🍓',
+                            'Kiwi': '🥝', 'Pear': '🍐', 'Plum': '🫐', 'Peach': '🍑',
+                            'Litchi': '🍒', 'Cherry': '🍒', 'Apricot': '🍑', 'Ber': '🍒', 'Amla': '🍏',
+                            'Paddy': '🍚', 'Rice': '🍚', 'Wheat': '🌾', 'Maize': '🌽',
+                            'Barley': '🌾', 'Bajra': '🌾', 'Jowar': '🌾', 'Ragi': '🌾',
+                            'Sorghum': '🌾', 'Millet': '🌾', 'Oats': '🥣',
+                            'Bengal Gram': '🟤', 'Gram': '🟤', 'Black Gram': '⚫',
+                            'Green Gram': '🟢', 'Moong': '🟢', 'Red Gram': '🟡', 'Arhar': '🟡',
+                            'Tur': '🟡', 'Lentil': '🔴', 'Masur': '🔴', 'Horse Gram': '🟤',
+                            'Cowpea': '🫘', 'Lobia': '🫘', 'Chickpea': '🧆', 'Rajmah': '🫘',
+                            'Groundnut': '🥜', 'Mustard': '🌼', 'Soyabean': '🫘', 'Sunflower': '🌻',
+                            'Sesamum': '🥯', 'Sesame': '🥯', 'Castor': '🌿', 'Linseed': '🌸',
+                            'Niger': '🌿', 'Safflower': '🌺', 'Coconut': '🥥', 'Copra': '🥥', 'Palm': '🌴',
+                            'Chilly': '🌶️', 'Turmeric': '🟡', 'Coriander': '🌿', 'Cumin': '🧂', 'Jeera': '🧂',
+                            'Black Pepper': '⚫', 'Cardamom': '🌿', 'Tamarind': '🟤', 'Arecanut': '🌰', 'Betelnut': '🌰',
+                            'Ajwan': '🌿',
+                            'Cotton': '☁️', 'Sugarcane': '🎋', 'Tea': '🍵', 'Coffee': '☕',
+                            'Jute': '🧶', 'Rubber': '🌳', 'Tobacco': '🍂', 'Mesta': '🧶',
+                            'Cashewnut': '🥜', 'Almond': '🌰', 'Raisin': '🍇', 'Walnut': '🌰',
+                            'Milk': '🥛', 'Egg': '🥚', 'Poultry': '🐔', 'Chicken': '🐔',
+                            'Fish': '🐟', 'Mutton': '🥩', 'Goat': '🐐', 'Sheep': '🐑'
+                            } %}
+                            {% set icon =
+                            listing_icon_map.get(listing.crop.split('(')[0].split('Raw')[0].split('Seed')[0].strip(),
+                            '🌾') %}
+                            {{ icon }}
                         </div>
                         <div style="flex: 1;">
                             <h3 class="crop-name">{{ listing.crop }}</h3>

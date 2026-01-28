@@ -212,8 +212,8 @@
                                 </option>
                                 <option value="Cluster Beans" {% if selected_commodity=='Cluster Beans' %}selected{%
                                     endif %}>Cluster Beans</option>
-                                <option value="Lady Finger" {% if selected_commodity=='Lady Finger' %}selected{% endif
-                                    %}>Lady Finger</option>
+                                <option value="Ladys Finger" {% if selected_commodity=='Ladys Finger' %}selected{% endif
+                                    %}>Ladys Finger</option>
                                 <option value="Drumstick" {% if selected_commodity=='Drumstick' %}selected{% endif %}>
                                     Drumstick</option>
                                 <option value="Bottle Gourd" {% if selected_commodity=='Bottle Gourd' %}selected{% endif
@@ -365,438 +365,693 @@
 
             <!-- Market Grid -->
             {% if market_data %}
+
+            {% set card_images = {
+            'Tomato': '/static/images/tomato.png',
+            'Onion': '/static/images/onion.png',
+            'Potato': '/static/images/potato.jpg',
+            'Brinjal': '/static/images/brinjal.png',
+            'Cabbage': '/static/images/cabbage.jpg',
+            'Cauliflower': '/static/images/cauliflower.jpg',
+            'Carrot': '/static/images/carrot.jpg',
+            'Apple': '/static/images/apple.jpg',
+            'Banana': '/static/images/banana.png',
+            'Orange': '/static/images/orange.png',
+            'Pomegranate':
+            'https://images.unsplash.com/photo-1615485925763-8678628890cb?auto=format&fit=crop&w=500&q=60',
+            'Mango': '/static/images/mango.png',
+            'Grapes': 'https://images.unsplash.com/photo-1596363505729-4190a9506133?auto=format&fit=crop&w=500&q=60',
+            'Wheat': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60',
+            'Rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=60',
+            'Paddy': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=60',
+            'Maize': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=500&q=60',
+            'Barley': 'https://images.unsplash.com/photo-1536766465355-be2361667b2d?auto=format&fit=crop&w=500&q=60',
+            'Jowar': 'https://images.unsplash.com/photo-1634467542740-023b14421d00?auto=format&fit=crop&w=500&q=60',
+            'Sorghum': 'https://images.unsplash.com/photo-1634467542740-023b14421d00?auto=format&fit=crop&w=500&q=60',
+            'Bajra': 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=500&q=60',
+            'Pearl Millet':
+            'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=500&q=60',
+            'Ragi': 'https://images.unsplash.com/photo-1609137021590-0f2c423c4a93?auto=format&fit=crop&w=500&q=60',
+            'Cotton': 'https://images.unsplash.com/photo-1594895697660-f38449c258d4?auto=format&fit=crop&w=500&q=60',
+            'Sugarcane': 'https://images.unsplash.com/photo-1601633512803-b097b6ec7f8f?auto=format&fit=crop&w=500&q=60',
+            'Coffee': 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=500&q=60',
+            'Green Chilli': '/static/images/green_chilli.jpg',
+            'Beetroot': '/static/images/beetroot.jpg',
+            'Capsicum': '/static/images/capsicum.jpg',
+            'Beans': '/static/images/beans.jpg',
+            'Cluster Beans': '/static/images/cluster_beans.png',
+            'Lady Finger': '/static/images/lady_finger.jpg',
+            'Ladys Finger': '/static/images/lady_finger.jpg',
+            'Bhindi': '/static/images/lady_finger.jpg',
+            'Drumstick': '/static/images/drumstick.jpg',
+            'Bottle Gourd': '/static/images/bottle_gourd.png',
+            'Sponge Gourd': '/static/images/sponge_gourd.png',
+            'Ridge Gourd': '/static/images/sponge_gourd.png',
+            'Snake Gourd': '/static/images/snake_gourd.png',
+            'Bitter Gourd': '/static/images/bitter_gourd.png',
+            'Pumpkin': '/static/images/pumpkin.jpg',
+            'Radish': '/static/images/radish.jpg',
+            'Ash Gourd': '/static/images/ash_gourd.png',
+            'Turnip': '/static/images/turnip.jpg',
+            'Sweet Corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=500&q=60',
+            'Peas': 'https://images.unsplash.com/photo-1592444641151-6d744b76c8c6?auto=format&fit=crop&w=500&q=60',
+            'Garlic': 'https://images.unsplash.com/photo-1615477810688-668832a87426?auto=format&fit=crop&w=500&q=60',
+            'Ginger': 'https://images.unsplash.com/photo-1629153579126-11f845014c47?auto=format&fit=crop&w=500&q=60',
+            'Spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=500&q=60',
+            'Lemon': 'https://images.unsplash.com/photo-1595855799863-1250325bdfa4?auto=format&fit=crop&w=500&q=60',
+            'Papaya': 'https://images.unsplash.com/photo-1617117833203-c91b44773aba?auto=format&fit=crop&w=500&q=60',
+            'Pineapple':
+            'https://plus.unsplash.com/premium_photo-1675715924050-69255be3269b?auto=format&fit=crop&w=500&q=60',
+            'Mosambi': 'https://images.unsplash.com/photo-1623854746401-b51f807f354f?auto=format&fit=crop&w=500&q=60',
+            'Groundnut': 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=500&q=60',
+            'Mustard': 'https://images.unsplash.com/photo-1615485500834-bc10199bc727?auto=format&fit=crop&w=500&q=60',
+            'Sunflower': 'https://images.unsplash.com/photo-1597848212624-e4c0e6d1b9b1?auto=format&fit=crop&w=500&q=60',
+            'Sesamum': 'https://images.unsplash.com/photo-1612530182604-0373df899533?auto=format&fit=crop&w=500&q=60',
+            'Soyabean': 'https://images.unsplash.com/photo-1612530182604-0373df899533?auto=format&fit=crop&w=500&q=60',
+            'Soybean': 'https://images.unsplash.com/photo-1612530182604-0373df899533?auto=format&fit=crop&w=500&q=60',
+            'Castor': 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=500&q=60',
+            'Linseed': 'https://images.unsplash.com/photo-1597848212624-e4c0e6d1b9b1?auto=format&fit=crop&w=500&q=60',
+            'Coconut': 'https://images.unsplash.com/photo-1598511757337-fe2cafc31ba0?auto=format&fit=crop&w=500&q=60',
+            'Turmeric': 'https://images.unsplash.com/photo-1615485500834-bc10199bc727?auto=format&fit=crop&w=500&q=60',
+            'Chilly': 'https://images.unsplash.com/photo-1583454155184-870a1f63aebc?auto=format&fit=crop&w=500&q=60',
+            'Red Chilli':
+            'https://images.unsplash.com/photo-1583454155184-870a1f63aebc?auto=format&fit=crop&w=500&q=60',
+            'Coriander': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=500&q=60',
+            'Cumin': 'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60',
+            'Tea': 'https://images.unsplash.com/photo-1597318130159-b8f6c223f785?auto=format&fit=crop&w=500&q=60',
+            'Jute': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=500&q=60',
+            'Tobacco': 'https://images.unsplash.com/photo-1464297162577-f5295c892194?auto=format&fit=crop&w=500&q=60',
+            'Cashewnut': 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=500&q=60',
+            'Almond': 'https://images.unsplash.com/photo-1508736793122-f516e3ba5569?auto=format&fit=crop&w=500&q=60',
+            'Raisin': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Walnut': 'https://images.unsplash.com/photo-1622484211052-6b1c7f5d6f1e?auto=format&fit=crop&w=500&q=60',
+            'Milk': 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=60',
+            'Egg': 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=500&q=60',
+            'Chicken': 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=500&q=60',
+            'Poultry': 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?auto=format&fit=crop&w=500&q=60',
+            'Fish': 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?auto=format&fit=crop&w=500&q=60',
+            'Bengal Gram':
+            'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Black Gram': 'https://images.unsplash.com/photo-1550953683-g4a428230554?auto=format&fit=crop&w=500&q=60',
+            'Green Gram':
+            'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60',
+            'Red Gram': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Lentil': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Arhar': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Gram': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Moong': 'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60',
+            'Urad': 'https://images.unsplash.com/photo-1550953683-g4a428230554?auto=format&fit=crop&w=500&q=60',
+            'Tur': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Masur': 'https://images.unsplash.com/photo-1587049352846-4a222e784acc?auto=format&fit=crop&w=500&q=60',
+            'Watermelon': '/static/images/watermelon.jpg',
+            'Water Melon': '/static/images/watermelon.jpg',
+            'Muskmelon': '/static/images/muskmelon.jpg',
+            'Musk Melon': '/static/images/muskmelon.jpg',
+            'Guava': '/static/images/guava.png',
+            'Mosambi': '/static/images/mosambi.png',
+            'Sweet Lime': '/static/images/mosambi.png',
+            'Pomegranate': '/static/images/pomegranate.png',
+            'Anar': '/static/images/pomegranate.png',
+            'Papaya': '/static/images/papaya.jpg',
+            'Papita': '/static/images/papaya.jpg',
+            'Pineapple': '/static/images/pineapple.jpg',
+            'Ananas': '/static/images/pineapple.jpg',
+            'Lemon': '/static/images/lemon.jpg',
+            'Lime': '/static/images/lemon.jpg',
+            'Nimbu': '/static/images/lemon.jpg',
+            'Grapes': '/static/images/grapes.png',
+            'Sapota': '/static/images/sapota.png',
+            'Custard Apple': '/static/images/custard_apple.jpg',
+            'Sitaphal': '/static/images/custard_apple.jpg',
+            'Kiwi': '/static/images/kiwi.png',
+            'Strawberry': '/static/images/strawberry.jpg',
+            'Pear': '/static/images/pear.png',
+            'Nashpati': '/static/images/pear.png',
+            'Plum': '/static/images/plum.png',
+            'Peach': '/static/images/peach.png',
+            'Adoo': '/static/images/peach.png'
+            } %}
+
             <style>
-                @media (max-width: 1024px) {
-                    .market-split-layout {
-                        grid-template-columns: 1fr !important;
+                /* Animation Keyframes */
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
                     }
                 }
+
+                /* Grid Layout for Dashboard */
+                .market-dashboard-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 20px;
+                    padding-bottom: 40px;
+                }
+
+                @media (max-width: 992px) {
+                    .market-dashboard-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                /* Category Panel */
+                .market-category-panel {
+                    background: white;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    display: flex;
+                    flex-direction: column;
+                    opacity: 0;
+                    animation: fadeInUp 0.5s ease-out forwards;
+                    height: 100%;
+                    /* Match height in row */
+                }
+
+                .market-category-panel:nth-child(1) {
+                    animation-delay: 0.1s;
+                }
+
+                .market-category-panel:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .market-category-panel:nth-child(3) {
+                    animation-delay: 0.3s;
+                }
+
+                .market-category-panel:nth-child(4) {
+                    animation-delay: 0.4s;
+                }
+
+                /* Panel Headers with varying colors */
+                .panel-header {
+                    padding: 12px 16px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    color: white;
+                }
+
+                .panel-header h2 {
+                    font-size: 20px;
+                    font-weight: 700;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .panel-header-icon {
+                    font-size: 22px;
+                }
+
+                .panel-link {
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 12px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+
+                .panel-link:hover {
+                    color: white;
+                    transform: translateX(2px);
+                    transition: transform 0.2s;
+                }
+
+                /* Panel Colors */
+                .panel-red {
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                }
+
+                .panel-yellow {
+                    background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+                }
+
+                .panel-green {
+                    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+                }
+
+                .panel-brown {
+                    background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+                }
+
+                .panel-maroon {
+                    background: linear-gradient(135deg, #4d7c0f 0%, #3f6212 100%);
+                }
+
+                .panel-purple {
+                    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+                }
+
+                .panel-blue {
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                }
+
+                .panel-amber {
+                    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+                }
+
+                .panel-body {
+                    padding: 16px;
+                    background: #fff;
+                    flex-grow: 1;
+                    /* Horizontal scrolling */
+                    display: flex;
+                    overflow-x: auto;
+                    gap: 16px;
+                    scrollbar-width: thin;
+                    padding-bottom: 8px;
+                    /* Space for scrollbar */
+                }
+
+                .panel-body::-webkit-scrollbar {
+                    height: 4px;
+                }
+
+                .panel-body::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .panel-body::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 4px;
+                }
+
+                /* Mini Card Styling */
+                .mini-card {
+                    flex: 0 0 170px;
+                    width: 170px;
+                    background: white;
+                    /* border: 1px solid #e2e8f0; */
+                    border-radius: 8px;
+                    overflow: hidden;
+                    transition: all 0.2s;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+
+                }
+
+                .mini-card:hover {
+                    /* transform: translateY(-2px); */
+                    /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+                }
+
+                .mini-card-img-box {
+                    height: 110px;
+                    width: 100%;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    position: relative;
+                    margin-bottom: 8px;
+                }
+
+                .mini-card-img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .mini-card-details {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                .mini-card-title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #0f172a;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .mini-card-price {
+                    font-size: 20px;
+                    font-weight: 800;
+                    color: #1e293b;
+                }
+
+                .mini-card-unit {
+                    font-size: 13px;
+                    color: #64748b;
+                    font-weight: 400;
+                }
+
+                .mini-card-loc {
+                    font-size: 12px;
+                    color: #94a3b8;
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+                    margin-top: 2px;
+                }
+
+                .mini-card-loc i {
+                    font-size: 11px;
+                }
+
+                .btn-buy {
+                    background-color: #2563eb;
+                    color: white;
+                    border: none;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin-left: auto;
+                    transition: background-color 0.2s;
+                }
+
+                .btn-buy:hover {
+                    background-color: #1d4ed8;
+                }
+
+                .card-footer-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-top: 4px;
+                }
+
+                .btn-buy {
+                    background-color: #2563eb;
+                    color: white;
+                    border: none;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin-left: auto;
+                    transition: background-color 0.2s;
+                }
+
+                .btn-buy:hover {
+                    background-color: #1d4ed8;
+                }
+
+                .card-footer-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-top: 4px;
+                }
             </style>
-            <!-- Row 1: Veg vs Fruits+Cereals -->
-            <div class="market-split-layout"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
-                <div class="market-column-left">
-                    <!-- Vegetables Section -->
-                    {% if vegetables %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid var(--accent-green);">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-green), #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🥬</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Vegetables</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    vegetables|length }} items available</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in vegetables %}
-                            <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon">🥬</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="market-column-right">
-                    <!-- Fruits Section -->
-                    {% if fruits %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🍎</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Fruits</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    fruits|length }} items available</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in fruits %}
-                            <div class="market-card {{ 'bearish' if item.change < 0 else '' }}">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #f97316, #ea580c);">🍎</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
 
-                    <!-- Cereals -->
-                    {% if cereals %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #eab308;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #eab308, #ca8a04); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🌾</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Cereals / Grains
-                                </h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    cereals|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in cereals %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #eab308, #ca8a04);">🌾</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
+            <div class="market-dashboard-grid">
+
+                <!-- Fruits Section -->
+                {% if fruits %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-red">
+                        <h2><span class="panel-header-icon">🍎</span> Fresh Fruits</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
                     </div>
-                    {% endif %}
+                    <div class="panel-body">
+                        {% for item in fruits %} <!-- Show limited items? -->
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
+                {% endif %}
+
+                <!-- Cereals & Grains Section -->
+                {% if cereals %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-yellow">
+                        <h2><span class="panel-header-icon">🌾</span> Cereals & Grains</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in cereals %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Pulses Section -->
+                {% if pulses %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-green">
+                        <h2><span class="panel-header-icon">🌱</span> Pulses</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in pulses %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Oilseeds Section -->
+                {% if oilseeds %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-brown">
+                        <h2><span class="panel-header-icon">🌻</span> Oilseeds</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in oilseeds %}
+                        {% set clean_name = item.commodity.split('(')[0].split('Seed')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Spices Section -->
+                {% if spices %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-maroon">
+                        <h2><span class="panel-header-icon">🌶️</span> Spices</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in spices %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Commercial Section -->
+                {% if commercial %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-purple">
+                        <h2><span class="panel-header-icon">🏭</span> Commercial Crops</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in commercial %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1594895697660-f38449c258d4?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Animal & Dry Fruits Section (Grouped if needed) -->
+                {% if animal %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-blue">
+                        <h2><span class="panel-header-icon">🥛</span> Animal Products</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in animal %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if vegetables %}
+                <div class="market-category-panel">
+                    <div class="panel-header panel-green">
+                        <h2><span class="panel-header-icon">🥦</span> Fresh Vegetables</h2>
+                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% for item in vegetables %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name,
+                        'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&w=500&q=60')
+                        %}
+                        <div class="mini-card">
+                            <div class="mini-card-img-box">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                            </div>
+                            <div class="mini-card-details">
+                                <div class="mini-card-title">{{ item.commodity }}</div>
+                                <div class="card-footer-row">
+                                    <div>
+                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
+                                                class="mini-card-unit">/q</span></div>
+                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
+                                            item.district }}</div>
+                                    </div>
+                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
-
-            <!-- Row 2: Pulses vs Oilseeds -->
-            <div class="market-split-layout"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
-                <div class="market-column-left">
-                    <!-- Pulses -->
-                    {% if pulses %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #10b981;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🌱</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Pulses / Dal</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    pulses|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in pulses %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #10b981, #059669);">🌱</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="market-column-right">
-                    <!-- Oilseeds -->
-                    {% if oilseeds %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #8b5cf6;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🌰</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Oilseeds</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    oilseeds|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in oilseeds %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🌰</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Row 3: Spices vs Commercial -->
-            <div class="market-split-layout"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; margin-bottom: 40px;">
-                <div class="market-column-left">
-                    <!-- Spices -->
-                    {% if spices %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #ef4444;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🧂</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Spices</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    spices|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in spices %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #ef4444, #dc2626);">🧂</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="market-column-right">
-                    <!-- Commercial -->
-                    {% if commercial %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #3b82f6;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🍬</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Commercial Crops
-                                </h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    commercial|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in commercial %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🍬</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Row 4: Dry Fruits vs Animal -->
-            <div class="market-split-layout"
-                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
-                <div class="market-column-left">
-                    <!-- Dry Fruits -->
-                    {% if dry_fruits %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #f97316;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🥜</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Dry Fruits</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    dry_fruits|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in dry_fruits %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #f97316, #ea580c);">🥜</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="market-column-right">
-                    <!-- Animal -->
-                    {% if animal %}
-                    <div style="margin-bottom: 40px;">
-                        <div
-                            style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 3px solid #06b6d4;">
-                            <div
-                                style="width: 50px; height: 50px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px;">
-                                🐄</div>
-                            <div>
-                                <h2 style="margin: 0; font-size: 24px; color: var(--text-primary);">Animal Related</h2>
-                                <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 14px;">{{
-                                    animal|length }} items</p>
-                            </div>
-                        </div>
-                        <div class="market-grid">
-                            {% for item in animal %}
-                            <div class="market-card">
-                                <div class="market-card-header">
-                                    <div class="commodity-info">
-                                        <div class="commodity-icon"
-                                            style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🐄</div>
-                                        <div>
-                                            <h3>{{ item.commodity }}</h3>
-                                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ item.district
-                                                }}, {{ item.state }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="market-card-body">
-                                    <div class="price-display"><span class="price">₹{{ (item.modal_price / 100)|round(1)
-                                            }}</span><span class="unit">per kg</span></div>
-                                    <div class="quintal-price"
-                                        style="font-size: 13px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                        <span>Quintal Price:</span><span
-                                            style="font-weight: 600; color: var(--text-primary);">₹{{ item.modal_price
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
             {% else %}
             <div class="empty-state">
                 <div class="empty-state-icon">📊</div>

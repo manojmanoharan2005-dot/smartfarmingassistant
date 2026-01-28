@@ -630,15 +630,52 @@
         const container = document.getElementById('seasonTrack');
         container.innerHTML = '';
 
+        const emojiMap = {
+            'Tomato': '🍅', 'Onion': '🧅', 'Potato': '🥔', 'Brinjal': '🍆', 'Eggplant': '🍆',
+            'Cabbage': '🥬', 'Cauliflower': '🥦', 'Carrot': '🥕', 'Beetroot': '🍠',
+            'Green Chilli': '🌶️', 'Chilli': '🌶️', 'Capsicum': '🫑', 'Beans': '🫘', 'Lady Finger': '🖐️', 'Okra': '🖐️',
+            'Drumstick': '🥢', 'Bottle Gourd': '🥒', 'Pumpkin': '🎃', 'Radish': '🥗',
+            'Sweet Corn': '🌽', 'Maize': '🌽', 'Corn': '🌽', 'Peas': '🫛', 'Garlic': '🧄', 'Ginger': '🫚',
+            'Spinach': '🥬', 'Mushroom': '🍄', 'Cucumber': '🥒', 'Lemon': '🍋',
+            'Bitter Gourd': '🥒', 'Ridge Gourd': '🥒', 'Snake Gourd': '🐍', 'Ash Gourd': '⚪',
+            'Turnip': '🥔', 'Colocasia': '🥔', 'Jack Fruit': '🍈', 'Pointed Gourd': '🥒',
+            'Apple': '🍎', 'Banana': '🍌', 'Orange': '🍊', 'Mosambi': '🍋',
+            'Grapes': '🍇', 'Pomegranate': '🪀', 'Papaya': '🍈', 'Pineapple': '🍍',
+            'Watermelon': '🍉', 'Muskmelon': '🍈', 'Mango': '🥭', 'Guava': '🍐',
+            'Custard Apple': '🍏', 'Sapota': '🥔', 'Strawberry': '🍓',
+            'Kiwi': '🥝', 'Pear': '🍐', 'Plum': '🫐', 'Peach': '🍑',
+            'Litchi': '🍒', 'Cherry': '🍒', 'Apricot': '🍑', 'Ber': '🍒', 'Amla': '🍏',
+            'Paddy': '🍚', 'Rice': '🍚', 'Wheat': '🌾',
+            'Barley': '🌾', 'Bajra': '🌾', 'Jowar': '🌾', 'Ragi': '🌾', 'Sorghum': '🌾', 'Millet': '🌾', 'Oats': '🥣',
+            'Bengal Gram': '🟤', 'Gram': '🟤', 'Black Gram': '⚫', 'Urad': '⚫',
+            'Green Gram': '🟢', 'Moong': '🟢', 'Red Gram': '🟡', 'Arhar': '🟡', 'Tur': '🟡',
+            'Lentil': '🔴', 'Masur': '🔴', 'Horse Gram': '🟤',
+            'Cowpea': '🫘', 'Lobia': '🫘', 'Chickpea': '🧆', 'Rajmah': '🫘', 'Kidney Beans': '🫘',
+            'Groundnut': '🥜', 'Peanut': '🥜', 'Mustard': '🌼', 'Soyabean': '🫘', 'Soybean': '🫘', 'Sunflower': '🌻',
+            'Sesamum': '🥯', 'Sesame': '🥯', 'Castor': '🌿', 'Linseed': '🌸',
+            'Niger': '🌿', 'Safflower': '🌺', 'Coconut': '🥥', 'Copra': '🥥', 'Palm': '🌴',
+            'Turmeric': '🟡', 'Coriander': '🌿', 'Cumin': '🧂', 'Jeera': '🧂',
+            'Black Pepper': '⚫', 'Cardamom': '🌿', 'Tamarind': '🟤', 'Arecanut': '🌰', 'Betelnut': '🌰', 'Ajwan': '🌿',
+            'Cotton': '☁️', 'Sugarcane': '🎋', 'Tea': '🍵', 'Coffee': '☕',
+            'Jute': '🧶', 'Rubber': '🌳', 'Tobacco': '🍂', 'Mesta': '🧶',
+            'Cashewnut': '🥜', 'Cashew': '🥜', 'Almond': '🌰', 'Raisin': '🍇', 'Walnut': '🌰',
+            'Milk': '🥛', 'Egg': '🥚', 'Poultry': '🐔', 'Chicken': '🐔',
+            'Fish': '🐟', 'Mutton': '🥩', 'Goat': '🐐', 'Sheep': '🐑'
+        };
+
         data.calendar.forEach(season => {
             const seasonCard = document.createElement('div');
             seasonCard.className = 'season-card';
 
             // Build crops list HTML
-            const cropsHtml = season.recommended_crops.map(crop => `
+            const cropsHtml = season.recommended_crops.map(crop => {
+                // Try exact match, then match by first word, or default to seedling
+                let emoji = emojiMap[crop.crop_name] || emojiMap[crop.crop_name.split(' ')[0]] || '🌱';
+
+                return `
             <div class="crop-item">
                 <div class="crop-name">
-                    <i class="fas fa-seedling" style="color: var(--accent-green)"></i> ${crop.crop_name}
+                    <span style="font-size: 1.25em; margin-right: 8px;">${emoji}</span> ${crop.crop_name}
                 </div>
                 <div class="crop-meta-grid">
                     <div>
@@ -659,7 +696,8 @@
                     </div>
                 </div>
             </div>
-        `).join('');
+        `;
+            }).join('');
 
             seasonCard.innerHTML = `
             <div class="season-header">

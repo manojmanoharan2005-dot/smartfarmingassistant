@@ -8,10 +8,25 @@ class FertilizerPredictor:
     def __init__(self, model_dir=None):
         """Initialize predictor with trained model"""
         if model_dir is None:
-            # Dynamically determine the path to the 'models' directory
-            # Go up one level from 'ml_models' to project root, then into 'models'
-            model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
-        self.model_dir = model_dir
+            # Try finding the 'models' directory in multiple common locations
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            possible_paths = [
+                os.path.join(os.path.dirname(current_dir), 'models'),  # ../models (Local & Render standard)
+                os.path.join(current_dir, 'models'),                     # ./models
+                os.path.join(current_dir, '..', 'models'),               # Explicit relative
+                '/opt/render/project/src/smartfarmingassitant/models'    # Render absolute
+            ]
+            
+            for path in possible_paths:
+                if os.path.exists(path) and os.path.exists(os.path.join(path, 'fertilizer_model.pkl')):
+                    model_dir = path
+                    print(f"[INFO] Found model directory at: {model_dir}")
+                    break
+            
+            if model_dir is None:
+                print(f"[WARNING] Model directory not found. Checked: {possible_paths}")
+                # Fallback to default to attempt load (which might fail)
+                model_dir = os.path.join(os.path.dirname(current_dir), 'models')
         self.model = None
         self.label_encoders = None
         self.target_encoder = None
