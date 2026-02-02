@@ -741,47 +741,387 @@
                     transition: background-color 0.2s;
                 }
 
-                .btn-buy:hover {
-                    background-color: #1d4ed8;
+            <style>
+                /* Modern Market Cards Design */
+                .market-categories-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 32px;
+                    padding: 20px 0;
                 }
 
-                .card-footer-row {
+                .category-section {
+                    background: white;
+                    border-radius: 20px;
+                    padding: 24px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                    border: 1px solid rgba(0, 0, 0, 0.06);
+                }
+
+                .category-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                    padding-bottom: 16px;
+                    border-bottom: 1px solid #f1f5f9;
+                }
+
+                .category-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    margin: 0;
+                }
+
+                .category-icon {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+                }
+
+                .fruits-icon {
+                    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+                    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+                }
+
+                .category-count {
+                    font-size: 14px;
+                    color: #64748b;
+                    font-weight: 500;
+                }
+
+                .products-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 20px;
+                }
+
+                .product-card {
+                    background: white;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                    border: 1px solid rgba(0, 0, 0, 0.06);
+                    transition: all 0.3s ease;
+                    position: relative;
+                }
+
+                .product-card:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+                }
+
+                .product-image-container {
+                    position: relative;
+                    height: 120px;
+                    overflow: hidden;
+                    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                }
+
+                .product-image {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.3s ease;
+                }
+
+                .product-card:hover .product-image {
+                    transform: scale(1.05);
+                }
+
+                .product-indicator {
+                    position: absolute;
+                    top: 12px;
+                    left: 12px;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    background: #10b981;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .product-content {
+                    padding: 16px;
+                }
+
+                .product-name {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #1e293b;
+                    margin: 0 0 8px 0;
+                    line-height: 1.3;
+                }
+
+                .product-location {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    color: #64748b;
+                    font-size: 14px;
+                    margin-bottom: 16px;
+                }
+
+                .location-icon {
+                    font-size: 12px;
+                    color: #94a3b8;
+                }
+
+                .price-section {
                     display: flex;
                     justify-content: space-between;
-                    align-items: flex-end;
-                    margin-top: 4px;
+                    align-items: flex-start;
+                    gap: 16px;
                 }
+
+                .price-info {
+                    flex: 1;
+                }
+
+                .main-price {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #0f172a;
+                    margin: 0;
+                    line-height: 1.2;
+                }
+
+                .price-unit {
+                    font-size: 14px;
+                    color: #64748b;
+                    font-weight: 500;
+                }
+
+                .price-details {
+                    display: flex;
+                    gap: 12px;
+                    margin-top: 8px;
+                }
+
+                .price-detail {
+                    font-size: 12px;
+                    color: #64748b;
+                }
+
+                .price-label {
+                    color: #94a3b8;
+                    margin-right: 4px;
+                }
+
+                .price-value {
+                    font-weight: 600;
+                    color: #475569;
+                }
+
+                .category-badge {
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    background: rgba(255, 255, 255, 0.95);
+                    color: #64748b;
+                    font-size: 11px;
+                    font-weight: 600;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    backdrop-filter: blur(8px);
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .products-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                        gap: 16px;
+                    }
+
+                    .category-section {
+                        padding: 20px 16px;
+                        margin: 0 -8px;
+                        border-radius: 16px;
+                    }
+
+                    .category-title {
+                        font-size: 20px;
+                    }
+
+                    .category-icon {
+                        width: 40px;
+                        height: 40px;
+                        font-size: 20px;
+                    }
+
+                    .product-image-container {
+                        height: 100px;
+                    }
+
+                    .main-price {
+                        font-size: 20px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .products-grid {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .price-section {
+                        flex-direction: column;
+                        gap: 8px;
+                    }
+
+                    .price-details {
+                        justify-content: space-between;
+                    }
+                }
+
+                /* Animation */
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .product-card {
+                    animation: fadeInUp 0.6s ease-out forwards;
+                }
+
+                .product-card:nth-child(1) { animation-delay: 0.1s; }
+                .product-card:nth-child(2) { animation-delay: 0.2s; }
+                .product-card:nth-child(3) { animation-delay: 0.3s; }
+                .product-card:nth-child(4) { animation-delay: 0.4s; }
+                .product-card:nth-child(5) { animation-delay: 0.5s; }
+                .product-card:nth-child(6) { animation-delay: 0.6s; }
             </style>
 
-            <div class="market-dashboard-grid">
+            <div class="market-categories-container">
+                <!-- Vegetables Section -->
+                {% if vegetables %}
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon">🥬</div>
+                            <div>
+                                <div>Vegetables</div>
+                                <div class="category-count">{{ vegetables|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('vegetables', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('vegetables', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="vegetables-grid">
+                        {% for item in vegetables %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Fresh</div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Fruits Section -->
                 {% if fruits %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-red">
-                        <h2><span class="panel-header-icon">🍎</span> Fresh Fruits</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                    <div class="panel-body">
-                        {% for item in fruits %} <!-- Show limited items? -->
-                        {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon fruits-icon">🍎</div>
+                            <div>
+                                <div>Fruits</div>
+                                <div class="category-count">{{ fruits|length }} items available</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('fruits', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('fruits', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="fruits-grid">
+                        {% for item in fruits %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Fresh</div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
@@ -792,101 +1132,115 @@
 
                 <!-- Cereals & Grains Section -->
                 {% if cereals %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-yellow">
-                        <h2><span class="panel-header-icon">🌾</span> Cereals & Grains</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #eab308, #ca8a04) !important; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3) !important;">🌾</div>
+                            <div>
+                                <div>Cereals & Grains</div>
+                                <div class="category-count">{{ cereals|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('cereals', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('cereals', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="cereals-grid">
                         {% for item in cereals %}
                         {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Grain</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
 
                 <!-- Pulses Section -->
                 {% if pulses %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-green">
-                        <h2><span class="panel-header-icon">🌱</span> Pulses</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                    <div class="panel-body">
-                        {% for item in pulses %}
-                        {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
-                            </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
-                                    </div>
-                                    <button class="btn-buy">Buy</button>
-                                </div>
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c) !important; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;">🫘</div>
+                            <div>
+                                <div>Pulses</div>
+                                <div class="category-count">{{ pulses|length }} items available</div>
                             </div>
                         </div>
-                        {% endfor %}
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('pulses', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('pulses', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                {% endif %}
-
-                <!-- Oilseeds Section -->
-                {% if oilseeds %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-brown">
-                        <h2><span class="panel-header-icon">🌻</span> Oilseeds</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                    <div class="panel-body">
-                        {% for item in oilseeds %}
-                        {% set clean_name = item.commodity.split('(')[0].split('Seed')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="pulses-grid">
+                        {% for item in pulses %}
+                        {% set clean_name = item.commodity.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Pulse</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
@@ -897,31 +1251,115 @@
 
                 <!-- Spices Section -->
                 {% if spices %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-maroon">
-                        <h2><span class="panel-header-icon">🌶️</span> Spices</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #dc2626, #991b1b) !important; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;">🌶️</div>
+                            <div>
+                                <div>Spices</div>
+                                <div class="category-count">{{ spices|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('spices', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('spices', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="spices-grid">
                         {% for item in spices %}
                         {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1596040033229-a0b3b1c8e4c5?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Spice</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Oilseeds Section -->
+                {% if oilseeds %}
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #92400e, #78350f) !important; box-shadow: 0 4px 12px rgba(146, 64, 14, 0.3) !important;">🌻</div>
+                            <div>
+                                <div>Oilseeds</div>
+                                <div class="category-count">{{ oilseeds|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('oilseeds', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('oilseeds', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="oilseeds-grid">
+                        {% for item in oilseeds %}
+                        {% set clean_name = item.commodity.split('(')[0].split('Seed')[0].strip() %}
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1589927986089-35812388d1f4?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Oilseed</div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -930,101 +1368,177 @@
                 </div>
                 {% endif %}
 
-                <!-- Commercial Section -->
+                <!-- Commercial Crops Section -->
                 {% if commercial %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-purple">
-                        <h2><span class="panel-header-icon">🏭</span> Commercial Crops</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #64748b, #475569) !important; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3) !important;">🌿</div>
+                            <div>
+                                <div>Commercial Crops</div>
+                                <div class="category-count">{{ commercial|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('commercial', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('commercial', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="commercial-grid">
                         {% for item in commercial %}
                         {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1594895697660-f38449c258d4?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1594895697660-f38449c258d4?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Commercial</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
 
-                <!-- Animal & Dry Fruits Section (Grouped if needed) -->
+                <!-- Animal Products Section -->
                 {% if animal %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-blue">
-                        <h2><span class="panel-header-icon">🥛</span> Animal Products</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb) !important; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;">🥛</div>
+                            <div>
+                                <div>Animal Products</div>
+                                <div class="category-count">{{ animal|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('animal', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('animal', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="animal-grid">
                         {% for item in animal %}
                         {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=60') %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Animal</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
 
-                {% if vegetables %}
-                <div class="market-category-panel">
-                    <div class="panel-header panel-green">
-                        <h2><span class="panel-header-icon">🥦</span> Fresh Vegetables</h2>
-                        <a href="#" class="panel-link">View All <i class="fas fa-chevron-right"></i></a>
+                <!-- Dry Fruits Section -->
+                {% if dry_fruits %}
+                <div class="category-section">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea) !important; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3) !important;">🥜</div>
+                            <div>
+                                <div>Dry Fruits</div>
+                                <div class="category-count">{{ dry_fruits|length }} items available</div>
+                            </div>
+                        </div>
+                        <div class="scroll-controls">
+                            <button class="scroll-btn scroll-left" onclick="scrollCategory('dry_fruits', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="scroll-btn scroll-right" onclick="scrollCategory('dry_fruits', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        {% for item in vegetables %}
+                    <div class="scroll-container">
+                        <div class="products-grid-horizontal" id="dry_fruits-grid">
+                        {% for item in dry_fruits %}
                         {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name,
-                        'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?auto=format&fit=crop&w=500&q=60')
-                        %}
-                        <div class="mini-card">
-                            <div class="mini-card-img-box">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="mini-card-img">
+                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1608797178974-15b35a64ede9?auto=format&fit=crop&w=500&q=60') %}
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <div class="product-indicator"></div>
+                                <div class="category-badge">Dry Fruit</div>
                             </div>
-                            <div class="mini-card-details">
-                                <div class="mini-card-title">{{ item.commodity }}</div>
-                                <div class="card-footer-row">
-                                    <div>
-                                        <div class="mini-card-price">₹{{ item.modal_price }} <span
-                                                class="mini-card-unit">/q</span></div>
-                                        <div class="mini-card-loc"><i class="fas fa-map-marker-alt"></i> {{
-                                            item.district }}</div>
+                            <div class="product-content">
+                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <div class="product-location">
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span>{{ item.district }}, {{ item.state }}</span>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-info">
+                                        <div class="main-price">₹{{ "%.1f"|format(item.modal_price|float) }} <span class="price-unit">per kg</span></div>
+                                        <div class="price-details">
+                                            <div class="price-detail">
+                                                <span class="price-label">Central Price:</span>
+                                                <span class="price-value">₹{{ item.modal_price }}</span>
+                                            </div>
+                                            <div class="price-detail">
+                                                <span class="price-label">Quoted Price:</span>
+                                                <span class="price-value">₹{{ item.max_price or item.modal_price }}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button class="btn-buy">Buy</button>
                                 </div>
                             </div>
                         </div>
@@ -1032,7 +1546,6 @@
                     </div>
                 </div>
                 {% endif %}
-
             </div>
             {% else %}
             <div class="empty-state">
@@ -1044,6 +1557,60 @@
         </div>
     </div>
 </div>
+
+<script>
+// Horizontal scroll functionality for category sections
+function scrollCategory(category, direction) {
+    const container = document.getElementById(category + '-grid');
+    if (!container) return;
+    
+    const scrollAmount = 300; // pixels to scroll
+    const currentScroll = container.parentElement.scrollLeft;
+    
+    if (direction === 'left') {
+        container.parentElement.scrollLeft = currentScroll - scrollAmount;
+    } else {
+        container.parentElement.scrollLeft = currentScroll + scrollAmount;
+    }
+    
+    // Update button states after scroll
+    setTimeout(() => updateScrollButtons(category), 100);
+}
+
+// Update scroll button states based on scroll position
+function updateScrollButtons(category) {
+    const container = document.getElementById(category + '-grid');
+    if (!container) return;
+    
+    const scrollContainer = container.parentElement;
+    const leftBtn = document.querySelector(`button[onclick="scrollCategory('${category}', 'left')"]`);
+    const rightBtn = document.querySelector(`button[onclick="scrollCategory('${category}', 'right')"]`);
+    
+    if (leftBtn && rightBtn) {
+        // Disable left button if at start
+        leftBtn.disabled = scrollContainer.scrollLeft <= 0;
+        
+        // Disable right button if at end
+        const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        rightBtn.disabled = scrollContainer.scrollLeft >= maxScroll - 1;
+    }
+}
+
+// Initialize button states on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const categories = ['vegetables', 'fruits', 'cereals', 'pulses', 'oilseeds', 'spices', 'commercial', 'dry_fruits', 'animal'];
+    
+    categories.forEach(category => {
+        updateScrollButtons(category);
+        
+        // Add scroll event listener to update buttons during manual scrolling
+        const container = document.getElementById(category + '-grid');
+        if (container && container.parentElement) {
+            container.parentElement.addEventListener('scroll', () => updateScrollButtons(category));
+        }
+    });
+});
+</script>
 
 <script id="states-data" type="application/json">
     {{ (states_districts or {}) | tojson | safe }}
