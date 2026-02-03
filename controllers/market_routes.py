@@ -369,13 +369,13 @@ def market_watch():
         change_val = item.get('change', 0)
         if isinstance(change_val, str):
             item['change'] = float(change_val.replace('%', '').replace('+', ''))
-        # Ensure price fields exist for template
-        if 'modal_price' not in item and 'current_price' in item:
-            item['modal_price'] = item['current_price']
-        if 'min_price' not in item and 'current_price' in item:
-            item['min_price'] = int(item['current_price'] * 0.9)
-        if 'max_price' not in item and 'current_price' in item:
-            item['max_price'] = int(item['current_price'] * 1.1)
+        # Ensure price fields exist for template (convert to kg prices)
+        if 'modal_price' not in item and 'current_price_kg' in item:
+            item['modal_price'] = item['current_price_kg']
+        if 'min_price' not in item and 'current_price_kg' in item:
+            item['min_price'] = item['min_price_kg']
+        if 'max_price' not in item and 'current_price_kg' in item:
+            item['max_price'] = item['max_price_kg']
     
     
     return render_template('market_watch.html', 
