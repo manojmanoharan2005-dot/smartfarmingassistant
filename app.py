@@ -1,9 +1,49 @@
 import os
+import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables FIRST before any other imports
 load_dotenv()
+
+# Console colors and formatting
+class ConsoleColors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def print_banner():
+    """Print a nice startup banner"""
+    banner = f"""{ConsoleColors.OKCYAN}{ConsoleColors.BOLD}
+    ╔══════════════════════════════════════════════╗
+    ║        🌱 Smart Farming Assistant 🌱        ║
+    ║                  v2.0.0                      ║
+    ╚══════════════════════════════════════════════╝{ConsoleColors.ENDC}
+    """
+    print(banner)
+    print(f"{ConsoleColors.HEADER}🚀 Starting application...{ConsoleColors.ENDC}\n")
+
+def log_success(message):
+    """Print success message with formatting"""
+    print(f"{ConsoleColors.OKGREEN}✅ [SUCCESS]{ConsoleColors.ENDC} {message}")
+
+def log_warning(message):
+    """Print warning message with formatting"""
+    print(f"{ConsoleColors.WARNING}⚠️  [WARNING]{ConsoleColors.ENDC} {message}")
+
+def log_error(message):
+    """Print error message with formatting"""
+    print(f"{ConsoleColors.FAIL}❌ [ERROR]{ConsoleColors.ENDC} {message}")
+
+def log_info(message):
+    """Print info message with formatting"""
+    print(f"{ConsoleColors.OKBLUE}ℹ️  [INFO]{ConsoleColors.ENDC} {message}")
 
 from flask import Flask, render_template, session, redirect, url_for
 from controllers.auth_routes import auth_bp
@@ -21,24 +61,32 @@ from controllers.resources_routes import resources_bp
 from controllers.market_scheduler import init_scheduler
 from utils.db import init_db
 
+# Print startup banner
+print_banner()
+
 app = Flask(__name__)
 app.secret_key = 'smart_farming_assistant_2024_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
+log_info(f"Flask application initialized with secret key")
+log_info(f"Upload folder: {app.config['UPLOAD_FOLDER']}")
+
 # Initialize MongoDB connection
+log_info("Initializing database connection...")
 try:
     init_db(app)
-    print("Database initialized successfully!")
+    log_success("Database initialized successfully!")
 except Exception as e:
-    print(f"Database initialization warning: {e}")
-    print("App will run with limited functionality")
+    log_warning(f"Database initialization warning: {e}")
+    log_warning("App will run with limited functionality")
 
 # Initialize market price scheduler for daily auto-updates
+log_info("Initializing market price scheduler...")
 try:
     scheduler = init_scheduler(app)
-    print("[SUCCESS] Market price scheduler initialized!")
+    log_success("Market price scheduler initialized!")
 except Exception as e:
-    print(f"[WARNING] Scheduler initialization warning: {e}")
+    log_warning(f"Scheduler initialization failed: {e}")
 
 # Register blueprints
 app.register_blueprint(auth_bp)
@@ -94,5 +142,56 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 def handler(request):
     return app(request)
 
+def print_route_summary():
+    """Print a summary of registered routes"""
+    print(f"\n{ConsoleColors.OKCYAN}{ConsoleColors.BOLD}📋 REGISTERED ROUTES SUMMARY:{ConsoleColors.ENDC}")
+    route_count = 0
+    endpoints = []
+    
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint not in ['static']:
+            route_count += 1
+            endpoints.append(f"  🔗 {rule.rule} [{', '.join(rule.methods - {'HEAD', 'OPTIONS'})}]")
+    
+    # Group by blueprint
+    blueprints = ['auth', 'dashboard', 'crop', 'fertilizer', 'growing', 'market', 'chat', 'report']
+    for bp in blueprints:
+        bp_routes = [e for e in endpoints if f'/{bp}/' in e]
+        if bp_routes:
+            print(f"\n{ConsoleColors.OKBLUE}📁 {bp.upper()} Routes:{ConsoleColors.ENDC}")
+            for route in bp_routes[:3]:  # Show first 3 routes per blueprint
+                print(route)
+            if len(bp_routes) > 3:
+                print(f"    ... and {len(bp_routes) - 3} more")
+    
+    print(f"\n{ConsoleColors.OKGREEN}✨ Total routes registered: {route_count}{ConsoleColors.ENDC}")
+
+def print_startup_complete():
+    """Print startup completion message"""
+    print(f"\n{ConsoleColors.OKGREEN}{ConsoleColors.BOLD}" + "="*50)
+    print(f"🎉 SMART FARMING ASSISTANT READY! 🎉")
+    print(f"📡 Server running on: http://127.0.0.1:5000")
+    print(f"🌐 Access the application in your browser")
+    print(f"🔧 Debug mode: {'ON' if app.debug else 'OFF'}")
+    print(f"📅 Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("="*50 + f"{ConsoleColors.ENDC}")
+    print(f"\n{ConsoleColors.OKCYAN}💡 Tips:{ConsoleColors.ENDC}")
+    print(f"  • Use Ctrl+C to stop the server")
+    print(f"  • Visit /about for application info")
+    print(f"  • Check /dashboard after login\n")
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Setup complete - show route summary
+    print_route_summary()
+    
+    # Show startup complete message
+    print_startup_complete()
+    
+    # Start the Flask development server
+    try:
+        app.run(debug=True, host='127.0.0.1', port=5000)
+    except KeyboardInterrupt:
+        print(f"\n{ConsoleColors.WARNING}🛑 Server stopped by user{ConsoleColors.ENDC}")
+        print(f"{ConsoleColors.OKBLUE}👋 Thank you for using Smart Farming Assistant!{ConsoleColors.ENDC}")
+    except Exception as e:
+        log_error(f"Failed to start server: {e}")

@@ -137,5 +137,22 @@
     }
   ],
   "3d61c07e-d859-491b-b30c-3447e7d0d3db": [],
-  "777c43d5-74c6-4172-8796-adcff99dbe53": []
+  "777c43d5-74c6-4172-8796-adcff99dbe53": [
+    {
+      "name": "Organic Compost",
+      "crop_type": "mango",
+      "priority": null,
+      "dosage": "2-5 tons/acre",
+      "usage": "Apply 2-3 weeks before sowing and mix well with soil",
+      "note": "",
+      "confidence": "0",
+      "soil_type": "Peaty Soil",
+      "nitrogen": "100.0",
+      "phosphorus": "100.0",
+      "potassium": "200.0",
+      "_id": "d085aaa3-2eca-4c73-9ece-67b6ed5ffbf9",
+      "user_id": "777c43d5-74c6-4172-8796-adcff99dbe53",
+      "saved_at": "2026-02-09T04:54:02.243692"
+    }
+  ]
 }

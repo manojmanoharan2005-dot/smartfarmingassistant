@@ -1,5 +1,18 @@
 import os
 
+# Console colors for consistent logging
+class Colors:
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    ENDC = '\033[0m'
+
+def log_success(msg): print(f"{Colors.GREEN}✅ [SUCCESS]{Colors.ENDC} {msg}")
+def log_warning(msg): print(f"{Colors.YELLOW}⚠️  [WARNING]{Colors.ENDC} {msg}")
+def log_error(msg): print(f"{Colors.RED}❌ [ERROR]{Colors.ENDC} {msg}")
+def log_info(msg): print(f"{Colors.BLUE}ℹ️  [INFO]{Colors.ENDC} {msg}")
+
 class CropPredictor:
     def __init__(self, model_dir="ml_models"):
         self.model = None
@@ -21,21 +34,22 @@ class CropPredictor:
                 self.model = joblib.load(model_path)
                 self.scaler = joblib.load(scaler_path)
                 self.use_sklearn = True
-                print("[SUCCESS] Sklearn model loaded successfully!")
+                log_success("Scikit-learn crop model loaded successfully!")
+                log_info(f"Model classes: {len(self.model.classes_)} crops available")
                 return True
         except ImportError:
-            print("[INFO] Sklearn not available, using simple model")
+            log_info("Scikit-learn not available, falling back to simple model")
         except Exception as e:
-            print(f"[WARNING] Error loading sklearn model: {e}")
+            log_warning(f"Error loading sklearn model: {e}")
         
         # Fallback to simple rule-based model
         try:
             from ml_models.crop_model_simple import simple_crop_predictor
             self.simple_model = simple_crop_predictor
-            print("[SUCCESS] Simple rule-based model loaded successfully!")
+            log_success("Simple rule-based crop model loaded successfully!")
             return True
         except Exception as e:
-            print(f"[ERROR] Error loading simple model: {e}")
+            log_error(f"Error loading simple model: {e}")
             return False
     
     def predict_crop_recommendation(self, nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):

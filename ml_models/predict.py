@@ -4,6 +4,19 @@ import pandas as pd
 import os
 from get_fertilizer_details import get_fertilizer_details
 
+# Console colors for consistent logging
+class Colors:
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    ENDC = '\033[0m'
+
+def log_success(msg): print(f"{Colors.GREEN}✅ [SUCCESS]{Colors.ENDC} {msg}")
+def log_warning(msg): print(f"{Colors.YELLOW}⚠️  [WARNING]{Colors.ENDC} {msg}")
+def log_error(msg): print(f"{Colors.RED}❌ [ERROR]{Colors.ENDC} {msg}")
+def log_info(msg): print(f"{Colors.BLUE}ℹ️  [INFO]{Colors.ENDC} {msg}")
+
 class FertilizerPredictor:
     def __init__(self, model_dir=None):
         """Initialize predictor with trained model"""
@@ -20,13 +33,16 @@ class FertilizerPredictor:
             for path in possible_paths:
                 if os.path.exists(path) and os.path.exists(os.path.join(path, 'fertilizer_model.pkl')):
                     model_dir = path
-                    print(f"[INFO] Found model directory at: {model_dir}")
+                    log_info(f"Found model directory at: {model_dir}")
                     break
             
             if model_dir is None:
-                print(f"[WARNING] Model directory not found. Checked: {possible_paths}")
+                log_warning(f"Model directory not found. Checked: {possible_paths}")
                 # Fallback to default to attempt load (which might fail)
                 model_dir = os.path.join(os.path.dirname(current_dir), 'models')
+        
+        # Fix: Assign model_dir to instance variable
+        self.model_dir = model_dir
         self.model = None
         self.label_encoders = None
         self.target_encoder = None
@@ -40,9 +56,10 @@ class FertilizerPredictor:
             self.label_encoders = joblib.load(f'{self.model_dir}/label_encoders.pkl')
             self.target_encoder = joblib.load(f'{self.model_dir}/target_encoder.pkl')
             self.scaler = joblib.load(f'{self.model_dir}/scaler.pkl')
-            print("[SUCCESS] Fertilizer model loaded successfully!")
+            log_success("Fertilizer ML model loaded successfully!")
+            log_info(f"Model loaded from: {self.model_dir}")
         except Exception as e:
-            print(f"[ERROR] Error loading model: {str(e)}")
+            log_error(f"Error loading model: {str(e)}")
             raise
     
     def predict(self, temperature, moisture, rainfall, ph, nitrogen, 

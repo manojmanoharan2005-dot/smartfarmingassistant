@@ -383,31 +383,15 @@ function viewFertilizerDetails(id, name, crop, n, p, k, soilType, savedDate) {
                 <div style="margin-bottom: 8px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                         <span style="font-size: 18px;">🛒</span>
-                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Buy From</h3>
+                        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">Buy Fertilizer</h3>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <button onclick="window.open('https://www.amazon.in/s?k=' + encodeURIComponent('` + (name || 'fertilizer') + `'), '_blank')" 
-                            style="background: #ff9900; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(255,153,0,0.3)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                            <div style="font-size: 24px;">📦</div>
-                            <div>Amazon</div>
-                        </button>
-                        <button onclick="window.open('https://www.indiamart.com/search.mp?ss=' + encodeURIComponent('` + (name || 'fertilizer') + `'), '_blank')"
-                            style="background: #0066cc; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,102,204,0.3)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                            <div style="font-size: 24px;">🏭</div>
-                            <div>IndiaMART</div>
-                        </button>
-                        <button onclick="alert('Find nearby agricultural stores in your area!')"
-                            style="background: #10b981; color: white; border: none; border-radius: 12px; padding: 16px 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px;"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                            <div style="font-size: 24px;">🏪</div>
-                            <div>Nearby Stores</div>
-                        </button>
-                    </div>
+                    <button onclick="window.open('https://agri-e-commerce.vercel.app', '_blank')" 
+                        style="width: 100%; background: #059669; color: white; border: none; border-radius: 12px; padding: 20px 16px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(5,150,105,0.3)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <div style="font-size: 28px;">🌾</div>
+                        <div>Shop at Agri E-Commerce</div>
+                    </button>
                 </div>
             </div>
         </div>
