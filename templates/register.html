@@ -3,84 +3,581 @@
 {% block title %}Register - Smart Farming Assistant{% endblock %}
 
 {% block content %}
-<section class="auth-section">
-    <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <div class="auth-logo">
+<style>
+    /* Enhanced Registration Form Styles */
+    .register-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 2rem 60px;
+        background: linear-gradient(135deg, #f8fdf8 0%, #e8f5e9 100%);
+    }
+
+    .register-container {
+        width: 100%;
+        max-width: 580px;
+    }
+
+    .register-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 48px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.1);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 36px;
+    }
+
+    .register-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+    }
+
+    .register-logo i {
+        font-size: 32px;
+        color: #fff;
+    }
+
+    .register-title {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+    }
+
+    .register-subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-section {
+        background: #f9fafb;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .form-section-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #22c55e;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-section-title i {
+        font-size: 0.9rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-row.three-cols {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    @media (max-width: 576px) {
+        .form-row, .form-row.three-cols {
+            grid-template-columns: 1fr;
+        }
+        .register-card {
+            padding: 28px;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-group label {
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-group label small {
+        color: #9ca3af;
+        font-weight: 400;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 1rem;
+        transition: color 0.2s;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+        width: 100%;
+        padding: 14px 14px 14px 44px;
+        background: #fff;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        color: #1a1a2e;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+        outline: none;
+        border-color: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+    }
+
+    .input-wrapper input:focus + i,
+    .input-wrapper select:focus + i,
+    .input-wrapper:focus-within i {
+        color: #22c55e;
+    }
+
+    .input-wrapper input::placeholder {
+        color: #9ca3af;
+    }
+
+    .pincode-status {
+        font-size: 0.8rem;
+        margin-top: 4px;
+        min-height: 18px;
+    }
+
+    .pincode-status.loading {
+        color: #3b82f6;
+    }
+
+    .pincode-status.success {
+        color: #22c55e;
+    }
+
+    .pincode-status.error {
+        color: #ef4444;
+    }
+
+    .terms-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .terms-check input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #22c55e;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .terms-check label {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .terms-check a {
+        color: #22c55e;
+        font-weight: 500;
+    }
+
+    .terms-check a:hover {
+        text-decoration: underline;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-register:active {
+        transform: translateY(0);
+    }
+
+    .register-footer {
+        text-align: center;
+        margin-top: 28px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    .register-footer a {
+        color: #22c55e;
+        font-weight: 600;
+    }
+
+    .register-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Loading animation for pincode */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .loading-text {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Phone OTP Verification Styles */
+    .phone-otp-wrapper {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 480px) {
+        .phone-otp-wrapper {
+            flex-direction: column;
+        }
+        .phone-otp-wrapper .input-wrapper {
+            width: 100%;
+        }
+        .btn-send-otp {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .btn-send-otp {
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-send-otp:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-send-otp:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .phone-status {
+        font-size: 0.8rem;
+        margin-top: 6px;
+        min-height: 18px;
+    }
+
+    .phone-status.loading { color: #3b82f6; }
+    .phone-status.success { color: #22c55e; }
+    .phone-status.error { color: #ef4444; }
+
+    .otp-section {
+        margin-top: 12px;
+        padding: 16px;
+        background: #f0f9ff;
+        border-radius: 12px;
+        border: 2px solid #bfdbfe;
+    }
+
+    .otp-input-wrapper {
+        display: flex;
+        gap: 10px;
+    }
+
+    .otp-input-wrapper input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        letter-spacing: 4px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .otp-input-wrapper input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn-verify-otp {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-verify-otp:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-verify-otp:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .otp-timer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .btn-resend {
+        background: none;
+        border: none;
+        color: #3b82f6;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-resend:hover {
+        text-decoration: underline;
+    }
+
+    .phone-verified {
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: #dcfce7;
+        border-radius: 10px;
+        color: #16a34a;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .phone-verified i {
+        font-size: 1.1rem;
+    }
+</style>
+
+<section class="register-section">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-logo">
                     <i class="fas fa-seedling"></i>
-                    <span>Smart Farming</span>
                 </div>
-                <h2 class="auth-title">Create Your Account</h2>
-                <p class="auth-subtitle">Join thousands of farmers using smart technology</p>
+                <h2 class="register-title">Create Your Account</h2>
+                <p class="register-subtitle">Join thousands of farmers using smart technology</p>
             </div>
 
-            <form method="POST" class="auth-form">
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="name" name="name" class="form-control" required
-                            placeholder="Enter your full name">
+            <form method="POST" class="register-form">
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user-circle"></i> Personal Information
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="phone">Phone Number</label>
+                        <div class="phone-otp-wrapper">
+                            <div class="input-wrapper" style="flex: 1;">
+                                <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required placeholder="10-digit number">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <button type="button" id="sendOtpBtn" class="btn-send-otp" onclick="sendOTP()">
+                                <i class="fas fa-paper-plane"></i> Send OTP
+                            </button>
+                        </div>
+                        <div id="phone-status" class="phone-status"></div>
+                        
+                        <!-- OTP Verification Section (Hidden by default) -->
+                        <div id="otp-section" class="otp-section" style="display: none;">
+                            <div class="otp-input-wrapper">
+                                <input type="text" id="otp" name="otp" maxlength="6" placeholder="Enter 6-digit OTP" 
+                                    pattern="[0-9]{6}" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <button type="button" id="verifyOtpBtn" class="btn-verify-otp" onclick="verifyOTP()">
+                                    <i class="fas fa-check"></i> Verify
+                                </button>
+                            </div>
+                            <div class="otp-timer">
+                                <span id="otp-timer-text">OTP expires in <span id="otp-countdown">5:00</span></span>
+                                <button type="button" id="resendOtpBtn" class="btn-resend" style="display: none;" onclick="sendOTP()">
+                                    <i class="fas fa-redo"></i> Resend
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Verified Badge (Hidden by default) -->
+                        <div id="phone-verified" class="phone-verified" style="display: none;">
+                            <i class="fas fa-check-circle"></i> Phone number verified
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" required placeholder="Enter your email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" required placeholder="Create a strong password">
+                            <i class="fas fa-lock"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" name="email" class="form-control" required
-                            placeholder="Enter your email">
+                <!-- Location Section -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-map-marker-alt"></i> Location Details
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pincode">Pincode</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="pincode" name="pincode" pattern="[0-9]{6}" 
+                                placeholder="Enter 6-digit pincode" maxlength="6" oninput="fetchPincodeDetails()">
+                            <i class="fas fa-map-pin"></i>
+                        </div>
+                        <div id="pincode-status" class="pincode-status"></div>
+                    </div>
+
+                    <div class="form-row" style="margin-top: 16px;">
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <div class="input-wrapper">
+                                <select id="state" name="state" required onchange="updateDistricts()">
+                                    <option value="">Select state</option>
+                                    {% for state in states_districts.keys() %}
+                                    <option value="{{ state }}">{{ state }}</option>
+                                    {% endfor %}
+                                </select>
+                                <i class="fas fa-map"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="district">District</label>
+                            <div class="input-wrapper">
+                                <select id="district" name="district" required>
+                                    <option value="">Select district</option>
+                                </select>
+                                <i class="fas fa-city"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="village">Village/Area <small>(Optional)</small></label>
+                        <div class="input-wrapper">
+                            <select id="village" name="village">
+                                <option value="">Select your village/area</option>
+                            </select>
+                            <i class="fas fa-home"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" name="password" class="form-control" required
-                            placeholder="Create password">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <div class="input-group">
-                        <i class="fas fa-phone"></i>
-                        <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{10}" required
-                            placeholder="10-digit mobile number">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="state">State</label>
-                    <select id="state" name="state" class="form-control" required onchange="updateDistricts()">
-                        <option value="">Select your state</option>
-                        {% for state in states_districts.keys() %}
-                        <option value="{{ state }}">{{ state }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="district">District</label>
-                    <select id="district" name="district" class="form-control" required>
-                        <option value="">Select your district</option>
-                    </select>
-                </div>
-
-                <div class="form-check">
+                <!-- Terms and Submit -->
+                <div class="terms-check">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a>
-                        and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
+                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-auth">
+                <button type="submit" class="btn-register">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
             </form>
 
-            <div class="auth-footer">
+            <div class="register-footer">
                 <p>Already have an account? <a href="{{ url_for('auth.login') }}">Sign in here</a></p>
             </div>
         </div>

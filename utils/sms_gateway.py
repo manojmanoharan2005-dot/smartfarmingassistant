@@ -77,7 +77,7 @@ class SMSGateway:
         if not all([account_sid, auth_token, from_number]):
             return False, "Twilio credentials not configured"
         
-        message_body = f"Your Smart Farming Assistant password reset OTP is: {otp}. Valid for 5 minutes. Do not share this OTP."
+        message_body = f"Your Smart Farming Assistant OTP is: {otp}. Valid for 5 minutes. Do not share this code."
         
         try:
             client = Client(account_sid, auth_token)

@@ -47,6 +47,7 @@ def log_info(message):
 
 from flask import Flask, render_template, session, redirect, url_for
 from controllers.auth_routes import auth_bp
+from controllers.otp_routes import otp_bp
 from controllers.dashboard_routes import dashboard_bp
 from controllers.crop_routes import crop_bp
 from controllers.fertilizer_routes import fertilizer_bp
@@ -90,6 +91,7 @@ except Exception as e:
 
 # Register blueprints
 app.register_blueprint(auth_bp)
+app.register_blueprint(otp_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(crop_bp)
 app.register_blueprint(fertilizer_bp)
@@ -168,9 +170,10 @@ def print_route_summary():
 
 def print_startup_complete():
     """Print startup completion message"""
+    port = int(os.environ.get('PORT', 5000))
     print(f"\n{ConsoleColors.OKGREEN}{ConsoleColors.BOLD}" + "="*50)
     print(f"🎉 SMART FARMING ASSISTANT READY! 🎉")
-    print(f"📡 Server running on: http://127.0.0.1:5000")
+    print(f"📡 Server running on: http://0.0.0.0:{port}")
     print(f"🌐 Access the application in your browser")
     print(f"🔧 Debug mode: {'ON' if app.debug else 'OFF'}")
     print(f"📅 Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -187,9 +190,12 @@ if __name__ == '__main__':
     # Show startup complete message
     print_startup_complete()
     
+    # Get port from environment variable (Render sets this)
+    port = int(os.environ.get('PORT', 5000))
+    
     # Start the Flask development server
     try:
-        app.run(debug=True, host='127.0.0.1', port=5000)
+        app.run(debug=False, host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         print(f"\n{ConsoleColors.WARNING}🛑 Server stopped by user{ConsoleColors.ENDC}")
         print(f"{ConsoleColors.OKBLUE}👋 Thank you for using Smart Farming Assistant!{ConsoleColors.ENDC}")

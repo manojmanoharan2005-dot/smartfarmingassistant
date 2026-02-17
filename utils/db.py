@@ -380,7 +380,7 @@ def get_db():
     return db
 
 # User model functions
-def create_user(name, email, password, phone, state, district):
+def create_user(name, email, password, phone, state, district, pincode='', village=''):
     """Create a new user and save to file-based storage"""
     import uuid
     
@@ -393,8 +393,10 @@ def create_user(name, email, password, phone, state, district):
         'email': email,
         'password': password.decode('utf-8') if isinstance(password, bytes) else password,
         'phone': phone,
+        'pincode': pincode,
         'state': state,
         'district': district,
+        'village': village,
         'created_at': datetime.utcnow().isoformat(),
         'saved_crops': [],
         'saved_fertilizers': [],
@@ -402,7 +404,7 @@ def create_user(name, email, password, phone, state, district):
     }
     
     # Try MongoDB first
-    if db and hasattr(db, 'users'):
+    if db is not None and hasattr(db, 'users'):
         try:
             result = db.users.insert_one(user_data.copy())
             print(f"👤 User created in MongoDB: {name} ({email})")
@@ -542,40 +544,119 @@ def find_user_by_id(user_id):
 # Alias for backward compatibility
 get_user_by_id = find_user_by_id
 
-# Mock functions for development
-def save_crop_recommendation(user_id, crop_data, timeline_data):
-    print(f"🌱 Crop recommendation saved for user {user_id}: {crop_data['crop_name']}")
-    return type('MockResult', (), {'inserted_id': 'mock_crop_id'})()
-
-def get_user_crops(user_id):
-    # Return some mock data for testing
-    return [
-        {
-            '_id': 'crop1',
-            'crop_name': 'Rice',
-            'probability': 0.89,
-            'sowing_date': '2024-01-15',
-            'status': 'monitoring'
-        }
-    ]
-
-def delete_crop(crop_id):
-    print(f"🗑️ Crop deleted: {crop_id}")
-    return type('MockResult', (), {'deleted_count': 1})()
-
-def save_fertilizer_recommendation(user_id, fertilizer_data):
-    """Save fertilizer recommendation to file"""
+# Crop functions
+def save_crop_recommendation(user_id, crop_data, timeline_data=None):
+    """Save crop recommendation to file and MongoDB"""
     import uuid
     try:
-        # Load existing fertilizers
-        with open(FERTILIZERS_FILE, 'r') as f:
-            fertilizer_db = json.load(f)
+        # Generate unique ID
+        crop_id = str(uuid.uuid4())
         
+        crop_record = {
+            '_id': crop_id,
+            'user_id': user_id,
+            'crop_name': crop_data.get('crop_name', crop_data.get('name', 'Unknown')),
+            'probability': crop_data.get('probability', 0),
+            'sowing_date': crop_data.get('sowing_date', datetime.utcnow().strftime('%Y-%m-%d')),
+            'status': crop_data.get('status', 'planned'),
+            'timeline': timeline_data or [],
+            'saved_at': datetime.utcnow().isoformat()
+        }
+        
+        # Save to MongoDB if available
+        if db is not None and hasattr(db, 'crops'):
+            try:
+                db.crops.insert_one(crop_record.copy())
+                print(f"🌱 Crop saved to MongoDB: {crop_record['crop_name']}")
+            except Exception as e:
+                print(f"[MongoDB] Could not save crop: {e}")
+        
+        # Also save to file storage
+        with open(CROPS_FILE, 'r') as f:
+            crops_db = json.load(f)
+        
+        if user_id not in crops_db:
+            crops_db[user_id] = []
+        
+        crops_db[user_id].append(crop_record)
+        
+        with open(CROPS_FILE, 'w') as f:
+            json.dump(crops_db, f, indent=2)
+        
+        print(f"🌱 Crop recommendation saved for user {user_id}: {crop_record['crop_name']}")
+        return type('MockResult', (), {'inserted_id': crop_id})()
+    except Exception as e:
+        print(f"Error saving crop: {e}")
+        return None
+
+def get_user_crops(user_id):
+    """Get user's saved crops from file and MongoDB"""
+    try:
+        # Try MongoDB first
+        if db is not None and hasattr(db, 'crops'):
+            try:
+                crops = list(db.crops.find({'user_id': user_id}))
+                if crops:
+                    return crops
+            except Exception as e:
+                print(f"[MongoDB] Could not fetch crops: {e}")
+        
+        # Fallback to file storage
+        with open(CROPS_FILE, 'r') as f:
+            crops_db = json.load(f)
+        
+        return crops_db.get(user_id, [])
+    except Exception as e:
+        print(f"Error fetching crops: {e}")
+        return []
+
+def delete_crop(crop_id):
+    """Delete a crop from file and MongoDB"""
+    try:
+        # Delete from MongoDB
+        if db is not None and hasattr(db, 'crops'):
+            try:
+                db.crops.delete_one({'_id': crop_id})
+            except:
+                pass
+        
+        # Delete from file storage
+        with open(CROPS_FILE, 'r') as f:
+            crops_db = json.load(f)
+        
+        for user_id in crops_db:
+            crops_db[user_id] = [c for c in crops_db[user_id] if c.get('_id') != crop_id]
+        
+        with open(CROPS_FILE, 'w') as f:
+            json.dump(crops_db, f, indent=2)
+        
+        print(f"🗑️ Crop deleted: {crop_id}")
+        return type('MockResult', (), {'deleted_count': 1})()
+    except Exception as e:
+        print(f"Error deleting crop: {e}")
+        return None
+
+def save_fertilizer_recommendation(user_id, fertilizer_data):
+    """Save fertilizer recommendation to file and MongoDB"""
+    import uuid
+    try:
         # Generate unique ID
         fertilizer_id = str(uuid.uuid4())
         fertilizer_data['_id'] = fertilizer_id
         fertilizer_data['user_id'] = user_id
         fertilizer_data['saved_at'] = datetime.utcnow().isoformat()
+        
+        # Save to MongoDB if available
+        if db is not None and hasattr(db, 'fertilizers'):
+            try:
+                db.fertilizers.insert_one(fertilizer_data.copy())
+                print(f"🧪 Fertilizer saved to MongoDB: {fertilizer_data.get('name')}")
+            except Exception as e:
+                print(f"[MongoDB] Could not save fertilizer: {e}")
+        
+        # Also save to file storage
+        with open(FERTILIZERS_FILE, 'r') as f:
+            fertilizer_db = json.load(f)
         
         # Save fertilizer
         if user_id not in fertilizer_db:
@@ -594,9 +675,19 @@ def save_fertilizer_recommendation(user_id, fertilizer_data):
         return None
 
 def get_user_fertilizers(user_id):
-    """Get user's saved fertilizers from file"""
+    """Get user's saved fertilizers from MongoDB and file"""
     import uuid
     try:
+        # Try MongoDB first
+        if db is not None and hasattr(db, 'fertilizers'):
+            try:
+                fertilizers = list(db.fertilizers.find({'user_id': user_id}))
+                if fertilizers:
+                    return fertilizers
+            except Exception as e:
+                print(f"[MongoDB] Could not fetch fertilizers: {e}")
+        
+        # Fallback to file storage
         with open(FERTILIZERS_FILE, 'r') as f:
             fertilizer_db = json.load(f)
         
@@ -622,106 +713,130 @@ def get_user_fertilizers(user_id):
         return []
 
 def delete_fertilizer_recommendation(fertilizer_id, user_id):
-    """Delete a fertilizer recommendation from file"""
+    """Delete a fertilizer recommendation from MongoDB and file"""
+    deleted = False
+    
+    # Try to delete from MongoDB first
     try:
-        # Load existing fertilizers
+        if db is not None:
+            from bson import ObjectId
+            try:
+                obj_id = ObjectId(fertilizer_id)
+                result = db.fertilizers.delete_one({'_id': obj_id, 'user_id': user_id})
+            except:
+                result = db.fertilizers.delete_one({'_id': fertilizer_id, 'user_id': user_id})
+            
+            if result.deleted_count > 0:
+                print(f"[SUCCESS] Deleted fertilizer {fertilizer_id} from MongoDB for user {user_id}")
+                deleted = True
+    except Exception as e:
+        print(f"[WARNING] MongoDB delete error: {e}")
+    
+    # Also delete from JSON file
+    try:
         with open(FERTILIZERS_FILE, 'r') as f:
             fertilizer_db = json.load(f)
         
-        # Get user's fertilizers
         user_fertilizers = fertilizer_db.get(user_id, [])
-        
-        # Find and remove the fertilizer
         initial_count = len(user_fertilizers)
         user_fertilizers = [f for f in user_fertilizers if f.get('_id') != fertilizer_id]
         
         if len(user_fertilizers) < initial_count:
-            # Fertilizer was found and removed
             fertilizer_db[user_id] = user_fertilizers
-            
-            # Write back to file
             with open(FERTILIZERS_FILE, 'w') as f:
                 json.dump(fertilizer_db, f, indent=2)
-            
-            print(f"[SUCCESS] Successfully deleted fertilizer {fertilizer_id} for user {user_id}")
-            return True
-        else:
-            print(f"[WARNING] Fertilizer {fertilizer_id} not found for user {user_id}")
-            return False
+            print(f"[SUCCESS] Deleted fertilizer {fertilizer_id} from JSON for user {user_id}")
+            deleted = True
             
     except Exception as e:
-        print(f"Error deleting fertilizer: {e}")
-        return False
+        print(f"[WARNING] JSON delete error: {e}")
+    
+    return deleted
 
 def save_disease_detection(user_id, disease_data):
-    print(f"🦠 Disease detection saved for user {user_id}: {disease_data['disease_name']}")
-    return type('MockResult', (), {'inserted_id': 'mock_disease_id'})()
+    """Save a disease detection result to MongoDB"""
+    try:
+        disease_data['user_id'] = user_id
+        disease_data['detected_at'] = datetime.utcnow()
+        
+        if db is not None:
+            result = db.diseases.insert_one(disease_data)
+            print(f"[SUCCESS] Disease detection saved to MongoDB for user {user_id}: {disease_data.get('disease_name')}")
+            return result
+        else:
+            print(f"[DEV] Disease detection saved for user {user_id}: {disease_data.get('disease_name')}")
+            return type('MockResult', (), {'inserted_id': 'mock_disease_id'})()
+    except Exception as e:
+        print(f"[ERROR] Failed to save disease detection: {e}")
+        return None
 
 def get_user_diseases(user_id):
-    # Return some mock data for testing
-    return [
-        {
-            '_id': 'disease1',
-            'disease_name': 'Tomato Blight',
-            'plant_type': 'Tomato',
-            'confidence': 0.87,
-            'detected_at': datetime.utcnow()
-        }
-    ]
+    """Get all disease detections for a user from MongoDB"""
+    try:
+        if db is not None:
+            diseases = list(db.diseases.find({'user_id': user_id}).sort('detected_at', -1))
+            for d in diseases:
+                d['_id'] = str(d['_id'])
+            return diseases
+        else:
+            return []
+    except Exception as e:
+        print(f"[ERROR] Failed to get user diseases: {e}")
+        return []
 
 def save_growing_activity(activity_data):
-    """Save a growing activity to database"""
+    """Save a growing activity to MongoDB"""
     import uuid
     try:
-        # Load existing activities
-        with open(GROWING_FILE, 'r') as f:
-            growing_data = json.load(f)
-        
-        # Generate unique ID
         activity_id = str(uuid.uuid4())
         activity_data['_id'] = activity_id
+        activity_data['created_at'] = datetime.utcnow()
         
-        # Save activity
-        user_id = activity_data.get('user_id')
-        if user_id not in growing_data:
-            growing_data[user_id] = []
+        # Save to MongoDB
+        if db is not None and not isinstance(db, MockDatabase):
+            db.growing_activities.insert_one(activity_data)
+            print(f"[SUCCESS] Growing activity saved to MongoDB: {activity_data.get('crop_display_name')} [ID: {activity_id}]")
+        else:
+            # Fallback to JSON file
+            with open(GROWING_FILE, 'r') as f:
+                growing_data = json.load(f)
+            
+            user_id = activity_data.get('user_id')
+            if user_id not in growing_data:
+                growing_data[user_id] = []
+            
+            growing_data[user_id].append(activity_data)
+            
+            with open(GROWING_FILE, 'w') as f:
+                json.dump(growing_data, f, indent=2, default=str)
+            
+            print(f"[DEV] Growing activity saved to JSON: {activity_data.get('crop_display_name')} [ID: {activity_id}]")
         
-        growing_data[user_id].append(activity_data)
-        
-        # Write back to file
-        with open(GROWING_FILE, 'w') as f:
-            json.dump(growing_data, f, indent=2)
-        
-        print(f"🌱 Growing activity saved: {activity_data.get('crop_display_name')} [ID: {activity_id}]")
         return type('MockResult', (), {'inserted_id': activity_id})()
     except Exception as e:
         print(f"Error saving growing activity: {e}")
         return None
 
 def get_user_growing_activities(user_id, status='active'):
-    """Get user's growing activities"""
-    import uuid
+    """Get user's growing activities from MongoDB"""
     try:
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            query = {'user_id': user_id}
+            if status:
+                query['status'] = status
+            
+            activities = list(db.growing_activities.find(query).sort('created_at', -1))
+            for a in activities:
+                a['_id'] = str(a['_id'])
+            return activities
+        
+        # Fallback to JSON file
         with open(GROWING_FILE, 'r') as f:
             growing_data = json.load(f)
         
-        # Get user's activities
         user_activities = growing_data.get(user_id, [])
         
-        # Add _id to activities that don't have one
-        needs_save = False
-        for activity in user_activities:
-            if '_id' not in activity:
-                activity['_id'] = str(uuid.uuid4())
-                needs_save = True
-        
-        # Save back if we added any IDs
-        if needs_save:
-            growing_data[user_id] = user_activities
-            with open(GROWING_FILE, 'w') as f:
-                json.dump(growing_data, f, indent=2)
-        
-        # Filter by status if specified
         if status:
             user_activities = [a for a in user_activities if a.get('status') == status]
         
@@ -731,58 +846,54 @@ def get_user_growing_activities(user_id, status='active'):
         return []
 
 def update_growing_activity(activity_id, user_id, update_data):
-    """Update growing activity with new data (stage, notes, tasks)"""
+    """Update growing activity in MongoDB"""
     try:
-        print(f"💾 DB: Updating activity {activity_id} for user {user_id}")
-        print(f"💾 DB: Update data: {update_data}")
+        print(f"[INFO] Updating activity {activity_id} for user {user_id}")
         
-        # Load existing activities
+        update_data['updated_at'] = datetime.utcnow()
+        
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            from bson import ObjectId
+            try:
+                obj_id = ObjectId(activity_id)
+                result = db.growing_activities.update_one(
+                    {'_id': obj_id, 'user_id': user_id},
+                    {'$set': update_data}
+                )
+            except:
+                result = db.growing_activities.update_one(
+                    {'_id': activity_id, 'user_id': user_id},
+                    {'$set': update_data}
+                )
+            
+            if result.modified_count > 0:
+                print(f"[SUCCESS] Updated activity {activity_id} in MongoDB")
+                return True
+        
+        # Fallback to JSON file
         with open(GROWING_FILE, 'r') as f:
             growing_data = json.load(f)
         
-        print(f"💾 DB: Loaded data for {len(growing_data)} users")
-        
-        # Get user's activities
         user_activities = growing_data.get(user_id, [])
-        print(f"💾 DB: User has {len(user_activities)} activities")
         
-        # Find and update the activity
         activity_found = False
         for i, activity in enumerate(user_activities):
-            print(f"💾 DB: Checking activity {i}: {activity.get('_id')} == {activity_id}?")
             if activity.get('_id') == activity_id or activity.get('id') == activity_id:
-                print(f"💾 DB: Match found! Updating...")
-                # Update the activity fields
-                if 'current_stage' in update_data:
-                    print(f"💾 DB: Updating stage: {activity.get('current_stage')} -> {update_data['current_stage']}")
-                    user_activities[i]['current_stage'] = update_data['current_stage']
-                if 'progress' in update_data:
-                    print(f"💾 DB: Updating progress: {activity.get('progress')} -> {update_data['progress']}")
-                    user_activities[i]['progress'] = update_data['progress']
-                if 'notes' in update_data:
-                    print(f"💾 DB: Updating notes")
-                    user_activities[i]['notes'] = update_data['notes']
-                if 'completed_tasks' in update_data:
-                    print(f"💾 DB: Updating tasks")
-                    user_activities[i]['completed_tasks'] = update_data['completed_tasks']
-                
-                user_activities[i]['updated_at'] = datetime.now().isoformat()
+                for key, value in update_data.items():
+                    user_activities[i][key] = value
                 activity_found = True
                 break
         
         if activity_found:
             growing_data[user_id] = user_activities
-            
-            # Write back to file
             with open(GROWING_FILE, 'w') as f:
-                json.dump(growing_data, f, indent=2)
-            
-            print(f"[SUCCESS] Successfully updated activity {activity_id} for user {user_id}")
-            print(f"[INFO] DB: File saved to {GROWING_FILE}")
+                json.dump(growing_data, f, indent=2, default=str)
+            print(f"[SUCCESS] Updated activity {activity_id} in JSON")
             return True
-        else:
-            print(f"⚠️ Activity {activity_id} not found for user {user_id}")
-            return False
+        
+        print(f"[WARNING] Activity {activity_id} not found")
+        return False
             
     except Exception as e:
         print(f"Error updating activity: {e}")
@@ -791,32 +902,39 @@ def update_growing_activity(activity_id, user_id, update_data):
         return False
 
 def delete_growing_activity(activity_id, user_id):
-    """Delete a growing activity"""
+    """Delete a growing activity from MongoDB"""
     try:
-        # Load existing activities
+        deleted = False
+        
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            from bson import ObjectId
+            try:
+                obj_id = ObjectId(activity_id)
+                result = db.growing_activities.delete_one({'_id': obj_id, 'user_id': user_id})
+            except:
+                result = db.growing_activities.delete_one({'_id': activity_id, 'user_id': user_id})
+            
+            if result.deleted_count > 0:
+                print(f"[SUCCESS] Deleted activity {activity_id} from MongoDB")
+                deleted = True
+        
+        # Also try JSON file
         with open(GROWING_FILE, 'r') as f:
             growing_data = json.load(f)
         
-        # Get user's activities
         user_activities = growing_data.get(user_id, [])
-        
-        # Find and remove the activity
         initial_count = len(user_activities)
         user_activities = [a for a in user_activities if a.get('_id') != activity_id]
         
         if len(user_activities) < initial_count:
-            # Activity was found and removed
             growing_data[user_id] = user_activities
-            
-            # Write back to file
             with open(GROWING_FILE, 'w') as f:
                 json.dump(growing_data, f, indent=2)
-            
-            print(f"[SUCCESS] Successfully deleted activity {activity_id} for user {user_id}")
-            return True
-        else:
-            print(f"⚠️ Activity {activity_id} not found for user {user_id}")
-            return False
+            print(f"[SUCCESS] Deleted activity {activity_id} from JSON")
+            deleted = True
+        
+        return deleted
             
     except Exception as e:
         print(f"Error deleting activity: {e}")
@@ -948,9 +1066,16 @@ def get_dashboard_notifications(user_id):
     return notifications
 
 def mark_user_notifications_read(user_id):
-    """Mark all notifications as read for a user"""
+    """Mark all notifications as read for a user in MongoDB"""
     try:
-        # 1. Update persistent notifications
+        # Update notifications in MongoDB
+        if db is not None and not isinstance(db, MockDatabase):
+            db.notifications.update_many(
+                {'user_id': str(user_id), 'read': False},
+                {'$set': {'read': True}}
+            )
+        
+        # Also update in JSON file for fallback
         if os.path.exists(NOTIFICATIONS_FILE):
              with open(NOTIFICATIONS_FILE, 'r') as f:
                 all_notifs = json.load(f)
@@ -965,41 +1090,14 @@ def mark_user_notifications_read(user_id):
                  with open(NOTIFICATIONS_FILE, 'w') as f:
                     json.dump(all_notifs, f, indent=2)
 
-        # 2. Update user's last_notification_read_at timestamp
-        users = db.users
+        # Update user's last_notification_read_at timestamp
         timestamp = datetime.now().isoformat()
         
-        if hasattr(users, 'update_one'):
-            # MongoDB
-            users.update_one(
-                {'_id': user_id} if not isinstance(user_id, str) else {'email': user_id}, 
+        if db is not None and not isinstance(db, MockDatabase):
+            db.users.update_one(
+                {'_id': user_id}, 
                 {'$set': {'last_notification_read_at': timestamp}}
             )
-        else:
-            # File-based DB (MockCollection)
-            user_found = False
-            # If using dict store (email keys)
-            if hasattr(users, 'data_store') and isinstance(users.data_store, dict):
-                 for email, u in users.data_store.items():
-                     if str(u.get('_id')) == str(user_id) or u.get('email') == str(user_id):
-                         u['last_notification_read_at'] = timestamp
-                         user_found = True
-                         break
-            # If using list store (unlikely for users but possible)
-            elif hasattr(users, 'data_store') and isinstance(users.data_store, list):
-                for u in users.data_store:
-                     if str(u.get('_id')) == str(user_id) or u.get('email') == str(user_id):
-                         u['last_notification_read_at'] = timestamp
-                         user_found = True
-                         break
-            
-            if user_found and os.path.exists(USERS_FILE):
-                with open(USERS_FILE, 'w') as f:
-                    # Determine what to save based on data_store type
-                    data_to_save = users.data_store
-                    json.dump(data_to_save, f, indent=2, default=str)
-
-        return True
 
         return True
     except Exception as e:
@@ -1007,13 +1105,8 @@ def mark_user_notifications_read(user_id):
         return False
         
 def add_notification(user_id, type, message, priority='medium', title=None, data=None):
-    """Save a user notification to file"""
+    """Save a user notification to MongoDB"""
     try:
-        notifications = []
-        if os.path.exists(NOTIFICATIONS_FILE):
-            with open(NOTIFICATIONS_FILE, 'r') as f:
-                notifications = json.load(f)
-        
         # Determine title if not provided
         if not title:
             if type == 'equipment' or type == 'rental_request':
@@ -1034,39 +1127,75 @@ def add_notification(user_id, type, message, priority='medium', title=None, data
             'read': False,
             'data': data or {}
         }
-        notifications.append(new_notif)
         
-        with open(NOTIFICATIONS_FILE, 'w') as f:
-            json.dump(notifications, f, indent=2)
+        # Save to MongoDB
+        if db is not None and not isinstance(db, MockDatabase):
+            db.notifications.insert_one(new_notif)
+            print(f"[SUCCESS] Notification saved to MongoDB for user {user_id}")
+        else:
+            # Fallback to JSON file
+            notifications = []
+            if os.path.exists(NOTIFICATIONS_FILE):
+                with open(NOTIFICATIONS_FILE, 'r') as f:
+                    notifications = json.load(f)
+            notifications.append(new_notif)
+            with open(NOTIFICATIONS_FILE, 'w') as f:
+                json.dump(notifications, f, indent=2)
+        
         return True
     except Exception as e:
         print(f"Error adding notification: {e}")
         return False
         
 def delete_notification(notification_id):
-    """Delete a notification by ID"""
+    """Delete a notification by ID from MongoDB"""
     try:
-        if not os.path.exists(NOTIFICATIONS_FILE):
-            return False
-            
-        with open(NOTIFICATIONS_FILE, 'r') as f:
-            notifications = json.load(f)
-            
-        initial_len = len(notifications)
-        notifications = [n for n in notifications if n.get('id') != notification_id]
+        deleted = False
         
-        if len(notifications) < initial_len:
-            with open(NOTIFICATIONS_FILE, 'w') as f:
-                json.dump(notifications, f, indent=2)
-            return True
-        return False
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            result = db.notifications.delete_one({'id': notification_id})
+            if result.deleted_count > 0:
+                print(f"[SUCCESS] Deleted notification {notification_id} from MongoDB")
+                deleted = True
+        
+        # Also try JSON file
+        if os.path.exists(NOTIFICATIONS_FILE):
+            with open(NOTIFICATIONS_FILE, 'r') as f:
+                notifications = json.load(f)
+                
+            initial_len = len(notifications)
+            notifications = [n for n in notifications if n.get('id') != notification_id]
+            
+            if len(notifications) < initial_len:
+                with open(NOTIFICATIONS_FILE, 'w') as f:
+                    json.dump(notifications, f, indent=2)
+                deleted = True
+        
+        return deleted
     except Exception as e:
         print(f"Error deleting notification: {e}")
         return False
 
 def update_equipment(equipment_id, update_data):
-    """Update generic equipment fields"""
+    """Update generic equipment fields in MongoDB"""
     try:
+        update_data['updated_at'] = datetime.now().isoformat()
+        
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            from bson import ObjectId
+            try:
+                obj_id = ObjectId(equipment_id)
+                result = db.equipment_listings.update_one({'_id': obj_id}, {'$set': update_data})
+            except:
+                result = db.equipment_listings.update_one({'_id': equipment_id}, {'$set': update_data})
+            
+            if result.modified_count > 0:
+                print(f"[SUCCESS] Updated equipment {equipment_id} in MongoDB")
+                return True
+        
+        # Fallback to JSON file
         with open(EQUIPMENT_FILE, 'r') as f:
             equipment = json.load(f)
         
@@ -1074,7 +1203,6 @@ def update_equipment(equipment_id, update_data):
         for item in equipment:
             if item.get('_id') == equipment_id:
                 item.update(update_data)
-                item['updated_at'] = datetime.now().isoformat()
                 updated = True
                 break
         
@@ -1086,13 +1214,18 @@ def update_equipment(equipment_id, update_data):
     except Exception as e:
         print(f"Error updating equipment: {e}")
         return False
-    except Exception as e:
-        print(f"Error adding notification: {e}")
-        return False
 
 def get_persistent_notifications(user_id):
-    """Retrieve saved notifications for a user"""
+    """Retrieve saved notifications for a user from MongoDB"""
     try:
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            notifications = list(db.notifications.find({'user_id': str(user_id)}))
+            for n in notifications:
+                n['_id'] = str(n['_id'])
+            return notifications
+        
+        # Fallback to JSON file
         if not os.path.exists(NOTIFICATIONS_FILE):
             return []
         with open(NOTIFICATIONS_FILE, 'r') as f:
@@ -1103,8 +1236,16 @@ def get_persistent_notifications(user_id):
         return []
 
 def get_all_equipment():
-    """Get all listed equipment"""
+    """Get all listed equipment from MongoDB"""
     try:
+        # Try MongoDB first
+        if db is not None and not isinstance(db, MockDatabase):
+            equipment = list(db.equipment_listings.find())
+            for e in equipment:
+                e['_id'] = str(e['_id'])
+            return equipment
+        
+        # Fallback to JSON file
         if not os.path.exists(EQUIPMENT_FILE):
             return []
         with open(EQUIPMENT_FILE, 'r') as f:
@@ -1114,23 +1255,26 @@ def get_all_equipment():
         return []
 
 def save_equipment(equipment_data):
-    """Save a new equipment listing"""
+    """Save a new equipment listing to MongoDB"""
     import uuid
     try:
-        equipment = get_all_equipment()
-        
-        # Generate unique ID and basic fields
         equipment_id = str(uuid.uuid4())
         equipment_data['_id'] = equipment_id
         equipment_data['created_at'] = datetime.utcnow().isoformat()
         equipment_data['status'] = 'available'
         
-        equipment.append(equipment_data)
-        
-        with open(EQUIPMENT_FILE, 'w') as f:
-            json.dump(equipment, f, indent=2)
+        # Save to MongoDB
+        if db is not None and not isinstance(db, MockDatabase):
+            db.equipment_listings.insert_one(equipment_data)
+            print(f"[SUCCESS] Equipment saved to MongoDB: {equipment_data.get('name')} [ID: {equipment_id}]")
+        else:
+            # Fallback to JSON file
+            equipment = get_all_equipment()
+            equipment.append(equipment_data)
+            with open(EQUIPMENT_FILE, 'w') as f:
+                json.dump(equipment, f, indent=2)
+            print(f"[DEV] Equipment saved to JSON: {equipment_data.get('name')} [ID: {equipment_id}]")
             
-        print(f"🚜 Equipment listed: {equipment_data.get('name')} [ID: {equipment_id}]")
         return equipment_id
     except Exception as e:
         print(f"Error saving equipment: {e}")
@@ -1140,7 +1284,7 @@ def update_equipment_status(equipment_id, status):
     """Update equipment listing status (available, booked, completed, cancelled)"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 try:
@@ -1490,7 +1634,7 @@ def get_listing_by_id(listing_id):
     """Get a specific listing by ID"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 # Try both ObjectId and string ID
@@ -1536,7 +1680,7 @@ def confirm_purchase(listing_id, purchase_data):
     """Confirm purchase and update listing status atomically"""
     try:
         # MongoDB Atlas - ATOMIC UPDATE
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 
@@ -1629,7 +1773,7 @@ def update_listing_status(listing_id, new_status):
     """Update listing status (for cancellation, expiry, etc.)"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 try:
@@ -1693,7 +1837,7 @@ def get_live_equipment_rent(equipment_name, district='', state=''):
     """
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 query = {'equipment_name': equipment_name}
                 # Try to match by state, fallback to generic
@@ -1757,7 +1901,7 @@ def create_equipment_listing(listing_data):
     """Create new equipment listing"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 result = db.equipment_listings.insert_one(listing_data)
                 return str(result.inserted_id)
@@ -1792,7 +1936,7 @@ def get_available_equipment(equipment_name='', district='', state='', sort_by='r
     """Get all available equipment (status='available')"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 query = {'status': 'available'}
                 if equipment_name:
@@ -1859,7 +2003,7 @@ def get_equipment_listing_by_id(listing_id):
     """Get equipment listing by ID"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 listing = db.equipment_listings.find_one({'_id': ObjectId(listing_id)})
@@ -1906,7 +2050,7 @@ def book_equipment_atomic(listing_id, booking_data):
     """
     try:
         # MongoDB Atlas - ATOMIC UPDATE
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 
@@ -1974,7 +2118,7 @@ def complete_equipment_rental(listing_id):
     """Mark equipment rental as completed"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 
@@ -2024,7 +2168,7 @@ def get_user_equipment_listings(user_id):
     """Get all equipment listings by a user"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 listings = list(db.equipment_listings.find({'owner_id': user_id}).sort('created_at', -1))
                 for listing in listings:
@@ -2054,7 +2198,7 @@ def confirm_equipment_rental(listing_id, rental_data):
     """Confirm equipment rental and update listing status atomically"""
     try:
         # MongoDB Atlas - ATOMIC UPDATE
-        if db:
+        if db is not None:
             try:
                 from bson.objectid import ObjectId
                 
@@ -2156,7 +2300,7 @@ def get_user_bookings(user_id):
     """Get all equipment bookings made by a user"""
     try:
         # MongoDB Atlas
-        if db:
+        if db is not None:
             try:
                 bookings = list(db.equipment_listings.find({'renter_id': user_id}).sort('booked_at', -1))
                 for booking in bookings:

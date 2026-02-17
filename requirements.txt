@@ -27,6 +27,9 @@ python-dotenv==1.0.0
 # HTTP Requests (for SMS gateways)
 requests>=2.31.0
 
+# SMS - Twilio
+twilio>=8.0.0
+
 # PDF Generation
 xhtml2pdf>=0.2.11
 

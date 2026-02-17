@@ -4,7 +4,7 @@ function updateDistricts() {
     const districtSelect = document.getElementById('district');
     const selectedState = stateSelect.value;
 
-    districtSelect.innerHTML = '<option value="">Select your district</option>';
+    districtSelect.innerHTML = '<option value="">Select district</option>';
 
     if (selectedState && statesDistrictsData[selectedState]) {
         statesDistrictsData[selectedState].forEach(function (district) {
@@ -16,5 +16,348 @@ function updateDistricts() {
     }
 }
 
+// Debounce timer for pincode API calls
+let pincodeTimer = null;
+
+// Fetch pincode details from Indian Postal API
+function fetchPincodeDetails() {
+    const pincodeInput = document.getElementById('pincode');
+    const pincode = pincodeInput.value.trim();
+    const statusElement = document.getElementById('pincode-status');
+    const villageSelect = document.getElementById('village');
+    const stateSelect = document.getElementById('state');
+    const districtSelect = document.getElementById('district');
+
+    // Clear previous timer
+    if (pincodeTimer) {
+        clearTimeout(pincodeTimer);
+    }
+
+    // Validate pincode length
+    if (pincode.length < 6) {
+        statusElement.textContent = '';
+        statusElement.className = 'pincode-status';
+        villageSelect.innerHTML = '<option value="">Select your village/area</option>';
+        return;
+    }
+
+    if (pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+        statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid 6-digit pincode';
+        statusElement.className = 'pincode-status error';
+        return;
+    }
+
+    // Show loading status
+    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching location...';
+    statusElement.className = 'pincode-status loading loading-text';
+
+    // Debounce API call (wait 500ms after user stops typing)
+    pincodeTimer = setTimeout(function() {
+        fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data[0] && data[0].Status === 'Success') {
+                    const postOffices = data[0].PostOffice;
+                    
+                    if (postOffices && postOffices.length > 0) {
+                        // Get state and district from first post office
+                        const firstPO = postOffices[0];
+                        const apiState = firstPO.State;
+                        const apiDistrict = firstPO.District;
+                        
+                        console.log('API Response - State:', apiState, 'District:', apiDistrict);
+
+                        // Normalize for comparison
+                        const normalize = (s) => s.toLowerCase().replace(/\s+/g, '').replace(/and/g, '').trim();
+                        
+                        // Find matching state
+                        let stateFound = false;
+                        for (let i = 0; i < stateSelect.options.length; i++) {
+                            const opt = stateSelect.options[i];
+                            if (!opt.value) continue;
+                            
+                            const optNorm = normalize(opt.value);
+                            const apiNorm = normalize(apiState);
+                            
+                            if (optNorm === apiNorm || optNorm.includes(apiNorm) || apiNorm.includes(optNorm)) {
+                                stateSelect.selectedIndex = i;
+                                stateFound = true;
+                                console.log('State matched:', opt.value);
+                                
+                                // Trigger change event to update districts
+                                updateDistricts();
+                                
+                                // Auto-select district after districts are loaded
+                                setTimeout(() => {
+                                    for (let j = 0; j < districtSelect.options.length; j++) {
+                                        const distOpt = districtSelect.options[j];
+                                        if (!distOpt.value) continue;
+                                        
+                                        const distOptNorm = normalize(distOpt.value);
+                                        const distApiNorm = normalize(apiDistrict);
+                                        
+                                        if (distOptNorm === distApiNorm || distOptNorm.includes(distApiNorm) || distApiNorm.includes(distOptNorm)) {
+                                            districtSelect.selectedIndex = j;
+                                            console.log('District matched:', distOpt.value);
+                                            break;
+                                        }
+                                    }
+                                }, 150);
+                                
+                                break;
+                            }
+                        }
+                        
+                        if (!stateFound) {
+                            console.log('State not found in dropdown:', apiState);
+                        }
+
+                        // Populate villages dropdown
+                        villageSelect.innerHTML = '<option value="">Select your village/area</option>';
+                        
+                        // Get unique village/area names
+                        const uniqueVillages = [...new Set(postOffices.map(po => po.Name))];
+                        uniqueVillages.sort(); // Sort alphabetically
+                        
+                        uniqueVillages.forEach(function(village) {
+                            const option = document.createElement('option');
+                            option.value = village;
+                            option.textContent = village;
+                            villageSelect.appendChild(option);
+                        });
+
+                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Location found: ' + apiDistrict + ', ' + apiState;
+                        statusElement.className = 'pincode-status success';
+                        
+                        // Clear success message after 3 seconds
+                        setTimeout(() => {
+                            statusElement.textContent = '';
+                            statusElement.className = 'pincode-status';
+                        }, 3000);
+                    }
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Invalid pincode';
+                    statusElement.className = 'pincode-status error';
+                    villageSelect.innerHTML = '<option value="">No villages found</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Pincode API error:', error);
+                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Could not fetch. Select manually.';
+                statusElement.className = 'pincode-status error';
+            });
+    }, 500);
+}
+
 // Globalize for safety
 window.updateDistricts = updateDistricts;
+window.fetchPincodeDetails = fetchPincodeDetails;
+// ----- OTP Verification for Phone Number -----
+
+let otpCountdownInterval = null;
+let phoneVerified = false;
+
+// Send OTP to phone number
+function sendOTP() {
+    const phoneInput = document.getElementById('phone');
+    const phone = phoneInput.value.trim();
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const statusElement = document.getElementById('phone-status');
+    const otpSection = document.getElementById('otp-section');
+    
+    // Validate phone
+    if (!phone || !/^[0-9]{10}$/.test(phone)) {
+        statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Enter a valid 10-digit phone number';
+        statusElement.className = 'phone-status error';
+        return;
+    }
+    
+    // Disable button and show loading
+    sendOtpBtn.disabled = true;
+    sendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
+    statusElement.className = 'phone-status loading';
+    
+    // Call API to send OTP
+    fetch('/api/register/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone: phone })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            statusElement.innerHTML = '<i class="fas fa-check-circle"></i> ' + data.message;
+            statusElement.className = 'phone-status success';
+            
+            // Show OTP input section
+            otpSection.style.display = 'block';
+            document.getElementById('otp').focus();
+            
+            // Start countdown timer (5 minutes)
+            startOTPCountdown(300);
+            
+            // Disable phone input after OTP sent
+            phoneInput.readOnly = true;
+            phoneInput.style.backgroundColor = '#f0f0f0';
+            
+            sendOtpBtn.innerHTML = '<i class="fas fa-clock"></i> OTP Sent';
+            
+            // Show dev OTP if in development mode
+            if (data.dev_otp) {
+                console.log('[DEV] OTP:', data.dev_otp);
+                statusElement.innerHTML += ` (Dev OTP: ${data.dev_otp})`;
+            }
+        } else {
+            statusElement.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.message;
+            statusElement.className = 'phone-status error';
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+        }
+    })
+    .catch(error => {
+        console.error('Send OTP error:', error);
+        statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Failed to send OTP. Please try again.';
+        statusElement.className = 'phone-status error';
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+    });
+}
+
+// Verify OTP
+function verifyOTP() {
+    const phone = document.getElementById('phone').value.trim();
+    const otp = document.getElementById('otp').value.trim();
+    const verifyBtn = document.getElementById('verifyOtpBtn');
+    const statusElement = document.getElementById('phone-status');
+    const otpSection = document.getElementById('otp-section');
+    const verifiedBadge = document.getElementById('phone-verified');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    
+    // Validate OTP format
+    if (!otp || !/^[0-9]{6}$/.test(otp)) {
+        statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Enter the 6-digit OTP';
+        statusElement.className = 'phone-status error';
+        return;
+    }
+    
+    // Disable button and show loading
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    // Call API to verify OTP
+    fetch('/api/register/verify-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone: phone, otp: otp })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Hide OTP section and show verified badge
+            otpSection.style.display = 'none';
+            verifiedBadge.style.display = 'flex';
+            sendOtpBtn.style.display = 'none';
+            statusElement.textContent = '';
+            
+            // Stop countdown
+            if (otpCountdownInterval) {
+                clearInterval(otpCountdownInterval);
+            }
+            
+            phoneVerified = true;
+            
+            // Clear success message after a moment
+            setTimeout(() => {
+                statusElement.className = 'phone-status';
+            }, 100);
+        } else {
+            statusElement.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.message;
+            statusElement.className = 'phone-status error';
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify';
+            
+            // Clear OTP input for retry
+            document.getElementById('otp').value = '';
+            document.getElementById('otp').focus();
+        }
+    })
+    .catch(error => {
+        console.error('Verify OTP error:', error);
+        statusElement.innerHTML = '<i class="fas fa-times-circle"></i> Verification failed. Please try again.';
+        statusElement.className = 'phone-status error';
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = '<i class="fas fa-check"></i> Verify';
+    });
+}
+
+// Start OTP countdown timer
+function startOTPCountdown(seconds) {
+    const countdownElement = document.getElementById('otp-countdown');
+    const timerText = document.getElementById('otp-timer-text');
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    
+    // Clear existing interval
+    if (otpCountdownInterval) {
+        clearInterval(otpCountdownInterval);
+    }
+    
+    let timeLeft = seconds;
+    
+    // Hide resend button initially
+    resendBtn.style.display = 'none';
+    timerText.style.display = 'inline';
+    
+    otpCountdownInterval = setInterval(() => {
+        timeLeft--;
+        
+        const minutes = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        const formattedTime = `${minutes}:${secs.toString().padStart(2, '0')}`;
+        
+        countdownElement.textContent = formattedTime;
+        
+        if (timeLeft <= 0) {
+            clearInterval(otpCountdownInterval);
+            timerText.style.display = 'none';
+            resendBtn.style.display = 'inline-flex';
+            
+            // Re-enable send OTP button for resend
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.innerHTML = '<i class="fas fa-redo"></i> Resend';
+            
+            // Allow editing phone number
+            const phoneInput = document.getElementById('phone');
+            phoneInput.readOnly = false;
+            phoneInput.style.backgroundColor = '#fff';
+        }
+    }, 1000);
+}
+
+// Form submission validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.register-form');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!phoneVerified) {
+                e.preventDefault();
+                const statusElement = document.getElementById('phone-status');
+                statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please verify your phone number first';
+                statusElement.className = 'phone-status error';
+                
+                // Scroll to phone section
+                document.getElementById('phone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    }
+});
+
+// Globalize OTP functions
+window.sendOTP = sendOTP;
+window.verifyOTP = verifyOTP;

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from utils.db import create_user, find_user_by_email, get_db, find_user_by_phone, update_user_password
 from utils.auth import hash_password, check_password, create_session, clear_session
+from controllers.otp_routes import is_phone_verified, clear_phone_verification
 import json
 import os
 import re
@@ -187,6 +188,22 @@ def login():
             session['user_phone'] = user_with_password.get('phone', 'Not provided')
             session['user_state'] = user_with_password.get('state', 'Not provided')
             session['user_district'] = user_with_password.get('district', 'Not provided')
+            session['user_village'] = user_with_password.get('village', '')
+            session['user_pincode'] = user_with_password.get('pincode', '')
+            
+            # Store last login time
+            now = datetime.now()
+            session['user_last_login'] = user_with_password.get('last_login')
+            
+            # Update last_login in database
+            try:
+                if hasattr(db, 'users'):
+                    db.users.update_one(
+                        {'_id': user_with_password['_id']},
+                        {'$set': {'last_login': now}}
+                    )
+            except Exception as e:
+                print(f"[Warning] Could not update last_login: {e}")
             
             flash('🎉 Login successful! Welcome back, ' + user_with_password['name'] + '!', 'success')
             return redirect(url_for('dashboard.dashboard'))
@@ -219,8 +236,10 @@ def register():
         email = request.form['email']
         password = request.form['password']
         phone = request.form['phone']
+        pincode = request.form.get('pincode', '')
         state = request.form['state']
         district = request.form['district']
+        village = request.form.get('village', '')
         
         # Check if user already exists by email
         if find_user_by_email(email):
@@ -232,6 +251,11 @@ def register():
             flash('⚠️ Phone number already registered! Please use a different phone number or login.', 'warning')
             return render_template('register.html', states_districts=states_districts)
         
+        # Check if phone number is verified via OTP
+        if not is_phone_verified(phone):
+            flash('⚠️ Please verify your phone number with OTP first.', 'warning')
+            return render_template('register.html', states_districts=states_districts)
+        
         # Validate password strength
         is_strong, message = validate_password_strength(password)
         if not is_strong:
@@ -240,7 +264,10 @@ def register():
         
         # Hash password and create user
         hashed_password = hash_password(password)
-        create_user(name, email, hashed_password, phone, state, district)
+        create_user(name, email, hashed_password, phone, state, district, pincode, village)
+        
+        # Clean up OTP store
+        clear_phone_verification(phone)
         
         flash('✅ Registration successful! Welcome to Smart Farming Assistant. Please login.', 'success')
         return redirect(url_for('auth.login'))

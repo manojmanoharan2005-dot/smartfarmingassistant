@@ -345,12 +345,29 @@ def dashboard():
             'phone': session.get('user_phone', 'Not provided'),
             'state': session.get('user_state', 'Not provided'), 
             'district': session.get('user_district', 'Not provided'),
-            'created_at': datetime.utcnow()
+            'village': session.get('user_village', ''),
+            'created_at': datetime.utcnow(),
+            'last_login': None
         }
     else:
         # Ensure created_at exists for existing users
         if 'created_at' not in user or user['created_at'] is None:
             user['created_at'] = datetime.utcnow()
+        else:
+            # Convert string to datetime if needed
+            if isinstance(user['created_at'], str):
+                try:
+                    user['created_at'] = datetime.fromisoformat(user['created_at'].replace('Z', '+00:00'))
+                except:
+                    user['created_at'] = datetime.utcnow()
+        
+        # Convert last_login to datetime if it's a string
+        if 'last_login' in user and user['last_login']:
+            if isinstance(user['last_login'], str):
+                try:
+                    user['last_login'] = datetime.fromisoformat(user['last_login'].replace('Z', '+00:00'))
+                except:
+                    user['last_login'] = None
     
     saved_crops = get_user_crops(user_id)
     saved_fertilizers = get_user_fertilizers(user_id)
