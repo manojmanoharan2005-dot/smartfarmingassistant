@@ -16,6 +16,14 @@ import os
 from datetime import datetime, timedelta
 from bson import ObjectId
 
+# Check if xhtml2pdf is available (optional dependency)
+try:
+    from xhtml2pdf import pisa
+    XHTML2PDF_AVAILABLE = True
+except ImportError:
+    XHTML2PDF_AVAILABLE = False
+    print("[INFO] xhtml2pdf not available - PDF generation will use client-side")
+
 report_bp = Blueprint('report', __name__)
 
 @report_bp.route('/api/report/crop-plan', methods=['GET'])
@@ -452,9 +460,10 @@ def calculate_harvest_window(activity):
 @login_required
 def download_market_prices_pdf():
     """Download today's market prices as PDF"""
+    if not XHTML2PDF_AVAILABLE:
+        return jsonify({'success': False, 'message': 'Server PDF generation not available. Please use browser print (Ctrl+P) to save as PDF.'}), 501
     try:
         from flask import make_response, render_template
-        from xhtml2pdf import pisa
         from io import BytesIO
         
         user_id = session.get('user_id')
@@ -507,9 +516,10 @@ def download_market_prices_pdf():
 @login_required
 def download_weather_pdf():
     """Download weather forecast as PDF"""
+    if not XHTML2PDF_AVAILABLE:
+        return jsonify({'success': False, 'message': 'Server PDF generation not available. Please use browser print (Ctrl+P) to save as PDF.'}), 501
     try:
         from flask import make_response, render_template
-        from xhtml2pdf import pisa
         from io import BytesIO
         
         user_id = session.get('user_id')
@@ -564,9 +574,10 @@ def download_weather_pdf():
 @login_required
 def download_expense_pdf():
     """Download expense calculator report as PDF"""
+    if not XHTML2PDF_AVAILABLE:
+        return jsonify({'success': False, 'message': 'Server PDF generation not available. Please use browser print (Ctrl+P) to save as PDF.'}), 501
     try:
         from flask import make_response, render_template
-        from xhtml2pdf import pisa
         from io import BytesIO
         
         user_id = session.get('user_id')
@@ -625,9 +636,10 @@ def download_expense_pdf():
 @login_required
 def download_crop_progress_pdf():
     """Download crop progress report as PDF"""
+    if not XHTML2PDF_AVAILABLE:
+        return jsonify({'success': False, 'message': 'Server PDF generation not available. Please use browser print (Ctrl+P) to save as PDF.'}), 501
     try:
         from flask import make_response, render_template
-        from xhtml2pdf import pisa
         from io import BytesIO
         
         user_id = session.get('user_id')

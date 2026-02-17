@@ -30,8 +30,8 @@ requests>=2.31.0
 # SMS - Twilio
 twilio>=8.0.0
 
-# PDF Generation
-xhtml2pdf>=0.2.11
+# PDF Generation (reportlab is easier to install on Render)
+reportlab>=4.0.0
 
 # Production Server
 gunicorn==21.2.0
