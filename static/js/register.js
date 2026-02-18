@@ -204,12 +204,6 @@ function sendOTP() {
             phoneInput.style.backgroundColor = '#f0f0f0';
             
             sendOtpBtn.innerHTML = '<i class="fas fa-clock"></i> OTP Sent';
-            
-            // Show dev OTP if in development mode
-            if (data.dev_otp) {
-                console.log('[DEV] OTP:', data.dev_otp);
-                statusElement.innerHTML += ` (Dev OTP: ${data.dev_otp})`;
-            }
         } else {
             statusElement.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.message;
             statusElement.className = 'phone-status error';

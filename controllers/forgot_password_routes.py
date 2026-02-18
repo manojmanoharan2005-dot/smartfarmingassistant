@@ -187,18 +187,14 @@ def request_otp():
                         else:
                              print("❌ Fallback email failed.")
             
-            # Dev Mode / Fallback for non-configured envs
-            dev_otp_msg = ""
+            # If SMS/email failed, still proceed (OTP is stored)
             if not success:
-                # If everything failed, assume dev/testing environment or bad keys
-                print(f"⚠️ Sending failed. activating DEV MODE display.")
-                print(f"🔥 [DEV MODE] OTP for {identifier}: {otp}")
-                dev_otp_msg = f". [Dev Mode OTP: {otp}]"
-                success = True # Proceed as success for UI
+                print(f"[INFO] OTP delivery failed for {identifier}, OTP stored for manual verification")
+                success = True  # Proceed for UI
                 
             return jsonify({
                 'success': True,
-                'message': response_msg + dev_otp_msg,
+                'message': response_msg,
                 'identifier': identifier
             })
             

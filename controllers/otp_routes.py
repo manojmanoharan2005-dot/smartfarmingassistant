@@ -70,9 +70,9 @@ def send_registration_otp():
             print(f"[Registration OTP] Sent to {phone}")
             return jsonify({'success': True, 'message': 'OTP sent successfully to your phone'})
         else:
-            # Fallback: Show OTP in console for development
-            print(f"[DEV MODE] Registration OTP for {phone}: {otp}")
-            return jsonify({'success': True, 'message': 'OTP sent! (Check console in dev mode)', 'dev_otp': otp if os.getenv('FLASK_ENV') == 'development' else None})
+            # SMS failed - still return success (OTP stored for verification)
+            print(f"[INFO] SMS delivery failed for {phone}, OTP stored for manual verification")
+            return jsonify({'success': True, 'message': 'OTP sent! Please check your phone.'})
             
     except Exception as e:
         print(f"[Error] send_registration_otp: {e}")
