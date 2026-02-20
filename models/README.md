@@ -2,7 +2,7 @@
 
 This directory contains the trained machine learning models for the Smart Farming Assistant.
 
-## Required Files:
+## Current Files:
 
 ### Fertilizer Recommendation Model:
 - `fertilizer_model.pkl` - Trained fertilizer recommendation model
@@ -17,8 +17,3 @@ are located in the ml_models/ directory.
 ## Training:
 To train new models, use the datasets in the datasets/ directory and follow the 
 training scripts in ml_models/.
-
-## Notes:
-- Model files are not included in version control due to size
-- Contact the development team for pre-trained models
-- Ensure models are compatible with the current scikit-learn version

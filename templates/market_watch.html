@@ -165,110 +165,15 @@
                         <select name="commodity" id="commoditySelect">
                             <option value="All" {% if selected_commodity=='All' or not selected_commodity %}selected{%
                                 endif %}>All Commodities</option>
-                            <optgroup label="🥬 Vegetables (30)">
-                                <option value="Tomato" {% if selected_commodity=='Tomato' %}selected{% endif %}>Tomato
-                                </option>
-                                <option value="Onion" {% if selected_commodity=='Onion' %}selected{% endif %}>Onion
-                                </option>
-                                <option value="Potato" {% if selected_commodity=='Potato' %}selected{% endif %}>Potato
-                                </option>
-                                <option value="Brinjal" {% if selected_commodity=='Brinjal' %}selected{% endif %}>
-                                    Brinjal</option>
-                                <option value="Cabbage" {% if selected_commodity=='Cabbage' %}selected{% endif %}>
-                                    Cabbage</option>
-                                <option value="Cauliflower" {% if selected_commodity=='Cauliflower' %}selected{% endif
-                                    %}>Cauliflower</option>
-                                <option value="Carrot" {% if selected_commodity=='Carrot' %}selected{% endif %}>Carrot
-                                </option>
-                                <option value="Beetroot" {% if selected_commodity=='Beetroot' %}selected{% endif %}>
-                                    Beetroot</option>
-                                <option value="Green Chilli" {% if selected_commodity=='Green Chilli' %}selected{% endif
-                                    %}>Green Chilli</option>
-                                <option value="Capsicum (Green)" {% if selected_commodity=='Capsicum (Green)'
-                                    %}selected{% endif %}>Capsicum (Green)</option>
-                                <option value="Capsicum (Red)" {% if selected_commodity=='Capsicum (Red)' %}selected{%
-                                    endif %}>Capsicum (Red)</option>
-                                <option value="Capsicum (Yellow)" {% if selected_commodity=='Capsicum (Yellow)'
-                                    %}selected{% endif %}>Capsicum (Yellow)</option>
-                                <option value="Beans" {% if selected_commodity=='Beans' %}selected{% endif %}>Beans
-                                </option>
-                                <option value="Cluster Beans" {% if selected_commodity=='Cluster Beans' %}selected{%
-                                    endif %}>Cluster Beans</option>
-                                <option value="Ladys Finger" {% if selected_commodity=='Ladys Finger' %}selected{% endif
-                                    %}>Ladys Finger</option>
-                                <option value="Drumstick" {% if selected_commodity=='Drumstick' %}selected{% endif %}>
-                                    Drumstick</option>
-                                <option value="Bottle Gourd" {% if selected_commodity=='Bottle Gourd' %}selected{% endif
-                                    %}>Bottle Gourd</option>
-                                <option value="Ridge Gourd" {% if selected_commodity=='Ridge Gourd' %}selected{% endif
-                                    %}>Ridge Gourd</option>
-                                <option value="Snake Gourd" {% if selected_commodity=='Snake Gourd' %}selected{% endif
-                                    %}>Snake Gourd</option>
-                                <option value="Bitter Gourd" {% if selected_commodity=='Bitter Gourd' %}selected{% endif
-                                    %}>Bitter Gourd</option>
-                                <option value="Pumpkin" {% if selected_commodity=='Pumpkin' %}selected{% endif %}>
-                                    Pumpkin</option>
-                                <option value="Ash Gourd" {% if selected_commodity=='Ash Gourd' %}selected{% endif %}>
-                                    Ash Gourd</option>
-                                <option value="Radish" {% if selected_commodity=='Radish' %}selected{% endif %}>Radish
-                                </option>
-                                <option value="Turnip" {% if selected_commodity=='Turnip' %}selected{% endif %}>Turnip
-                                </option>
-                                <option value="Sweet Corn" {% if selected_commodity=='Sweet Corn' %}selected{% endif %}>
-                                    Sweet Corn</option>
-                                <option value="Peas" {% if selected_commodity=='Peas' %}selected{% endif %}>Peas
-                                </option>
-                                <option value="Garlic" {% if selected_commodity=='Garlic' %}selected{% endif %}>Garlic
-                                </option>
-                                <option value="Ginger" {% if selected_commodity=='Ginger' %}selected{% endif %}>Ginger
-                                </option>
-                                <option value="Coriander Leaves" {% if selected_commodity=='Coriander Leaves'
-                                    %}selected{% endif %}>Coriander Leaves</option>
-                                <option value="Spinach" {% if selected_commodity=='Spinach' %}selected{% endif %}>
-                                    Spinach</option>
-                            </optgroup>
-                            <optgroup label="🍎 Fruits (20)">
-                                <option value="Apple" {% if selected_commodity=='Apple' %}selected{% endif %}>Apple
-                                </option>
-                                <option value="Banana" {% if selected_commodity=='Banana' %}selected{% endif %}>Banana
-                                </option>
-                                <option value="Orange" {% if selected_commodity=='Orange' %}selected{% endif %}>Orange
-                                </option>
-                                <option value="Mosambi" {% if selected_commodity=='Mosambi' %}selected{% endif %}>
-                                    Mosambi</option>
-                                <option value="Grapes" {% if selected_commodity=='Grapes' %}selected{% endif %}>Grapes
-                                </option>
-                                <option value="Pomegranate" {% if selected_commodity=='Pomegranate' %}selected{% endif
-                                    %}>Pomegranate</option>
-                                <option value="Papaya" {% if selected_commodity=='Papaya' %}selected{% endif %}>Papaya
-                                </option>
-                                <option value="Pineapple" {% if selected_commodity=='Pineapple' %}selected{% endif %}>
-                                    Pineapple</option>
-                                <option value="Watermelon" {% if selected_commodity=='Watermelon' %}selected{% endif %}>
-                                    Watermelon</option>
-                                <option value="Muskmelon" {% if selected_commodity=='Muskmelon' %}selected{% endif %}>
-                                    Muskmelon</option>
-                                <option value="Mango" {% if selected_commodity=='Mango' %}selected{% endif %}>Mango
-                                </option>
-                                <option value="Guava" {% if selected_commodity=='Guava' %}selected{% endif %}>Guava
-                                </option>
-                                <option value="Lemon" {% if selected_commodity=='Lemon' %}selected{% endif %}>Lemon
-                                </option>
-                                <option value="Custard Apple" {% if selected_commodity=='Custard Apple' %}selected{%
-                                    endif %}>Custard Apple</option>
-                                <option value="Sapota" {% if selected_commodity=='Sapota' %}selected{% endif %}>Sapota
-                                </option>
-                                <option value="Strawberry" {% if selected_commodity=='Strawberry' %}selected{% endif %}>
-                                    Strawberry</option>
-                                <option value="Kiwi" {% if selected_commodity=='Kiwi' %}selected{% endif %}>Kiwi
-                                </option>
-                                <option value="Pear" {% if selected_commodity=='Pear' %}selected{% endif %}>Pear
-                                </option>
-                                <option value="Plum" {% if selected_commodity=='Plum' %}selected{% endif %}>Plum
-                                </option>
-                                <option value="Peach" {% if selected_commodity=='Peach' %}selected{% endif %}>Peach
-                                </option>
-                            </optgroup>
+                            <option value="Vegetables" {% if selected_commodity=='Vegetables' %}selected{% endif %}>🥬 Vegetables ({{ vegetables|length }})</option>
+                            <option value="Fruits" {% if selected_commodity=='Fruits' %}selected{% endif %}>🍎 Fruits ({{ fruits|length }})</option>
+                            <option value="Grains" {% if selected_commodity=='Grains' %}selected{% endif %}>🌾 Grains ({{ cereals|length }})</option>
+                            <option value="Pulses" {% if selected_commodity=='Pulses' %}selected{% endif %}>🫘 Pulses ({{ pulses|length }})</option>
+                            <option value="Oilseeds" {% if selected_commodity=='Oilseeds' %}selected{% endif %}>🌻 Oilseeds ({{ oilseeds|length }})</option>
+                            <option value="Spices" {% if selected_commodity=='Spices' %}selected{% endif %}>🌶️ Spices ({{ spices|length }})</option>
+                            <option value="Commercial Crops" {% if selected_commodity=='Commercial Crops' %}selected{% endif %}>🌿 Commercial Crops ({{ commercial|length }})</option>
+                            <option value="Dry Fruits" {% if selected_commodity=='Dry Fruits' %}selected{% endif %}>🥜 Dry Fruits ({{ dry_fruits|length }})</option>
+                            <option value="Animal Products" {% if selected_commodity=='Animal Products' %}selected{% endif %}>🥛 Animal Products ({{ animal|length }})</option>
                         </select>
                     </div>
                     <button type="submit" class="filter-btn">
@@ -283,63 +188,63 @@
                 <div class="summary-card">
                     <div class="icon orange">🥬</div>
                     <div class="info">
-                        <h4>30</h4>
+                        <h4>{{ vegetables|length }}</h4>
                         <p>Vegetables</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon purple">🍎</div>
                     <div class="info">
-                        <h4>20</h4>
+                        <h4>{{ fruits|length }}</h4>
                         <p>Fruits</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon green">🌾</div>
                     <div class="info">
-                        <h4>8</h4>
+                        <h4>{{ cereals|length }}</h4>
                         <p>Grains</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon blue">🫘</div>
                     <div class="info">
-                        <h4>8</h4>
+                        <h4>{{ pulses|length }}</h4>
                         <p>Pulses</p>
                     </div>
                 </div>
                 <div class="summary-card">
-                    <div class="icon orange">🫒</div>
+                    <div class="icon orange">🌻</div>
                     <div class="info">
-                        <h4>7</h4>
+                        <h4>{{ oilseeds|length }}</h4>
                         <p>Oilseeds</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon purple">🌶️</div>
                     <div class="info">
-                        <h4>7</h4>
+                        <h4>{{ spices|length }}</h4>
                         <p>Spices</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon green">🌿</div>
                     <div class="info">
-                        <h4>6</h4>
+                        <h4>{{ commercial|length }}</h4>
                         <p>Commercial Crops</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon blue">🥜</div>
                     <div class="info">
-                        <h4>6</h4>
+                        <h4>{{ dry_fruits|length }}</h4>
                         <p>Dry Fruits</p>
                     </div>
                 </div>
                 <div class="summary-card">
                     <div class="icon orange">🥛</div>
                     <div class="info">
-                        <h4>7</h4>
+                        <h4>{{ animal|length }}</h4>
                         <p>Animal Products</p>
                     </div>
                 </div>

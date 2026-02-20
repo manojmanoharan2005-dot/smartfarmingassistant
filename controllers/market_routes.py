@@ -288,8 +288,36 @@ def market_watch():
     
     # Filter by commodity if selected (supports partial matching for search)
     if selected_commodity and selected_commodity != 'All':
-        # Case-insensitive partial match for search functionality
-        market_data = [item for item in market_data if selected_commodity.lower() in item.get('commodity', '').lower()]
+        if selected_commodity == 'Vegetables':
+            # Filter to show only vegetables
+            market_data = [item for item in market_data if item.get('commodity') in vegetables_list]
+        elif selected_commodity == 'Fruits':
+            # Filter to show only fruits  
+            market_data = [item for item in market_data if item.get('commodity') in fruits_list]
+        elif selected_commodity == 'Grains':
+            # Filter to show only cereals/grains
+            market_data = [item for item in market_data if item.get('commodity') in cereals_list]
+        elif selected_commodity == 'Pulses':
+            # Filter to show only pulses
+            market_data = [item for item in market_data if item.get('commodity') in pulses_list]
+        elif selected_commodity == 'Oilseeds':
+            # Filter to show only oilseeds
+            market_data = [item for item in market_data if item.get('commodity') in oilseeds_list]
+        elif selected_commodity == 'Spices':
+            # Filter to show only spices
+            market_data = [item for item in market_data if item.get('commodity') in spices_list]
+        elif selected_commodity == 'Commercial Crops':
+            # Filter to show only commercial crops
+            market_data = [item for item in market_data if item.get('commodity') in commercial_list]
+        elif selected_commodity == 'Dry Fruits':
+            # Filter to show only dry fruits
+            market_data = [item for item in market_data if item.get('commodity') in dry_fruits_list]
+        elif selected_commodity == 'Animal Products':
+            # Filter to show only animal products
+            market_data = [item for item in market_data if item.get('commodity') in animal_list]
+        else:
+            # Case-insensitive partial match for search functionality (for specific commodities)
+            market_data = [item for item in market_data if selected_commodity.lower() in item.get('commodity', '').lower()]
     
     # Categorize into vegetables and fruits - MUST match generate_market_data.py exactly
     vegetables_list = [
@@ -403,7 +431,14 @@ def market_watch():
                          bullish_count=bullish_count,
                          bearish_count=bearish_count,
                          vegetable_count=len(vegetables_list),
-                         fruit_count=len(fruits_list))
+                         fruit_count=len(fruits_list),
+                         cereals_count=len(cereals_list),
+                         pulses_count=len(pulses_list),
+                         oilseeds_count=len(oilseeds_list),
+                         spices_count=len(spices_list),
+                         commercial_count=len(commercial_list),
+                         dry_fruits_count=len(dry_fruits_list),
+                         animal_count=len(animal_list))
 
 @market_bp.route('/api/refresh-prices')
 @login_required

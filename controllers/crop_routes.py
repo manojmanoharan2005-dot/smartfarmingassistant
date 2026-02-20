@@ -3,9 +3,18 @@ from utils.auth import login_required
 from utils.db import save_crop_recommendation, delete_crop, get_user_crops
 from ml_models.model_integration import crop_predictor
 from datetime import datetime
+import os
+import google.generativeai as genai
 
 crop_bp = Blueprint('crop', __name__)
 
+# Configure Gemini API
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+if GEMINI_API_KEY:
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        print(f"Error configuring Gemini API in crop routes: {e}")
 
 # Helper function for crop categorization
 def get_crop_category(crop_name):

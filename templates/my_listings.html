@@ -141,10 +141,10 @@
                         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                             <h3 style="font-size: 26px; font-weight: 700; color: var(--text-primary); margin: 0;">{{
                                 listing.crop }}</h3>
-                            {% if listing.status == 'available' %}
+                            {% if listing.status == 'active' %}
                             <span class="status-badge"
                                 style="background: #dcfce7; color: #166534; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                <i class="fas fa-check-circle"></i> AVAILABLE
+                                <i class="fas fa-check-circle"></i> ACTIVE
                             </span>
                             {% elif listing.status == 'sold' %}
                             <span class="status-badge"
@@ -223,7 +223,7 @@
 
                     <!-- Actions -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-                        {% if listing.status == 'available' %}
+                        {% if listing.status == 'active' %}
                         <button onclick="cancelListing(this)" data-id="{{ listing._id }}" class="btn-delete"
                             style="padding: 12px 24px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: 2px solid #fca5a5; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);">
                             <i class="fas fa-trash-alt"></i> Cancel
@@ -351,7 +351,7 @@
         border-left: 4px solid var(--text-muted);
     }
 
-    .listing-card.status-available {
+    .listing-card.status-active {
         border-left-color: var(--accent-green);
     }
 

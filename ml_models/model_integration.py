@@ -48,6 +48,11 @@ class CropPredictor:
             self.simple_model = simple_crop_predictor
             log_success("Simple rule-based crop model loaded successfully!")
             return True
+        except ImportError:
+            log_warning("crop_model_simple.py not found - creating basic fallback")
+            # Create a basic fallback predictor
+            self.simple_model = self._create_basic_fallback()
+            return True
         except Exception as e:
             log_error(f"Error loading simple model: {e}")
             return False
@@ -111,6 +116,43 @@ class CropPredictor:
                     'temperature': temperature, 'humidity': humidity, 'ph': ph, 'rainfall': rainfall
                 }
             }
+    
+    def _create_basic_fallback(self):
+        """Create a basic fallback predictor when crop_model_simple.py is missing"""
+        class BasicFallback:
+            def predict_crop_recommendation(self, nitrogen, phosphorus, potassium, temperature, humidity, ph, rainfall):
+                # Simple rule-based recommendations
+                recommendations = []
+                
+                # Rice - Good for high rainfall and humidity
+                if rainfall > 150 and humidity > 80:
+                    recommendations.append(('Rice', 0.85))
+                elif rainfall > 100:
+                    recommendations.append(('Rice', 0.70))
+                    
+                # Wheat - Good for moderate rainfall and cooler temps
+                if 15 <= temperature <= 25 and 50 <= rainfall <= 150:
+                    recommendations.append(('Wheat', 0.80))
+                    
+                # Maize - Adaptable crop
+                if 18 <= temperature <= 27:
+                    recommendations.append(('Maize', 0.75))
+                    
+                # Cotton - Warm weather, moderate rainfall
+                if temperature > 20 and 50 <= rainfall <= 100:
+                    recommendations.append(('Cotton', 0.70))
+                    
+                # Default fallback if no good matches
+                if not recommendations:
+                    recommendations = [('Rice', 0.60), ('Wheat', 0.55), ('Maize', 0.50)]
+                
+                # Sort by probability and return top 3
+                recommendations.sort(key=lambda x: x[1], reverse=True)
+                top_3 = recommendations[:3]
+                
+                return [crop for crop, prob in top_3]
+                
+        return BasicFallback()
 
 # Global predictor instance
 crop_predictor = CropPredictor()

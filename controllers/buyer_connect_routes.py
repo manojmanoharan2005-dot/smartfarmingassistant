@@ -185,9 +185,20 @@ def create_listing():
             return redirect(url_for('buyer_connect.create_listing'))
         
         # Get farmer info
+        print(f"[DEBUG] Looking up farmer with user_id: {user_id}", flush=True)
         farmer = find_user_by_id(user_id)
-        farmer_name = farmer.get('name', 'Unknown') if farmer else 'Unknown'
-        farmer_phone = farmer.get('phone', '') if farmer else ''
+        print(f"[DEBUG] Farmer lookup result: {farmer}", flush=True)
+        
+        # Use database info first, then fallback to session data
+        if farmer:
+            farmer_name = farmer.get('name', session.get('user_name', 'Unknown'))
+            farmer_phone = farmer.get('phone', session.get('user_phone', ''))
+        else:
+            # Fallback to session data if database lookup fails
+            farmer_name = session.get('user_name', 'Unknown')
+            farmer_phone = session.get('user_phone', '')
+        
+        print(f"[DEBUG] Farmer name: {farmer_name}, phone: {farmer_phone}", flush=True)
         
         # Create listing object
         listing_data = {
@@ -207,7 +218,7 @@ def create_listing():
             'min_price': min_allowed,
             'max_price': max_allowed,
             'live_market_price': recommended_price,
-            'status': 'available',
+            'status': 'active',  # Changed from 'available' to 'active' to match MongoDB schema
             'created_at': datetime.utcnow().isoformat(),
             'expires_at': (datetime.utcnow() + timedelta(days=30)).isoformat()
         }
@@ -239,7 +250,11 @@ def create_listing():
 def my_listings():
     """View farmer's own listings"""
     user_id = session.get('user_id')
+    print(f"\n[MY LISTINGS] Called for user_id: {user_id}", flush=True)
     listings = get_user_listings(user_id)
+    print(f"[MY LISTINGS] Retrieved {len(listings)} listings", flush=True)
+    if listings:
+        print(f"[MY LISTINGS] First listing: {listings[0].get('crop')} - {listings[0].get('_id')}", flush=True)
     
     return render_template('my_listings.html', listings=listings)
 

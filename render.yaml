@@ -1,25 +1,21 @@
 services:
   - type: web
     name: smart-farming-assistant
-    runtime: python
-    region: singapore  # Closest to India
-    plan: free
+    env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: gunicorn wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: FLASK_ENV
+        value: production
       - key: MONGODB_URI
-        sync: false  # Set manually in Render dashboard for security
-      - key: SECRET_KEY
-        generateValue: true
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
         sync: false
       - key: TWILIO_PHONE_NUMBER
         sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-    healthCheckPath: /
-    autoDeploy: true

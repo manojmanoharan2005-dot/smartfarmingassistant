@@ -3,9 +3,11 @@
 {% block title %}Crop Suggestion - Smart Farming Assistant{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/crop_suggestion.css') }}">
-
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ range(1000000,9999999) | random }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/crop_suggestion.css') }}?v={{ range(1000000,9999999) | random }}">
 {% endblock %}
 
 {% block content %}
@@ -281,9 +283,6 @@
                                 class="crop-action-btn primary">
                                 <i class="fas fa-play"></i> Start Growing
                             </a>
-                            <button class="crop-action-btn secondary" onclick="alert('Details coming soon!')">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -374,9 +373,6 @@
                                 class="crop-action-btn primary">
                                 <i class="fas fa-play"></i> Start Growing
                             </a>
-                            <button class="crop-action-btn secondary" onclick="alert('Details coming soon!')">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -386,4 +382,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

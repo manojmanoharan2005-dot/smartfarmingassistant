@@ -68,6 +68,16 @@ print_banner()
 app = Flask(__name__)
 app.secret_key = 'smart_farming_assistant_2024_secret_key'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Auto-reload templates
+
+# Add no-cache headers to all responses
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 log_info(f"Flask application initialized with secret key")
 log_info(f"Upload folder: {app.config['UPLOAD_FOLDER']}")
@@ -133,10 +143,6 @@ def about():
 def features():
     return render_template('features.html')
 
-@app.route('/toast-demo')
-def toast_demo():
-    return render_template('toast_demo.html')
-
 # Create upload directory
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -193,9 +199,9 @@ if __name__ == '__main__':
     # Get port from environment variable (Render sets this)
     port = int(os.environ.get('PORT', 5000))
     
-    # Start the Flask development server
+    # Start the Flask development server with DEBUG enabled
     try:
-        app.run(debug=False, host='0.0.0.0', port=port)
+        app.run(debug=True, host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         print(f"\n{ConsoleColors.WARNING}🛑 Server stopped by user{ConsoleColors.ENDC}")
         print(f"{ConsoleColors.OKBLUE}👋 Thank you for using Smart Farming Assistant!{ConsoleColors.ENDC}")

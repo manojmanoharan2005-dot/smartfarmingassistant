@@ -29,6 +29,7 @@ def create_session(user):
     session['user_id'] = str(user['_id'])
     session['user_name'] = user['name']
     session['user_email'] = user['email']
+    session['user_phone'] = user.get('phone', '')
 
 def clear_session():
     """Clear user session"""

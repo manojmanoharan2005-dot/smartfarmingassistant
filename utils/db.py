@@ -498,29 +498,43 @@ def update_user_password(email, new_password):
         return False
 
 def find_user_by_id(user_id):
+    print(f"[DEBUG find_user_by_id] Searching for user_id: {user_id}", flush=True)
     try:
         if hasattr(db, 'users') and db:
             users = db.users
             
-            # Try with ObjectId first (for MongoDB)
+            # Try with ObjectId first (for MongoDB native ObjectIds)
             try:
                 from bson.objectid import ObjectId
-                user = users.find_one(
-                    {'_id': ObjectId(user_id)}, 
-                    {'password': 0}  # Exclude password field
-                )
-                if user:
-                    return user
-            except:
-                pass
+                if len(str(user_id)) == 24:  # ObjectId is 24 hex chars
+                    user = users.find_one(
+                        {'_id': ObjectId(user_id)}, 
+                        {'password': 0}  # Exclude password field
+                    )
+                    if user:
+                        print(f"[DEBUG find_user_by_id] Found user via ObjectId: {user.get('name')}", flush=True)
+                        return user
+            except Exception as e:
+                print(f"[DEBUG find_user_by_id] ObjectId lookup failed: {e}", flush=True)
             
-            # Try with string ID (for file-based storage)
-            user = users.find_one({'_id': user_id})
+            # Try with string ID (for UUID-based IDs stored as strings)
+            user = users.find_one({'_id': str(user_id)})
             if user:
+                print(f"[DEBUG find_user_by_id] Found user via string _id: {user.get('name')}", flush=True)
                 # Remove password from result
-                user_copy = user.copy()
+                user_copy = dict(user)
                 user_copy.pop('password', None)
                 return user_copy
+            
+            # Also try searching by user_id field (in case stored differently)
+            user = users.find_one({'user_id': str(user_id)})
+            if user:
+                print(f"[DEBUG find_user_by_id] Found user via user_id field: {user.get('name')}", flush=True)
+                user_copy = dict(user)
+                user_copy.pop('password', None)
+                return user_copy
+            
+            print(f"[DEBUG find_user_by_id] User not found in MongoDB", flush=True)
         
         # File-based fallback - search through users.json
         if os.path.exists(USERS_FILE):
@@ -1468,6 +1482,7 @@ def create_crop_listing(listing_data):
     global db
     try:
         print(f"\n[DEBUG] Database status: db is {type(db)} (None: {db is None})", flush=True)
+        print(f"[DEBUG] Listing data received: {listing_data}", flush=True)
         
         # MongoDB Atlas Path
         if db is not None:
@@ -1490,21 +1505,39 @@ def create_crop_listing(listing_data):
         
         # File-based Fallback Path
         print(f"[DEBUG] Attempting file-based storage to: {LISTINGS_FILE}", flush=True)
+        print(f"[DEBUG] File exists: {os.path.exists(LISTINGS_FILE)}", flush=True)
+        
         import uuid
         if '_id' not in listing_data:
             listing_data['_id'] = str(uuid.uuid4())
+            print(f"[DEBUG] Generated listing ID: {listing_data['_id']}", flush=True)
             
         listings = []
         if os.path.exists(LISTINGS_FILE):
             try:
                 with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
-                    listings = json.load(f)
+                    content = f.read().strip()
+                    print(f"[DEBUG] File content: '{content}'", flush=True)
+                    if content:
+                        listings = json.loads(content)
+                    else:
+                        listings = []
                 print(f"[DEBUG] Loaded {len(listings)} existing listings from file", flush=True)
+            except json.JSONDecodeError as json_err:
+                print(f"[FILE JSON ERROR] {str(json_err)}", flush=True)
+                print("[DEBUG] Resetting file with empty array", flush=True)
+                listings = []
             except Exception as read_err:
                 print(f"[FILE READ ERROR] {str(read_err)}", flush=True)
                 listings = []
+        else:
+            print("[DEBUG] File does not exist, creating new", flush=True)
         
         listings.append(listing_data)
+        print(f"[DEBUG] Total listings to save: {len(listings)}", flush=True)
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(LISTINGS_FILE), exist_ok=True)
         
         with open(LISTINGS_FILE, 'w', encoding='utf-8') as f:
             json.dump(listings, f, indent=2, default=str)
@@ -1523,44 +1556,72 @@ def get_user_listings(user_id):
     """Get all listings by a specific farmer"""
     global db
     user_id_str = str(user_id)
-    print(f"\n[DEBUG] Fetching listings for User ID: {user_id} (String: {user_id_str})", flush=True)
+    print(f"\n{'='*60}", flush=True)
+    print(f"[GET_USER_LISTINGS] Starting fetch for User ID: {user_id}", flush=True)
+    print(f"[GET_USER_LISTINGS] User ID String: {user_id_str}", flush=True)
+    print(f"[GET_USER_LISTINGS] Database connection: db={type(db)}, is None: {db is None}", flush=True)
+    print(f"{'='*60}\n", flush=True)
     
     try:
         # MongoDB Atlas
         if db is not None:
             try:
+                print(f"[GET_USER_LISTINGS] Attempting MongoDB query...", flush=True)
                 # Try both original and string version of ID for robustness
                 query = {'$or': [{'farmer_id': user_id}, {'farmer_id': user_id_str}]}
-                listings = list(db.crop_listings.find(query).sort('created_at', -1))
-                print(f"[DEBUG] MongoDB found {len(listings)} listings", flush=True)
-                for listing in listings:
-                    listing['_id'] = str(listing['_id'])
+                print(f"[GET_USER_LISTINGS] Query: {query}", flush=True)
+                
+                cursor = db.crop_listings.find(query)
+                listings = list(cursor.sort('created_at', -1))
+                print(f"[GET_USER_LISTINGS] MongoDB returned {len(listings)} listings", flush=True)
+                
+                if listings:
+                    print(f"[GET_USER_LISTINGS] First listing farmer_id: {listings[0].get('farmer_id')}", flush=True)
+                    for listing in listings:
+                        listing['_id'] = str(listing['_id'])
+                        print(f"[GET_USER_LISTINGS] Listing: {listing.get('crop')} - ID: {listing['_id']}", flush=True)
+                else:
+                    print(f"[GET_USER_LISTINGS] No listings found in MongoDB", flush=True)
+                    # Check if there are ANY listings for debugging
+                    total_count = db.crop_listings.count_documents({})
+                    print(f"[GET_USER_LISTINGS] Total listings in DB: {total_count}", flush=True)
+                    if total_count > 0:
+                        sample = db.crop_listings.find_one({})
+                        print(f"[GET_USER_LISTINGS] Sample listing farmer_id: {sample.get('farmer_id')}", flush=True)
+                
                 return listings
             except Exception as e:
-                print(f"[MONGODB ERROR] {str(e)}", flush=True)
+                print(f"[GET_USER_LISTINGS MONGODB ERROR] {str(e)}", flush=True)
+                import traceback
+                traceback.print_exc()
+        else:
+            print(f"[GET_USER_LISTINGS] MongoDB not available, using file fallback", flush=True)
         
         # File-based fallback
-        print(f"[DEBUG] Checking file fallback: {LISTINGS_FILE}", flush=True)
+        print(f"[GET_USER_LISTINGS] Checking file: {LISTINGS_FILE}", flush=True)
         if os.path.exists(LISTINGS_FILE):
             with open(LISTINGS_FILE, 'r', encoding='utf-8') as f:
                 all_listings = json.load(f)
             
+            print(f"[GET_USER_LISTINGS] File has {len(all_listings)} total listings", flush=True)
             # Flexible matching for file fallback too
             user_listings = [l for l in all_listings if str(l.get('farmer_id')) == user_id_str]
             user_listings.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-            print(f"[DEBUG] File found {len(user_listings)} listings", flush=True)
+            print(f"[GET_USER_LISTINGS] File found {len(user_listings)} listings for user", flush=True)
             return user_listings
         
-        print("[DEBUG] No listings file found", flush=True)
+        print("[GET_USER_LISTINGS] No listings file found", flush=True)
         return []
         
     except Exception as e:
-        print(f"[ERROR in get_user_listings] {str(e)}", flush=True)
+        print(f"[GET_USER_LISTINGS CRITICAL ERROR] {str(e)}", flush=True)
+        import traceback
+        traceback.print_exc()
         return []
 
 
 def get_available_listings(crop='', district='', state='', sort_by='recent'):
-    """Get all available listings for buyers (status='available')"""
+    """Get all available listings for buyers (status='active')"""
     global db
     print(f"\n[DEBUG] Fetching available listings for {crop} in {district}, {state}", flush=True)
     
@@ -1568,7 +1629,7 @@ def get_available_listings(crop='', district='', state='', sort_by='recent'):
         # MongoDB Atlas
         if db is not None:
             try:
-                query = {'status': 'available'}
+                query = {'status': 'active'}
                 if crop: query['crop'] = crop
                 if district: query['district'] = district
                 if state: query['state'] = state
@@ -1599,7 +1660,7 @@ def get_available_listings(crop='', district='', state='', sort_by='recent'):
                 all_listings = json.load(f)
             
             # Filter by status and criteria
-            available = [l for l in all_listings if l.get('status') == 'available']
+            available = [l for l in all_listings if l.get('status') == 'active']
             print(f"[DEBUG] File found total {len(available)} available listings before filtering", flush=True)
             
             if crop: available = [l for l in available if l.get('crop', '').lower() == crop.lower()]
@@ -1684,7 +1745,7 @@ def confirm_purchase(listing_id, purchase_data):
             try:
                 from bson.objectid import ObjectId
                 
-                # Atomic update: only update if status is still 'available'
+                # Atomic update: only update if status is still 'active'
                 # This prevents double-selling
                 try:
                     obj_id = ObjectId(listing_id)
@@ -1692,7 +1753,7 @@ def confirm_purchase(listing_id, purchase_data):
                     obj_id = listing_id
                 
                 result = db.crop_listings.find_one_and_update(
-                    {'_id': obj_id, 'status': 'available'},  # Only if still available
+                    {'_id': obj_id, 'status': 'active'},  # Only if still active
                     {
                         '$set': {
                             'status': 'sold',
@@ -1733,10 +1794,10 @@ def confirm_purchase(listing_id, purchase_data):
             try:
                 listings = json.load(f)
                 
-                # Find listing and check if still available
+                # Find listing and check if still active
                 for listing in listings:
                     if listing.get('_id') == listing_id:
-                        if listing.get('status') != 'available':
+                        if listing.get('status') != 'active':
                             return False, "This listing is no longer available"
                         
                         # Update status
