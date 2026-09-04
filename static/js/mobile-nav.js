@@ -1,155 +1,213 @@
 /**
- * Mobile Navigation Handler
- * Handles hamburger menu toggle and sidebar behavior on mobile devices
+ * Mobile Navigation & Sidebar Handler
+ * Smart Farming Assistant - Complete Mobile Responsive UI Adaptation
  */
 
-(function() {
+(function () {
     'use strict';
-    
-    // Wait for DOM to be fully loaded
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
-    
+
     function init() {
-        setupMobileToggle();
-        setupSidebarOverlay();
-        setupResponsiveHandlers();
+        setupPublicNavbar();
+        setupDashboardSidebar();
         setupKeyboardHandlers();
+        setupResponsiveResize();
+        autoWrapTables();
     }
-    
+
     /**
-     * Setup mobile sidebar toggle button
+     * Public Header Navbar Hamburger Toggle
      */
-    function setupMobileToggle() {
-        const toggle = document.querySelector('.mobile-sidebar-toggle');
+    function setupPublicNavbar() {
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.navbar-menu');
+
+        if (mobileMenuBtn && navMenu) {
+            mobileMenuBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                navMenu.classList.toggle('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) {
+                    icon.className = navMenu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+                }
+            });
+
+            // Close navbar menu when clicking any nav link
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
+                });
+            });
+
+            // Close navbar menu on click outside
+            document.addEventListener('click', function (e) {
+                if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    navMenu.classList.remove('active');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
+                }
+            });
+        }
+    }
+
+    /**
+     * Dashboard Sidebar Drawer & Overlay Setup
+     */
+    function setupDashboardSidebar() {
         const sidebar = document.querySelector('.sidebar');
-        
-        if (!toggle || !sidebar) return;
-        
-        toggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            toggleSidebar();
+        if (!sidebar) return;
+
+        // Ensure sidebar overlay exists
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+        }
+
+        overlay.addEventListener('click', closeSidebar);
+
+        // Ensure mobile sidebar toggle button exists inside main-content if missing
+        let toggle = document.querySelector('.mobile-sidebar-toggle');
+        const mainContent = document.querySelector('.main-content');
+
+        if (!toggle && mainContent && window.innerWidth <= 1024) {
+            toggle = document.createElement('button');
+            toggle.className = 'mobile-sidebar-toggle';
+            toggle.setAttribute('aria-label', 'Toggle Navigation Menu');
+            toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            mainContent.insertBefore(toggle, mainContent.firstChild);
+        }
+
+        if (toggle) {
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleSidebar();
+            });
+        }
+
+        // Close sidebar on link click (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function () {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
         });
     }
-    
+
     /**
-     * Toggle sidebar visibility
+     * Toggle Sidebar Drawer
      */
     function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
-        const toggle = document.querySelector('.mobile-sidebar-toggle');
         const overlay = document.querySelector('.sidebar-overlay');
-        
+        const toggle = document.querySelector('.mobile-sidebar-toggle');
+
         if (!sidebar) return;
-        
+
         const isActive = sidebar.classList.toggle('active');
-        
-        // Toggle icon
+
+        if (overlay) {
+            overlay.classList.toggle('active', isActive);
+        }
+
         if (toggle) {
             const icon = toggle.querySelector('i');
             if (icon) {
                 icon.className = isActive ? 'fas fa-times' : 'fas fa-bars';
             }
         }
-        
-        // Toggle overlay
-        if (overlay) {
-            overlay.classList.toggle('active', isActive);
-        }
-        
-        // Prevent body scroll when sidebar is open
+
         document.body.style.overflow = isActive ? 'hidden' : '';
     }
-    
+
     /**
-     * Close sidebar
+     * Close Sidebar Drawer
      */
     function closeSidebar() {
         const sidebar = document.querySelector('.sidebar');
-        const toggle = document.querySelector('.mobile-sidebar-toggle');
         const overlay = document.querySelector('.sidebar-overlay');
-        
+        const toggle = document.querySelector('.mobile-sidebar-toggle');
+
         if (!sidebar) return;
-        
+
         sidebar.classList.remove('active');
-        
+
+        if (overlay) {
+            overlay.classList.remove('active');
+        }
+
         if (toggle) {
             const icon = toggle.querySelector('i');
             if (icon) {
                 icon.className = 'fas fa-bars';
             }
         }
-        
-        if (overlay) {
-            overlay.classList.remove('active');
-        }
-        
+
         document.body.style.overflow = '';
     }
-    
+
     /**
-     * Setup overlay click to close sidebar
-     */
-    function setupSidebarOverlay() {
-        // Create overlay if it doesn't exist
-        let overlay = document.querySelector('.sidebar-overlay');
-        
-        if (!overlay && document.querySelector('.sidebar')) {
-            overlay = document.createElement('div');
-            overlay.className = 'sidebar-overlay';
-            document.body.appendChild(overlay);
-        }
-        
-        if (overlay) {
-            overlay.addEventListener('click', closeSidebar);
-        }
-        
-        // Close sidebar when clicking on sidebar links (mobile)
-        const sidebarLinks = document.querySelectorAll('.sidebar a');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    closeSidebar();
-                }
-            });
-        });
-    }
-    
-    /**
-     * Setup keyboard handlers (ESC to close)
+     * Close on ESC key press
      */
     function setupKeyboardHandlers() {
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeSidebar();
+                const navMenu = document.querySelector('.navbar-menu');
+                if (navMenu) navMenu.classList.remove('active');
             }
         });
     }
-    
+
     /**
-     * Setup responsive handlers
+     * Window Resize Handler
      */
-    function setupResponsiveHandlers() {
-        let resizeTimer;
-        
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                // Close sidebar when switching to desktop view
-                if (window.innerWidth > 768) {
+    function setupResponsiveResize() {
+        let timer;
+        window.addEventListener('resize', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                if (window.innerWidth > 1024) {
                     closeSidebar();
                 }
-            }, 250);
+            }, 200);
         });
     }
-    
-    // Export functions for external use
+
+    /**
+     * Automatically wrap tables in .table-responsive if not already wrapped
+     */
+    function autoWrapTables() {
+        document.querySelectorAll('table').forEach(table => {
+            if (!table.parentElement.classList.contains('table-responsive')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        });
+    }
+
+    // Expose global methods
+    window.toggleSidebar = toggleSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleMobileMenu = function () {
+        const navMenu = document.querySelector('.navbar-menu');
+        if (navMenu) navMenu.classList.toggle('active');
+    };
+
     window.MobileNav = {
         toggle: toggleSidebar,
         close: closeSidebar
     };
-    
+
 })();

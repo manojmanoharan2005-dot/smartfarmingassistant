@@ -206,3 +206,36 @@
     border-color: #92400e;
     color: #fbbf24;
 }
+
+/* Responsive Modal Styling */
+@media (max-width: 576px) {
+    .modal-overlay,
+    .modal {
+        padding: 10px !important;
+    }
+    
+    .modal-content,
+    .modal .modal-content {
+        width: 96vw !important;
+        max-width: 96vw !important;
+        max-height: 92vh !important;
+        border-radius: 16px !important;
+        padding: 16px !important;
+    }
+    
+    .modal-header {
+        padding: 14px 16px !important;
+    }
+    
+    .modal-body {
+        padding: 16px 12px !important;
+    }
+    
+    .modal-close {
+        width: 40px !important;
+        height: 40px !important;
+        top: 12px !important;
+        right: 12px !important;
+    }
+}
+

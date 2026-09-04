@@ -986,3 +986,77 @@
 [data-theme="dark"] .security-notice p {
     color: #fcd34d;
 }
+
+/* ============================================
+   RESPONSIVE MEDIA QUERIES FOR AUTH PAGES
+   ============================================ */
+@media (max-width: 768px) {
+    .register-section,
+    .login-section,
+    .auth-section {
+        padding: 80px 12px 30px !important;
+        min-height: auto !important;
+    }
+    
+    .register-container,
+    .login-container,
+    .auth-container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .register-card,
+    .login-card,
+    .auth-card {
+        padding: 24px 16px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .register-header {
+        margin-bottom: 24px !important;
+    }
+
+    .register-logo {
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 14px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .register-logo i {
+        font-size: 24px !important;
+    }
+
+    .register-title {
+        font-size: 1.4rem !important;
+    }
+
+    .register-subtitle {
+        font-size: 0.9rem !important;
+    }
+
+    .form-section {
+        padding: 14px !important;
+        border-radius: 12px !important;
+    }
+
+    .input-field {
+        height: 46px !important;
+        font-size: 16px !important;
+        padding: 10px 14px !important;
+    }
+
+    .register-btn,
+    .auth-btn,
+    .btn-submit {
+        height: 48px !important;
+        font-size: 1rem !important;
+    }
+}
+
