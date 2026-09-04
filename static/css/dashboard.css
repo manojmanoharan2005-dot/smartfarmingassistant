@@ -548,11 +548,25 @@ body {
 /* ============================================
    MAIN CONTENT AREA
    ============================================ */
-.main-content {
-    margin-left: 280px;
-    min-height: 100vh;
-    background: var(--bg-primary);
+@media (min-width: 1025px) {
+    .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        min-height: 100vh;
+        background: var(--bg-primary);
+    }
 }
+@media (max-width: 1024px) {
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh;
+        background: var(--bg-primary);
+        box-sizing: border-box !important;
+    }
+}
+
 
 /* ============================================
    HERO HEADER - Clean Modern
@@ -2720,8 +2734,10 @@ body {
     }
     
     table {
-        min-width: 600px;
+        width: 100%;
+        max-width: 100%;
     }
+
     
     /* Modals */
     .modal-content {

@@ -706,16 +706,21 @@
     
     /* Market Prices Table */
     .market-prices-table {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        margin: 0 -16px;
-        padding: 0 16px;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin: 0 0 16px 0 !important;
+        padding: 0 !important;
+        display: block !important;
     }
     
     table {
         font-size: 13px;
-        min-width: 600px;
+        width: 100%;
+        max-width: 100%;
     }
+
     
     table th,
     table td {
