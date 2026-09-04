@@ -1506,40 +1506,102 @@ img {
 
 @media (max-width: 768px) {
     .navbar {
-        padding: 0 1rem;
+        padding: 0 1rem !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 60px !important;
+        z-index: 10000 !important;
+        background: var(--bg-white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    [data-theme="dark"] .navbar {
+        background: #1e293b !important;
     }
 
     .navbar-container {
-        height: 60px;
+        height: 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
     }
 
+    .navbar-brand {
+        font-size: 1.15rem !important;
+        gap: 8px !important;
+    }
+
+    .navbar-brand img {
+        height: 32px !important;
+        max-height: 32px !important;
+        width: auto !important;
+    }
+
+    /* HIDE ALL DESKTOP ACTION BUTTONS & DESKTOP THEME TOGGLES IN MOBILE HEADER ROW */
+    .navbar-actions .btn,
+    .navbar-actions .btn-primary,
+    .navbar-actions .btn-secondary,
+    .navbar-actions .desktop-auth-btn,
+    .navbar-actions .desktop-theme-toggle,
+    .navbar-actions .theme-toggle:not(.mobile-theme-toggle) {
+        display: none !important;
+    }
+
+    .navbar-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0 !important;
+    }
+
+    /* HAMBURGER BUTTON ONLY */
+    .mobile-menu-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 8px !important;
+        background: transparent !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        font-size: 1.25rem !important;
+        cursor: pointer !important;
+    }
+
+    /* SLIDE-DOWN DROPDOWN MENU */
     .navbar-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--bg-dark);
-        flex-direction: column;
-        padding: 20px;
-        border-bottom: 1px solid var(--border-color);
+        display: none !important;
+        position: fixed !important;
+        top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        background: var(--bg-white) !important;
+        flex-direction: column !important;
+        padding: 16px !important;
+        gap: 8px !important;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 9999 !important;
+    }
+
+    [data-theme="dark"] .navbar-menu {
+        background: #1e293b !important;
     }
 
     .navbar-menu.active {
-        display: flex;
-    }
-
-    .navbar-actions .btn-secondary {
-        display: none;
-    }
-
-    .mobile-menu-btn {
-        display: block;
+        display: flex !important;
     }
 
     .hero-section {
-        padding: 100px 1rem 60px;
+        padding: 24px 1rem 40px !important;
+        margin-top: 0 !important;
     }
+
 
     .hero-title {
         font-size: 2.25rem;
