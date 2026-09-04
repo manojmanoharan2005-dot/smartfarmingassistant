@@ -4,10 +4,8 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
-{% endblock %}
-
-{% block content %}
 <style>
+
     /* Enhanced Registration Form Styles */
     .register-section {
         min-height: 100vh;
@@ -613,8 +611,11 @@
         color: #22c55e;
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <section class="register-section">
+
     <div class="register-container">
         <div class="register-card">
             <div class="register-header">

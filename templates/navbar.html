@@ -1,28 +1,51 @@
 <nav class="navbar">
     <div class="navbar-container">
         <a href="{{ url_for('index') }}" class="navbar-brand">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Smart Farming" style="height: 40px; border-radius: 8px; margin-right: 8px;">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Smart Farming">
             <span>Smart Farming</span>
         </a>
-        <div class="navbar-menu">
+
+        <!-- Public Navigation Menu (Desktop Header & Mobile Slide-down Dropdown) -->
+        <div class="navbar-menu" id="navbarMenu">
             <a href="{{ url_for('index') }}"
-                class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+                class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                <i class="fas fa-home mobile-nav-icon"></i> Home
+            </a>
             <a href="{{ url_for('about') }}"
-                class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
+                class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+                <i class="fas fa-info-circle mobile-nav-icon"></i> About
+            </a>
             <a href="{{ url_for('features') }}"
-                class="nav-link {% if request.endpoint == 'features' %}active{% endif %}">Features</a>
-        </div>
-        <div class="navbar-actions">
-            <button class="theme-toggle" title="Toggle Dark Mode">
-                <i class="fas fa-moon"></i>
-            </button>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">
+                class="nav-link {% if request.endpoint == 'features' %}active{% endif %}">
+                <i class="fas fa-star mobile-nav-icon"></i> Features
+            </a>
+            
+            <div class="mobile-nav-divider"></div>
+
+            <!-- Mobile Only Auth Links -->
+            <a href="{{ url_for('auth.login') }}" class="nav-link mobile-nav-item">
                 <i class="fas fa-sign-in-alt"></i> Login
             </a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+            <a href="{{ url_for('auth.register') }}" class="nav-link mobile-nav-item mobile-nav-btn-primary">
                 <i class="fas fa-user-plus"></i> Register
             </a>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <button class="theme-toggle mobile-theme-toggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i> <span>Toggle Dark Mode</span>
+            </button>
+        </div>
+
+        <!-- Desktop Action Buttons & Mobile Hamburger Button -->
+        <div class="navbar-actions">
+            <button class="theme-toggle desktop-theme-toggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary desktop-auth-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary desktop-auth-btn">
+                <i class="fas fa-user-plus"></i> Register
+            </a>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle Navigation Menu">
                 <i class="fas fa-bars"></i>
             </button>
         </div>

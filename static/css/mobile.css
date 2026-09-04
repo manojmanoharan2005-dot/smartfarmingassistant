@@ -56,53 +56,127 @@ table {
 /* ============================================
    2. PUBLIC NAVBAR RESPONSIVE STYLES
    ============================================ */
+/* Desktop Header (769px and wider) */
+@media (min-width: 769px) {
+    .mobile-menu-btn,
+    .mobile-nav-divider,
+    .mobile-nav-item,
+    .mobile-theme-toggle,
+    .mobile-nav-icon {
+        display: none !important;
+    }
+
+    .desktop-auth-btn,
+    .desktop-theme-toggle {
+        display: inline-flex !important;
+    }
+
+    .navbar-menu {
+        display: flex !important;
+        position: static !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        flex-direction: row !important;
+        border: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+}
+
+/* Mobile Header (< 769px) */
 @media (max-width: 768px) {
     .navbar {
-        padding: 0 1rem !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 60px !important;
+        z-index: 10000 !important;
+        padding: 0 16px !important;
+        background: var(--bg-white, #ffffff) !important;
+        border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-theme="dark"] .navbar {
+        background: rgba(30, 41, 59, 0.98) !important;
     }
 
     .navbar-container {
-        height: 60px !important;
         width: 100% !important;
         max-width: 100% !important;
+        height: 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     .navbar-brand {
-        font-size: 1.2rem !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
     }
 
     .navbar-brand img {
         height: 32px !important;
+        width: auto !important;
+        max-height: 32px !important;
+        border-radius: 6px !important;
+        flex-shrink: 0 !important;
     }
 
+    /* HIDE ALL DESKTOP ACTION BUTTONS ON MOBILE HEADER */
+    .desktop-auth-btn,
+    .desktop-theme-toggle,
+    .navbar-actions .btn,
+    .navbar-actions .theme-toggle:not(.mobile-theme-toggle) {
+        display: none !important;
+    }
+
+    .navbar-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0 !important;
+    }
+
+    /* HAMBURGER BUTTON ONLY ON MOBILE RIGHT SIDE */
     .mobile-menu-btn {
         display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        border-radius: 8px;
-        background: transparent;
-        border: 1px solid var(--border-color, #e2e8f0);
-        color: var(--text-primary, #0f172a);
-        font-size: 1.2rem;
-        cursor: pointer;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 8px !important;
+        background: transparent !important;
+        border: 1px solid var(--border-color, #e2e8f0) !important;
+        color: var(--text-primary, #0f172a) !important;
+        font-size: 1.25rem !important;
+        cursor: pointer !important;
     }
 
+    /* SLIDE-DOWN MOBILE NAV MENU */
     .navbar-menu {
         display: none !important;
-        position: absolute !important;
-        top: 100% !important;
+        position: fixed !important;
+        top: 60px !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
         background: var(--bg-white, #ffffff) !important;
         flex-direction: column !important;
-        padding: 1rem !important;
-        gap: 0.5rem !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        padding: 16px !important;
+        gap: 8px !important;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
         border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
-        z-index: 1000 !important;
+        z-index: 9999 !important;
+        box-sizing: border-box !important;
     }
 
     [data-theme="dark"] .navbar-menu {
@@ -111,23 +185,49 @@ table {
 
     .navbar-menu.active {
         display: flex !important;
-        animation: navSlideDown 0.25s ease-out forwards;
+        animation: navSlideDown 0.2s ease-out forwards;
     }
 
-    .nav-link {
+    .mobile-nav-divider {
+        height: 1px;
+        background: var(--border-color, #e2e8f0);
+        margin: 8px 0;
+        width: 100%;
+    }
+
+    .mobile-nav-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
         width: 100% !important;
         padding: 12px 16px !important;
-        border-radius: 8px !important;
+        border-radius: 10px !important;
         font-size: 1rem !important;
+        font-weight: 500 !important;
+        color: var(--text-primary, #0f172a) !important;
+        text-decoration: none !important;
     }
 
-    .navbar-actions {
-        gap: 8px !important;
+    .mobile-nav-btn-primary {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        justify-content: center !important;
     }
 
-    .navbar-actions .btn {
-        padding: 8px 14px !important;
-        font-size: 0.875rem !important;
+    .mobile-theme-toggle {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 12px 16px !important;
+        border-radius: 10px !important;
+        border: 1px solid var(--border-color, #e2e8f0) !important;
+        background: var(--bg-card, #f8fafc) !important;
+        color: var(--text-primary, #0f172a) !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
     }
 }
 
@@ -377,12 +477,13 @@ table {
 }
 
 /* ============================================
-   5. LANDING PAGE & HERO SECTION (index.html)
+   5. PUBLIC LANDING PAGE (index.html)
    ============================================ */
 @media (max-width: 767px) {
     .hero,
     .hero-section {
-        padding: 80px 16px 30px 16px !important;
+        padding: 20px 16px 30px 16px !important;
+        margin-top: 0 !important;
     }
 
     .hero-container,
@@ -429,23 +530,62 @@ table {
    6. AUTHENTICATION PAGES (login, register, OTP)
    ============================================ */
 @media (max-width: 767px) {
-    .auth-container,
+    body {
+        padding-top: 60px !important;
+    }
+
+    .register-section,
+    .login-section,
+    .auth-section {
+        padding: 24px 12px 30px 12px !important;
+        margin-top: 0 !important;
+        min-height: auto !important;
+        display: block !important; /* Normal vertical flow, no flex centering overlap */
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .register-container,
     .login-container,
-    .register-container {
-        padding: 80px 12px 30px 12px !important;
+    .auth-container {
+        margin: 0 auto !important;
+        padding: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
     }
 
-    .auth-card,
+    .register-card,
     .login-card,
-    .register-card {
+    .auth-card {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 20px 16px !important;
+        padding: 24px 16px !important;
         margin: 0 auto !important;
         border-radius: 16px !important;
         box-sizing: border-box !important;
+    }
+
+    .register-header {
+        text-align: center !important;
+        margin-bottom: 24px !important;
+    }
+
+    .register-logo {
+        display: inline-flex !important;
+        width: 60px !important;
+        height: 60px !important;
+        border-radius: 16px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .register-title {
+        font-size: 1.45rem !important;
+        margin-bottom: 6px !important;
+    }
+
+    .register-subtitle {
+        font-size: 0.9rem !important;
     }
 
     .form-control,
