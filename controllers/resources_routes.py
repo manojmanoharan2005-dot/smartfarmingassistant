@@ -12,6 +12,7 @@ resources_bp = Blueprint('resources', __name__, url_prefix='/resources')
 
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash')
 if GEMINI_API_KEY:
     try:
         genai.configure(api_key=GEMINI_API_KEY)
@@ -80,8 +81,8 @@ def regional_calendar():
 
         if GEMINI_API_KEY:
             try:
-                # Using gemma-3-4b-it as requested for compatibility with the current API key
-                model = genai.GenerativeModel('gemma-3-4b-it')
+                # Using GEMINI_MODEL environment variable
+                model = genai.GenerativeModel(GEMINI_MODEL)
                 response = model.generate_content(prompt)
                 
                 # Clean response text to ensure it's valid JSON

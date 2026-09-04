@@ -12,6 +12,8 @@ chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
 # Configure Gemini API from environment variable
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash')
+
 # Global model variable
 model = None
 
@@ -20,8 +22,8 @@ if not GEMINI_API_KEY:
 else:
     try:
         genai.configure(api_key=GEMINI_API_KEY)
-        # Initialize the model - use gemma-3-4b-it
-        model = genai.GenerativeModel('gemma-3-4b-it')
+        # Initialize the model
+        model = genai.GenerativeModel(GEMINI_MODEL)
     except Exception as e:
         print(f"Error configuring Gemini API: {e}")
 
@@ -82,7 +84,7 @@ def chat_message():
         print(f"User message: {user_message}")
         
         # Create a new model instance for each request
-        chat_model = genai.GenerativeModel('gemma-3-4b-it')
+        chat_model = genai.GenerativeModel(GEMINI_MODEL)
         
         # Generate response with system context
         prompt = f"{SYSTEM_CONTEXT}\n\nUSER INFO:\nName: {user_name}\n\nUSER QUESTION:\n{user_message}\n\nProvide a warm, logical, and helpful response:"
@@ -120,7 +122,7 @@ def test_api():
             }), 500
         
         # Simple test
-        model = genai.GenerativeModel('gemma-3-4b-it')
+        model = genai.GenerativeModel(GEMINI_MODEL)
         response = model.generate_content("Say 'Hello, Smart Farming!' in one sentence.")
         
         return jsonify({

@@ -1,6 +1,6 @@
 const statesDistricts = JSON.parse(document.getElementById('states-data').textContent);
 
-// All 50 commodities for autocomplete
+// Key commodities for autocomplete
 const allCommodities = [
     // Vegetables (30)
     "Tomato", "Onion", "Potato", "Brinjal", "Cabbage", "Cauliflower",
@@ -13,7 +13,10 @@ const allCommodities = [
     "Apple", "Banana", "Orange", "Mosambi", "Grapes", "Pomegranate",
     "Papaya", "Pineapple", "Watermelon", "Muskmelon", "Mango", "Guava",
     "Lemon", "Custard Apple", "Sapota", "Strawberry", "Kiwi", "Pear",
-    "Plum", "Peach"
+    "Plum", "Peach",
+    // Cereals & grains (8)
+    "Paddy (Rice - Common)", "Paddy (Basmati)", "Wheat", "Maize (Corn)",
+    "Barley", "Jowar (Sorghum)", "Bajra (Pearl Millet)", "Ragi (Finger Millet)"
 ];
 
 function updateDistricts() {

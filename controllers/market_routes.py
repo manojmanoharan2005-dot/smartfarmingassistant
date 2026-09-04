@@ -2,8 +2,6 @@ from flask import Blueprint, render_template, session, request, jsonify
 from utils.auth import login_required
 import requests
 import random
-import json
-import os
 from datetime import datetime, timedelta
 from math import radians, cos, sin, asin, sqrt
 

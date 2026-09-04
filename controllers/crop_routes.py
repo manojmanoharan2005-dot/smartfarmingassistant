@@ -12,6 +12,7 @@ crop_bp = Blueprint('crop', __name__)
 
 # Configure Gemini API
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-1.5-flash')
 if GEMINI_API_KEY:
     try:
         genai.configure(api_key=GEMINI_API_KEY)
@@ -353,8 +354,8 @@ def disease_detection():
                     flash('Gemini API key not configured. Please contact administrator.', 'error')
                     return redirect(url_for('crop.disease_detection'))
                 
-                # Use the exact model requested
-                model = genai.GenerativeModel('gemma-3-4b-it')
+                # Use configured model
+                model = genai.GenerativeModel(GEMINI_MODEL)
                 
                 prompt = "You are an expert plant pathologist. Please analyze this image of a plant/leaf. If there is no plant, say so. Otherwise, identify any diseases, pests, or deficiencies present. Provide the common name, causes, symptoms, and actionable, eco-friendly treatment recommendations. Format with clear headings."
                 

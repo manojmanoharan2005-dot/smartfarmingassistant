@@ -387,9 +387,9 @@
             'Ash Gourd': '/static/images/ash_gourd.png',
             'Turnip': '/static/images/turnip.jpg',
             'Sweet Corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=500&q=60',
-            'Peas': 'https://images.unsplash.com/photo-1592444641151-6d744b76c8c6?auto=format&fit=crop&w=500&q=60',
-            'Garlic': 'https://images.unsplash.com/photo-1615477810688-668832a87426?auto=format&fit=crop&w=500&q=60',
-            'Ginger': 'https://images.unsplash.com/photo-1629153579126-11f845014c47?auto=format&fit=crop&w=500&q=60',
+            'Peas': '/static/images/peas.png',
+            'Garlic': '/static/images/garlic.png',
+            'Ginger': '/static/images/ginger.png',
             'Spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=500&q=60',
             'Lemon': 'https://images.unsplash.com/photo-1595855799863-1250325bdfa4?auto=format&fit=crop&w=500&q=60',
             'Papaya': 'https://images.unsplash.com/photo-1617117833203-c91b44773aba?auto=format&fit=crop&w=500&q=60',
@@ -465,7 +465,6 @@
             'Adoo': '/static/images/peach.png'
             } %}
 
-
             <div class="market-categories-container">
                 <!-- Vegetables Section -->
                 {% if vegetables %}
@@ -490,16 +489,17 @@
                     <div class="scroll-container">
                         <div class="products-grid-horizontal" id="vegetables-grid">
                         {% for item in vegetables %}
-                        {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60') %}
+                        {% set display_name = item.commodity.strip() %}
+                        {% set clean_name = display_name.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(display_name, card_images.get(clean_name, 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=500&q=60')) %}
                         <div class="product-card">
                             <div class="product-image-container">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <img src="{{ bg_image }}" alt="{{ display_name }}" class="product-image">
                                 <div class="product-indicator"></div>
                                 <div class="category-badge">Fresh</div>
                             </div>
                             <div class="product-content">
-                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <h3 class="product-name">{{ display_name }}</h3>
                                 <div class="product-location">
                                     <i class="fas fa-map-marker-alt location-icon"></i>
                                     <span>{{ item.district }}, {{ item.state }}</span>
@@ -610,16 +610,17 @@
                     <div class="scroll-container">
                         <div class="products-grid-horizontal" id="cereals-grid">
                         {% for item in cereals %}
-                        {% set clean_name = item.commodity.split('(')[0].strip() %}
-                        {% set bg_image = card_images.get(clean_name, 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60') %}
+                        {% set display_name = item.commodity.strip() %}
+                        {% set clean_name = display_name.split('(')[0].strip() %}
+                        {% set bg_image = card_images.get(display_name, card_images.get(clean_name, 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=500&q=60')) %}
                         <div class="product-card">
                             <div class="product-image-container">
-                                <img src="{{ bg_image }}" alt="{{ clean_name }}" class="product-image">
+                                <img src="{{ bg_image }}" alt="{{ display_name }}" class="product-image">
                                 <div class="product-indicator"></div>
                                 <div class="category-badge">Grain</div>
                             </div>
                             <div class="product-content">
-                                <h3 class="product-name">{{ clean_name }}</h3>
+                                <h3 class="product-name">{{ display_name }}</h3>
                                 <div class="product-location">
                                     <i class="fas fa-map-marker-alt location-icon"></i>
                                     <span>{{ item.district }}, {{ item.state }}</span>
