@@ -1,0 +1,23 @@
+<!-- Mobile Bottom Navigation Bar (Visible on Mobile Viewports for Logged-In Users) -->
+<nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+    <a href="{{ url_for('dashboard.dashboard') }}" class="bottom-nav-item {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+        <i class="fas fa-th-large"></i>
+        <span>Home</span>
+    </a>
+    <a href="{{ url_for('crop.crop_suggestion') }}" class="bottom-nav-item {% if request.endpoint == 'crop.crop_suggestion' %}active{% endif %}">
+        <i class="fas fa-seedling"></i>
+        <span>Crop</span>
+    </a>
+    <a href="#" class="bottom-nav-item" onclick="openWeatherModal(); return false;">
+        <i class="fas fa-cloud-sun"></i>
+        <span>Weather</span>
+    </a>
+    <a href="{{ url_for('market.market_watch') }}" class="bottom-nav-item {% if request.endpoint == 'market.market_watch' %}active{% endif %}">
+        <i class="fas fa-chart-line"></i>
+        <span>Market</span>
+    </a>
+    <a href="#" class="bottom-nav-item" onclick="openProfileModal(); return false;">
+        <i class="fas fa-user-circle"></i>
+        <span>Profile</span>
+    </a>
+</nav>

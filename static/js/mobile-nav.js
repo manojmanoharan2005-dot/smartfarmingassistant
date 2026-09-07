@@ -15,9 +15,12 @@
     function init() {
         setupPublicNavbar();
         setupDashboardSidebar();
+        setupBottomNavHighlight();
+        setupPasswordToggles();
         setupKeyboardHandlers();
         setupResponsiveResize();
         autoWrapTables();
+        setupChartResizing();
     }
 
     /**
@@ -153,6 +156,65 @@
         }
 
         document.body.style.overflow = '';
+    }
+
+    /**
+     * Highlight current tab in bottom navigation
+     */
+    function setupBottomNavHighlight() {
+        const currentPath = window.location.pathname;
+        const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+
+        bottomNavItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href && href !== '#' && currentPath.includes(href)) {
+                bottomNavItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            }
+        });
+    }
+
+    /**
+     * Password Visibility Toggle Setup
+     */
+    function setupPasswordToggles() {
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        passwordInputs.forEach(input => {
+            const group = input.parentElement;
+            if (group && group.classList.contains('input-group') && !group.querySelector('.password-toggle-btn')) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'password-toggle-btn';
+                toggleBtn.setAttribute('aria-label', 'Toggle Password Visibility');
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+
+                toggleBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
+                    toggleBtn.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+                });
+
+                group.appendChild(toggleBtn);
+            }
+        });
+    }
+
+    /**
+     * Handle Chart.js resizing on orientation / window changes
+     */
+    function setupChartResizing() {
+        window.addEventListener('orientationchange', function () {
+            setTimeout(() => {
+                if (window.Chart && window.Chart.instances) {
+                    Object.values(window.Chart.instances).forEach(chart => {
+                        if (chart && typeof chart.resize === 'function') {
+                            chart.resize();
+                        }
+                    });
+                }
+            }, 300);
+        });
     }
 
     /**

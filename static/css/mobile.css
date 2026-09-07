@@ -1,16 +1,54 @@
 /**
- * UNIVERSAL MASTER RESPONSIVE STYLESHEET
- * Smart Farming Assistant - Complete Mobile Responsive UI Adaptation
- * Evaluated LAST in document head to guarantee global viewport compliance
+ * UNIVERSAL MASTER RESPONSIVE & MOBILE-FIRST STYLESHEET
+ * Smart Farming Assistant - Modern Production Mobile Agriculture UI
+ * Evaluated LAST in document head to guarantee viewport compliance across all devices
  */
 
 /* ============================================
-   1. GLOBAL VIEWPORT & RESET OVERRIDES
+   1. CORE DESIGN TOKENS & RESET OVERRIDES
    ============================================ */
+:root {
+    --primary-color: #10b981;
+    --primary-hover: #059669;
+    --primary-light: #ecfdf5;
+    --primary-dark: #047857;
+    --accent-blue: #3b82f6;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --bottom-nav-height: 64px;
+}
+
+[data-theme="dark"] {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --primary-light: rgba(16, 185, 129, 0.15);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
 *,
 *::before,
 *::after {
     box-sizing: border-box !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -21,24 +59,33 @@ html, body {
     padding: 0 !important;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Media Elements & Canvas Scaling */
+/* Touch Targets Enforcement */
+button, input, select, textarea, a, .btn, .nav-link, .bottom-nav-item {
+    touch-action: manipulation;
+    min-height: 44px;
+}
+
+a {
+    color: var(--primary-color);
+}
+
+/* Global Media & Container Containment */
 img, video, canvas, svg, iframe {
     max-width: 100% !important;
     height: auto;
 }
 
-button, input, select, textarea, a {
-    touch-action: manipulation;
-}
-
-/* Universal Table Wrapper */
 .table-responsive,
 .table-container {
     width: 100% !important;
@@ -47,43 +94,21 @@ button, input, select, textarea, a {
     -webkit-overflow-scrolling: touch !important;
     display: block !important;
     margin-bottom: 1rem;
-}
-
-table {
-    max-width: 100%;
+    border-radius: var(--radius-md);
 }
 
 /* ============================================
-   2. PUBLIC NAVBAR RESPONSIVE STYLES
+   2. PUBLIC HEADER & NAVBAR STYLES
    ============================================ */
-/* Desktop Header (769px and wider) */
-@media (min-width: 769px) {
-    .mobile-menu-btn,
-    .mobile-nav-divider,
-    .mobile-nav-item,
-    .mobile-theme-toggle,
-    .mobile-nav-icon {
-        display: none !important;
-    }
-
-    .desktop-auth-btn,
-    .desktop-theme-toggle {
-        display: inline-flex !important;
-    }
-
-    .navbar-menu {
-        display: flex !important;
-        position: static !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        flex-direction: row !important;
-        border: none !important;
-        padding: 0 !important;
-        width: auto !important;
-    }
+.navbar {
+    background: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
 }
 
-/* Mobile Header (< 769px) */
 @media (max-width: 768px) {
     .navbar {
         position: fixed !important;
@@ -91,77 +116,56 @@ table {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
         height: 60px !important;
-        z-index: 10000 !important;
         padding: 0 16px !important;
-        background: var(--bg-white, #ffffff) !important;
-        border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
         box-sizing: border-box !important;
     }
 
-    [data-theme="dark"] .navbar {
-        background: rgba(30, 41, 59, 0.98) !important;
-    }
-
     .navbar-container {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 60px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        padding: 0 !important;
+        height: 100% !important;
+        width: 100% !important;
         margin: 0 !important;
+        padding: 0 !important;
     }
 
     .navbar-brand {
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
-        font-size: 1.15rem !important;
+        font-size: 1.1rem !important;
         font-weight: 700 !important;
+        color: var(--text-primary) !important;
         text-decoration: none !important;
     }
 
     .navbar-brand img {
         height: 32px !important;
         width: auto !important;
-        max-height: 32px !important;
         border-radius: 6px !important;
-        flex-shrink: 0 !important;
     }
 
-    /* HIDE ALL DESKTOP ACTION BUTTONS ON MOBILE HEADER */
     .desktop-auth-btn,
-    .desktop-theme-toggle,
-    .navbar-actions .btn,
-    .navbar-actions .theme-toggle:not(.mobile-theme-toggle) {
+    .desktop-theme-toggle {
         display: none !important;
     }
 
-    .navbar-actions {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0 !important;
-    }
-
-    /* HAMBURGER BUTTON ONLY ON MOBILE RIGHT SIDE */
     .mobile-menu-btn {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         width: 44px !important;
         height: 44px !important;
-        border-radius: 8px !important;
+        border-radius: var(--radius-sm) !important;
         background: transparent !important;
-        border: 1px solid var(--border-color, #e2e8f0) !important;
-        color: var(--text-primary, #0f172a) !important;
-        font-size: 1.25rem !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+        font-size: 1.2rem !important;
         cursor: pointer !important;
     }
 
-    /* SLIDE-DOWN MOBILE NAV MENU */
     .navbar-menu {
         display: none !important;
         position: fixed !important;
@@ -169,72 +173,25 @@ table {
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        background: var(--bg-white, #ffffff) !important;
+        background: var(--bg-card) !important;
         flex-direction: column !important;
         padding: 16px !important;
         gap: 8px !important;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-        border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
+        box-shadow: var(--shadow-lg) !important;
+        border-bottom: 1px solid var(--border-color) !important;
         z-index: 9999 !important;
-        box-sizing: border-box !important;
-    }
-
-    [data-theme="dark"] .navbar-menu {
-        background: var(--bg-card, #1e293b) !important;
     }
 
     .navbar-menu.active {
         display: flex !important;
         animation: navSlideDown 0.2s ease-out forwards;
     }
-
-    .mobile-nav-divider {
-        height: 1px;
-        background: var(--border-color, #e2e8f0);
-        margin: 8px 0;
-        width: 100%;
-    }
-
-    .mobile-nav-item {
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
-        width: 100% !important;
-        padding: 12px 16px !important;
-        border-radius: 10px !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-        color: var(--text-primary, #0f172a) !important;
-        text-decoration: none !important;
-    }
-
-    .mobile-nav-btn-primary {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-        color: white !important;
-        font-weight: 600 !important;
-        justify-content: center !important;
-    }
-
-    .mobile-theme-toggle {
-        width: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
-        padding: 12px 16px !important;
-        border-radius: 10px !important;
-        border: 1px solid var(--border-color, #e2e8f0) !important;
-        background: var(--bg-card, #f8fafc) !important;
-        color: var(--text-primary, #0f172a) !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
-        cursor: pointer !important;
-    }
 }
 
 @keyframes navSlideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
     to {
         opacity: 1;
@@ -243,9 +200,76 @@ table {
 }
 
 /* ============================================
-   3. AUTHENTICATED DASHBOARD DRAWER & ROOT LAYOUT
+   3. MOBILE BOTTOM NAVIGATION BAR
    ============================================ */
-/* Desktop Layout (1025px+) */
+.mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: var(--bottom-nav-height) !important;
+        background: var(--bg-card) !important;
+        border-top: 1px solid var(--border-color) !important;
+        z-index: 9900 !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 4px 8px calc(env(safe-area-inset-bottom, 0px) + 4px) 8px !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .bottom-nav-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+        height: 100% !important;
+        color: var(--text-secondary) !important;
+        text-decoration: none !important;
+        font-size: 0.72rem !important;
+        font-weight: 500 !important;
+        gap: 3px !important;
+        transition: color 0.2s ease, transform 0.15s ease !important;
+        padding: 4px 0 !important;
+        min-height: 44px !important;
+    }
+
+    .bottom-nav-item i {
+        font-size: 1.25rem !important;
+        transition: transform 0.2s ease !important;
+    }
+
+    .bottom-nav-item.active {
+        color: var(--primary-color) !important;
+        font-weight: 700 !important;
+    }
+
+    .bottom-nav-item.active i {
+        transform: scale(1.12) translateY(-1px) !important;
+    }
+
+    .bottom-nav-item:active {
+        transform: scale(0.94) !important;
+    }
+
+    /* Add spacing to main container so content doesn't get covered by bottom nav */
+    .dashboard-layout,
+    .main-content,
+    main {
+        padding-bottom: calc(var(--bottom-nav-height) + 16px) !important;
+    }
+}
+
+/* ============================================
+   4. DASHBOARD DRAWER & SIDEBAR RESPONSIVE
+   ============================================ */
 @media (min-width: 1025px) {
     .dashboard-layout {
         display: flex !important;
@@ -260,14 +284,14 @@ table {
         width: 280px !important;
         height: 100vh !important;
         z-index: 1000 !important;
-        transform: none !important;
+        background: var(--bg-card) !important;
+        border-right: 1px solid var(--border-color) !important;
     }
 
     .main-content {
         margin-left: 280px !important;
         width: calc(100% - 280px) !important;
-        max-width: calc(100% - 280px) !important;
-        padding: 24px !important;
+        padding: 24px 32px !important;
         box-sizing: border-box !important;
     }
 
@@ -277,7 +301,6 @@ table {
     }
 }
 
-/* Mobile & Tablet Layout (< 1025px) */
 @media (max-width: 1024px) {
     .dashboard-layout {
         display: block !important;
@@ -285,25 +308,26 @@ table {
         max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-        overflow-x: hidden !important;
     }
 
     .sidebar {
         position: fixed !important;
         top: 0 !important;
-        left: -290px !important;
+        left: -300px !important;
         width: 280px !important;
-        max-width: 85vw !important;
+        max-width: 84vw !important;
         height: 100vh !important;
         z-index: 10050 !important;
+        background: var(--bg-card) !important;
+        border-right: 1px solid var(--border-color) !important;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: var(--shadow-lg) !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
     }
 
     .sidebar.active {
-        transform: translateX(290px) !important;
+        transform: translateX(300px) !important;
     }
 
     .sidebar-overlay {
@@ -333,7 +357,6 @@ table {
         max-width: 100% !important;
         padding: 16px 12px !important;
         box-sizing: border-box !important;
-        overflow-x: hidden !important;
     }
 
     .mobile-sidebar-toggle {
@@ -342,406 +365,311 @@ table {
         justify-content: center;
         width: 44px;
         height: 44px;
-        border-radius: 10px;
-        background: var(--bg-card, #ffffff);
-        border: 1px solid var(--border-color, #e2e8f0);
-        color: var(--text-primary, #0f172a);
-        font-size: 1.25rem;
+        border-radius: var(--radius-md);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 1.2rem;
         cursor: pointer;
-        box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.1));
-        margin-bottom: 16px;
-    }
-
-    [data-theme="dark"] .mobile-sidebar-toggle {
-        background: var(--bg-card, #1e293b);
-        border-color: #334155;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 12px;
     }
 }
 
 /* ============================================
-   4. FULL VIEWPORT WIDTH ENGINE FOR ALL CONTENT
+   5. DASHBOARD CARDS & METRICS RESPONSIVE
    ============================================ */
-@media (max-width: 768px) {
-    /* Root Page Containers */
-    .container,
-    .wrapper,
-    .content-wrapper,
-    .dashboard-content,
-    .hero-header,
-    .page-hero,
-    .hero-section,
-    .features-section,
-    .about-content,
-    .auth-container,
-    .login-container,
-    .register-container,
-    .cta-container,
-    .promo-container,
-    .market-categories-container,
-    .category-section,
-    .filter-card,
-    .form-card,
-    .card {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        box-sizing: border-box !important;
-    }
+.dashboard-grid,
+.summary-cards,
+.cards-grid,
+.features-grid,
+.marketplace-grid,
+.products-grid,
+.listings-grid,
+.equipment-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 24px !important;
+}
 
-    /* Stack Grids & Multi-column Layouts */
+@media (max-width: 768px) {
     .dashboard-grid,
+    .summary-cards,
+    .cards-grid,
+    .features-grid,
     .marketplace-grid,
     .products-grid,
-    .features-grid,
-    .cards-grid,
-    .summary-cards,
-    .promo-grid,
-    .technology-grid,
-    .price-details,
-    .price-details-grid,
-    .filter-row,
-    .form-grid,
-    .form-grid-2,
-    .form-grid-3,
-    .form-grid-4,
-    .form-row,
-    .two-column-form,
-    .info-grid,
-    .card-info-grid,
-    .values-grid,
-    .equipment-grid,
     .listings-grid,
-    .product-grid {
-        display: grid !important;
+    .equipment-grid {
         grid-template-columns: 1fr !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
         gap: 12px !important;
-        margin: 0 0 16px 0 !important;
-        padding: 0 !important;
     }
 
-    /* Ensure Grid Items Have Safe Minimum Width */
-    .dashboard-grid > *,
-    .marketplace-grid > *,
-    .products-grid > *,
-    .feature-card,
-    .product-card,
-    .listing-card,
-    .equipment-card,
-    .stat-item,
+    .hero-header {
+        padding: 16px !important;
+        border-radius: var(--radius-lg) !important;
+        margin-bottom: 16px !important;
+    }
+
+    .hero-title {
+        font-size: 1.4rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem !important;
+    }
+
+    .stat-card,
     .summary-card,
-    .filter-group,
-    .filter-group-category {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Stats Bar Mobile Grid */
-    .stats-bar {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        gap: 10px !important;
-        padding: 12px !important;
-        box-sizing: border-box !important;
-        margin: 0 0 16px 0 !important;
-    }
-
-    .logout-wrapper {
-        grid-column: 1 / -1 !important;
-        width: 100% !important;
-        margin-top: 8px !important;
-    }
-
-    .logout-btn {
-        width: 100% !important;
-        justify-content: center !important;
+    .card,
+    .quick-action-card {
+        padding: 16px !important;
+        border-radius: var(--radius-lg) !important;
+        border: 1px solid var(--border-color) !important;
+        box-shadow: var(--shadow-sm) !important;
     }
 }
 
-@media (max-width: 480px) {
-    .stats-bar {
+/* ============================================
+   6. FORMS & INPUTS (MOBILE-FIRST)
+   ============================================ */
+.form-group {
+    margin-bottom: 16px !important;
+    width: 100% !important;
+}
+
+.form-control,
+.input-field,
+select.form-control,
+textarea.form-control {
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border-color) !important;
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    font-size: 0.95rem !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.form-control:focus,
+.input-field:focus {
+    border-color: var(--primary-color) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px var(--primary-light) !important;
+}
+
+@media (max-width: 768px) {
+    .form-grid,
+    .form-row,
+    .form-grid-2,
+    .form-grid-3,
+    .form-grid-4,
+    .two-column-form {
+        display: grid !important;
         grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
     }
 
-    .quick-actions-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+    .btn,
+    .btn-primary,
+    .btn-submit,
+    .predict-btn {
+        width: 100% !important;
+        min-height: 48px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        border-radius: var(--radius-md) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         gap: 8px !important;
     }
 }
 
 /* ============================================
-   5. PUBLIC LANDING PAGE (index.html)
+   7. CROP PREDICTION RESPONSIVE
    ============================================ */
-@media (max-width: 767px) {
-    .hero,
-    .hero-section {
-        padding: 20px 16px 30px 16px !important;
-        margin-top: 0 !important;
-    }
+.crop-form-card,
+.result-card {
+    border-radius: var(--radius-lg) !important;
+    padding: 20px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-md) !important;
+}
 
-    .hero-container,
-    .hero-grid {
-        grid-template-columns: 1fr !important;
-        flex-direction: column !important;
-        gap: 20px !important;
-        text-align: center !important;
-    }
+.confidence-bar-container {
+    width: 100% !important;
+    height: 10px !important;
+    background: var(--border-color) !important;
+    border-radius: var(--radius-full) !important;
+    overflow: hidden !important;
+    margin: 8px 0 !important;
+}
 
-    .hero-badge {
-        margin: 0 auto 12px auto !important;
-        display: inline-flex !important;
-    }
-
-    .hero-title,
-    .hero-heading {
-        font-size: clamp(1.6rem, 5.5vw, 2.2rem) !important;
-        line-height: 1.25 !important;
-    }
-
-    .hero-subtitle,
-    .hero-description {
-        font-size: 0.95rem !important;
-        margin: 0 auto 20px auto !important;
-    }
-
-    .hero-buttons,
-    .hero-actions,
-    .cta-buttons {
-        flex-direction: column !important;
-        width: 100% !important;
-        gap: 10px !important;
-    }
-
-    .hero-buttons .btn,
-    .hero-actions .btn,
-    .cta-buttons .btn {
-        width: 100% !important;
-    }
+.confidence-bar-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+    border-radius: var(--radius-full) !important;
+    transition: width 0.6s ease !important;
 }
 
 /* ============================================
-   6. AUTHENTICATION PAGES (login, register, OTP)
+   8. WEATHER LAYOUT RESPONSIVE & HORIZONTAL SCROLL
    ============================================ */
-@media (max-width: 767px) {
-    body {
-        padding-top: 60px !important;
-    }
-
-    .register-section,
-    .login-section,
-    .auth-section {
-        padding: 24px 12px 30px 12px !important;
-        margin-top: 0 !important;
-        min-height: auto !important;
-        display: block !important; /* Normal vertical flow, no flex centering overlap */
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .register-container,
-    .login-container,
-    .auth-container {
-        margin: 0 auto !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-
-    .register-card,
-    .login-card,
-    .auth-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 24px 16px !important;
-        margin: 0 auto !important;
-        border-radius: 16px !important;
-        box-sizing: border-box !important;
-    }
-
-    .register-header {
-        text-align: center !important;
-        margin-bottom: 24px !important;
-    }
-
-    .register-logo {
-        display: inline-flex !important;
-        width: 60px !important;
-        height: 60px !important;
-        border-radius: 16px !important;
-        margin-bottom: 12px !important;
-    }
-
-    .register-title {
-        font-size: 1.45rem !important;
-        margin-bottom: 6px !important;
-    }
-
-    .register-subtitle {
-        font-size: 0.9rem !important;
-    }
-
-    .form-control,
-    .auth-input,
-    .input-field {
-        width: 100% !important;
-        height: 48px !important;
-        padding: 12px 16px !important;
-        box-sizing: border-box !important;
-    }
-
-    .auth-btn,
-    .btn-submit,
-    .register-btn {
-        width: 100% !important;
-        min-height: 48px !important;
-        font-size: 1rem !important;
-    }
-}
-
-/* ============================================
-   7. MODALS & POPUPS RESPONSIVE
-   ============================================ */
-.modal-overlay,
-.modal-backdrop {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-    z-index: 99999 !important;
-    display: none;
+.weather-current-card {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 12px !important;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: #ffffff;
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
 }
 
-.modal-overlay.active,
-.modal-overlay.show,
-[style*="display: block"].modal-overlay,
-[style*="display: flex"].modal-overlay {
+.weather-temp-main {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 8px 0;
+}
+
+.forecast-scroll-container {
     display: flex !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 16px !important;
 }
 
-.modal-content,
-.modal-card,
-.modal-dialog {
-    width: min(94vw, 700px) !important;
-    max-height: 90vh !important;
-    margin: auto !important;
-    border-radius: 16px !important;
+.forecast-chip {
+    flex: 0 0 110px !important;
+    scroll-snap-align: start !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 12px 8px !important;
+    text-align: center !important;
+}
+
+/* ============================================
+   9. MARKET WATCH RESPONSIVE CARDS & CHARTS
+   ============================================ */
+.chart-card-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    min-height: 260px !important;
+    max-height: 360px !important;
+}
+
+.ai-insight-box {
+    background: var(--primary-light) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 16px !important;
+    max-height: 240px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
-    box-sizing: border-box !important;
 }
 
-@media (max-width: 768px) {
-    .modal-overlay .card,
-    .modal .card,
-    .modal-content,
-    .modal-card {
-        width: 95vw !important;
-        max-width: 95vw !important;
-        max-height: 92vh !important;
-        padding: 16px !important;
-    }
-    
-    .modal-overlay [style*="grid-template-columns"],
-    .modal [style*="grid-template-columns"],
-    .modal-content [style*="grid-template-columns"],
-    .card-body [style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-    }
+.ai-insight-box h4 {
+    margin-top: 0;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-insight-box ul {
+    padding-left: 20px;
+    margin-bottom: 0;
 }
 
 /* ============================================
-   8. CHATBOT / AI ASSISTANT RESPONSIVE
+   10. AUTHENTICATION (LOGIN / REGISTER)
    ============================================ */
-.chatbot-trigger,
-.chat-fab {
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
-    z-index: 9990 !important;
-    width: 54px !important;
-    height: 54px !important;
-    border-radius: 50% !important;
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4) !important;
+.auth-section {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
 }
 
-.chatbot-window,
-.chat-window-container {
-    position: fixed !important;
-    bottom: 85px !important;
-    right: 20px !important;
-    width: min(92vw, 380px) !important;
-    max-height: 75vh !important;
-    z-index: 9995 !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
-    overflow: hidden !important;
+.auth-card {
+    width: 100% !important;
+    max-width: 420px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 28px 20px !important;
+    box-shadow: var(--shadow-lg) !important;
 }
 
 @media (max-width: 480px) {
-    .chatbot-window,
-    .chat-window-container {
-        right: 4vw !important;
-        left: 4vw !important;
-        width: 92vw !important;
-        bottom: 80px !important;
-        max-height: 70vh !important;
+    .auth-card {
+        padding: 20px 16px !important;
     }
 }
 
+/* Password Toggle Wrapper */
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-group i:first-child {
+    position: absolute;
+    left: 14px;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.input-group .form-control {
+    padding-left: 40px !important;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    min-height: auto;
+}
+
 /* ============================================
-   9. TOAST NOTIFICATIONS RESPONSIVE
+   11. ACCESSIBILITY & UTILITIES
    ============================================ */
-.toast-container {
-    position: fixed !important;
-    top: 16px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: min(92vw, 420px) !important;
-    z-index: 100000 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    pointer-events: none !important;
+:focus-visible {
+    outline: 2px solid var(--primary-color) !important;
+    outline-offset: 2px !important;
 }
 
-.toast {
-    pointer-events: auto !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    padding: 12px 16px !important;
-    border-radius: 10px !important;
-    font-size: 0.9rem !important;
-    word-break: break-word !important;
-}
-
-/* ============================================
-   10. CHARTS & CANVASES
-   ============================================ */
-.chart-container,
-.canvas-holder {
-    width: 100% !important;
-    max-width: 100% !important;
-    position: relative !important;
-}
-
-canvas {
-    max-width: 100% !important;
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }

@@ -96,6 +96,7 @@
 
 
     {% if user_logged_in %}
+    {% include 'includes/bottom_nav.html' %}
     {% include 'includes/global_modals.html' %}
     <script src="{{ url_for('static', filename='js/global_modals.js') }}"></script>
     {% endif %}
